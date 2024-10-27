@@ -38,15 +38,15 @@ class METEORIC_API AMETCharacter : public ACharacter
 public:
 	AMETCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float AimDownSightsSpeed;
-
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AMETWeapon* const InWeapon);
 
 	AMETWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 	bool IsAiming() const { return bIsAiming; }
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, const AMETWeapon*, NewWeapon);
+	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
@@ -68,5 +68,8 @@ protected:
 	void StopAimDownSights();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+private:
+	FWeaponEquippedEvent WeaponEquippedEvent;
 
 };

@@ -6,13 +6,14 @@
 
 // Sets default values
 AMETWeapon::AMETWeapon()
+	: SightCameraOffset(30.f)
+	, AimDownSightsSpeed(20.f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-
 }
 
 // Called when the game starts or when spawned

@@ -17,6 +17,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	FName ParentAttachmentSocket;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
+	float SightCameraOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
+	float AimDownSightsSpeed;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Mesh;

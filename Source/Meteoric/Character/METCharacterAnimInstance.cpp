@@ -15,13 +15,19 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, bShouldMove(false)
 	, bIsFalling(false)
 	, SightCameraOffset(30.f)
+	, AimDownSightsSpeed(20.f)
+	, AimAlpha(0.f)
 {
 }
 
 void UMETCharacterAnimInstance::NativeInitializeAnimation()
 {
 	Character = Cast<AMETCharacter>(TryGetPawnOwner());
-	MovementComponent = Character ? Character->GetCharacterMovement() : nullptr;
+	if(!Character) return;
+	
+	MovementComponent = Character->GetCharacterMovement();
+	Character->OnWeaponEquipped().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
+	OnWeaponEquipped(Character->GetCurrentWeapon());
 }
 
 void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -30,17 +36,16 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateMovementData();
 	SetControlRotationDelta();
-	SetHandRelativeToSight();
 	SetSightRelativeToSpine();
 	SetHandRelativeToSpine();
 
 	if(Character->IsAiming())
 	{
-		AimAlpha = FMath::InterpSinInOut(AimAlpha, 1.f, Character->AimDownSightsSpeed * DeltaSeconds);
+		AimAlpha = FMath::InterpSinInOut(AimAlpha, 1.f, AimDownSightsSpeed * DeltaSeconds);
 	}
 	else
 	{
-		AimAlpha = FMath::InterpSinInOut(AimAlpha, 0.f, Character->AimDownSightsSpeed * DeltaSeconds);
+		AimAlpha = FMath::InterpSinInOut(AimAlpha, 0.f, AimDownSightsSpeed * DeltaSeconds);
 	}
 }
 
@@ -79,10 +84,12 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 
 	if(CharacterMesh && WeaponMesh)
 	{
-		const FTransform HandTransform = CharacterMesh->GetBoneTransform(FName("hand_r"));
+		const FTransform RightHandTransform = CharacterMesh->GetBoneTransform(FName("hand_r"));
+		const FTransform LeftHandTransform = CharacterMesh->GetBoneTransform(FName("hand_l"));
 		const FTransform SightTransform = WeaponMesh->GetSocketTransform(FName("S_Sight"));
 
-		HandRelativeToSight = HandTransform.GetRelativeTransform(SightTransform);
+		RightHandRelSight = RightHandTransform.GetRelativeTransform(SightTransform);
+		LeftHandRelSight= LeftHandTransform.GetRelativeTransform(SightTransform);
 	}
 }
 
@@ -98,13 +105,24 @@ void UMETCharacterAnimInstance::SetSightRelativeToSpine()
 		const FTransform CameraTransform = MainCamera->GetComponentToWorld();
 		const FTransform SpineTransform = CharacterMesh->GetBoneTransform(FName("spine_05"));
 
-		SightRelativeToSpine = CameraTransform.GetRelativeTransform(SpineTransform);
-		SightRelativeToSpine.SetLocation(SightRelativeToSpine.GetLocation() + SightRelativeToSpine.GetRotation().GetForwardVector() * SightCameraOffset);
+		SightRelSpine = CameraTransform.GetRelativeTransform(SpineTransform);
+		SightRelSpine.SetLocation(SightRelSpine.GetLocation() + SightRelSpine.GetRotation().GetForwardVector() * SightCameraOffset);
 	}
 	
 }
 
 void UMETCharacterAnimInstance::SetHandRelativeToSpine()
 {
-	HandRelativeToSpine = HandRelativeToSight * SightRelativeToSpine;
+	RightHandRelSpine = RightHandRelSight * SightRelSpine;
+	LeftHandRelSpine = LeftHandRelSight * SightRelSpine;
+}
+
+void UMETCharacterAnimInstance::OnWeaponEquipped(const AMETWeapon* InWeapon)
+{
+	if(InWeapon)
+	{
+		SetHandRelativeToSight();
+		SightCameraOffset = InWeapon->SightCameraOffset;
+		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;
+	}
 }

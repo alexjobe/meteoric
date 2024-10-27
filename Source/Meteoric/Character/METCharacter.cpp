@@ -13,8 +13,7 @@
 DEFINE_LOG_CATEGORY(LogMETCharacter);
 
 AMETCharacter::AMETCharacter()
-	: AimDownSightsSpeed(20.f)
-	, bIsAiming(false)
+	: bIsAiming(false)
 {
 	GetCapsuleComponent()->InitCapsuleSize(35.f, 90.0f);
 	
@@ -37,6 +36,7 @@ void AMETCharacter::EquipWeapon(AMETWeapon* const InWeapon)
 	if(!ensure(CurrentWeapon)) return;
 
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
+	WeaponEquippedEvent.Broadcast(CurrentWeapon);
 }
 
 void AMETCharacter::BeginPlay()

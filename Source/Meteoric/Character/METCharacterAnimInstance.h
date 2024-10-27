@@ -43,20 +43,34 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Control")
 	FRotator ControlRotationDelta;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
+	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	float SightCameraOffset;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ADS")
+	float AimDownSightsSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	float AimAlpha;
 
+	/* Right Hand Relative to Sight */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform HandRelativeToSight;
+	FTransform RightHandRelSight;
 
+	/* Left Hand Relative to Sight */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform SightRelativeToSpine;
+	FTransform LeftHandRelSight;
 
+	/* Sight Relative to Spine */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform HandRelativeToSpine;
+	FTransform SightRelSpine;
+
+	/* Right Hand Relative to Spine */
+	UPROPERTY(BlueprintReadOnly, Category = "ADS")
+	FTransform RightHandRelSpine;
+	
+	/* Left Hand Relative to Spine */
+	UPROPERTY(BlueprintReadOnly, Category = "ADS")
+	FTransform LeftHandRelSpine;
 
 private:
 
@@ -65,5 +79,8 @@ private:
 	void SetHandRelativeToSight();
 	void SetSightRelativeToSpine();
 	void SetHandRelativeToSpine();
+
+	UFUNCTION()
+	void OnWeaponEquipped(const class AMETWeapon* InWeapon);
 	
 };
