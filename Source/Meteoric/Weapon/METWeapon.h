@@ -12,8 +12,6 @@ class METEORIC_API AMETWeapon : public AActor
 	GENERATED_BODY()
 	
 public:
-	AMETWeapon();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	FName ParentAttachmentSocket;
 
@@ -23,9 +21,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
 	float AimDownSightsSpeed;
 
+	AMETWeapon();
+
+	void OnEquipped(ACharacter* InOwningCharacter);
+	void Fire() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class USkeletalMeshComponent> Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> CharacterFireMontage;
 	
 	virtual void BeginPlay() override;
 
@@ -33,5 +39,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
+
+
+private:
+	TObjectPtr<class ACharacter> OwningCharacter;
 
 };

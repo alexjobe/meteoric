@@ -35,6 +35,10 @@ class METEORIC_API AMETCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> AimAction;
 
+	/** Fire Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> FireAction;
+
 public:
 	AMETCharacter();
 
@@ -66,6 +70,9 @@ protected:
 	/** Called for ADS input */
 	void AimDownSights();
 	void StopAimDownSights();
+
+	/** Called for firing input */
+	void Fire();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

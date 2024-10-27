@@ -3,6 +3,7 @@
 
 #include "METWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
 AMETWeapon::AMETWeapon()
@@ -16,11 +17,23 @@ AMETWeapon::AMETWeapon()
 	RootComponent = Mesh;
 }
 
+void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
+{
+	OwningCharacter = InOwningCharacter;
+}
+
+void AMETWeapon::Fire() const
+{
+	if(ensure(OwningCharacter))
+	{
+		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
+	}
+}
+
 // Called when the game starts or when spawned
 void AMETWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

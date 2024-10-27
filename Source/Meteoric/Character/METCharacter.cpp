@@ -35,6 +35,7 @@ void AMETCharacter::EquipWeapon(AMETWeapon* const InWeapon)
 	CurrentWeapon = InWeapon;
 	if(!ensure(CurrentWeapon)) return;
 
+	CurrentWeapon->OnEquipped(this);
 	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
 	WeaponEquippedEvent.Broadcast(CurrentWeapon);
 }
@@ -77,6 +78,14 @@ void AMETCharacter::StopAimDownSights()
 	bIsAiming = false;
 }
 
+void AMETCharacter::Fire()
+{
+	if(CurrentWeapon)
+	{
+		CurrentWeapon->Fire();
+	}
+}
+
 void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -94,5 +103,8 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Aiming
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimDownSights);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::StopAimDownSights);
+
+		// Firing
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::Fire);
 	}
 }
