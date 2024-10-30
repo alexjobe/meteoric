@@ -21,12 +21,18 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintGetter)
+	UAnimSequence* GetIdleWeaponAnim() const { return IdleWeaponAnim; }
+
 protected:
 	UPROPERTY(Transient)
-	class AMETCharacter* Character;
+	TObjectPtr<class AMETCharacter> Character;
 
 	UPROPERTY(Transient)
-	class UCharacterMovementComponent* MovementComponent;
+	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimSequence> IdleWeaponAnim;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FVector Velocity;
@@ -75,6 +81,7 @@ protected:
 private:
 
 	void UpdateMovementData();
+	
 	void SetControlRotationDelta();
 	void SetHandRelativeToSight();
 	void SetSightRelativeToSpine();
@@ -82,5 +89,4 @@ private:
 
 	UFUNCTION()
 	void OnWeaponEquipped(const class AMETWeapon* InWeapon);
-	
 };

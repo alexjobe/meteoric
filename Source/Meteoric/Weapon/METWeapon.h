@@ -26,12 +26,20 @@ public:
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void Fire() const;
 
+	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<class USkeletalMeshComponent> Mesh;
+	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<class UAnimMontage> CharacterFireMontage;
+	TObjectPtr<UAnimMontage> CharacterFireMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimSequence> CharacterIdleWeaponAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimSequence> WeaponFireAnim;
 	
 	virtual void BeginPlay() override;
 
@@ -40,8 +48,8 @@ public:
 
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
-
 private:
-	TObjectPtr<class ACharacter> OwningCharacter;
+	UPROPERTY(Transient)
+	TObjectPtr<ACharacter> OwningCharacter;
 
 };

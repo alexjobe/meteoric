@@ -27,6 +27,7 @@ void AMETWeapon::Fire() const
 	if(ensure(OwningCharacter))
 	{
 		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
+		Mesh->PlayAnimation(WeaponFireAnim, false);
 	}
 }
 

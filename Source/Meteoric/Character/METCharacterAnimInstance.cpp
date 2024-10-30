@@ -35,6 +35,7 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if(!Character) return;
 
 	UpdateMovementData();
+	
 	SetControlRotationDelta();
 	SetSightRelativeToSpine();
 	SetHandRelativeToSpine();
@@ -121,8 +122,9 @@ void UMETCharacterAnimInstance::OnWeaponEquipped(const AMETWeapon* InWeapon)
 {
 	if(InWeapon)
 	{
-		SetHandRelativeToSight();
+		IdleWeaponAnim = InWeapon->GetCharacterIdleWeaponAnim();
 		SightCameraOffset = InWeapon->SightCameraOffset;
 		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;
+		SetHandRelativeToSight();
 	}
 }
