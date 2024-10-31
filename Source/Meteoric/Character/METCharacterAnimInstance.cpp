@@ -86,11 +86,9 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 	if(CharacterMesh && WeaponMesh)
 	{
 		const FTransform RightHandTransform = CharacterMesh->GetBoneTransform(FName("hand_r"));
-		const FTransform LeftHandTransform = CharacterMesh->GetBoneTransform(FName("hand_l"));
 		const FTransform SightTransform = WeaponMesh->GetSocketTransform(FName("S_Sight"));
 
 		RightHandRelSight = RightHandTransform.GetRelativeTransform(SightTransform);
-		LeftHandRelSight= LeftHandTransform.GetRelativeTransform(SightTransform);
 	}
 }
 
@@ -115,7 +113,6 @@ void UMETCharacterAnimInstance::SetSightRelativeToSpine()
 void UMETCharacterAnimInstance::SetHandRelativeToSpine()
 {
 	RightHandRelSpine = RightHandRelSight * SightRelSpine;
-	LeftHandRelSpine = LeftHandRelSight * SightRelSpine;
 }
 
 void UMETCharacterAnimInstance::OnWeaponEquipped(const AMETWeapon* InWeapon)

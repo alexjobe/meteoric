@@ -70,7 +70,10 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 
 void AMETCharacter::AimDownSights()
 {
-	bIsAiming = true;
+	if(CurrentWeapon)
+	{
+		bIsAiming = true;
+	}
 }
 
 void AMETCharacter::StopAimDownSights()

@@ -15,20 +15,15 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/ABP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Animations/ABP_MetCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/ABP_MetCharacter_OLD.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AM_Pistol_Fire.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AS_Pistol_Aim.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AS_Pistol_Fire.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AS_Pistol_Idle.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/LS_Pistol_Aim.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/LS_Pistol_Fire.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/LS_Pistol_Idle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AM_Character_Pistol_Aim_Fire.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AS_Character_Pistol_Idle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Animations/Pistol/AS_Character_Pistol_Idle.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/BP_Pistol.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/BP_Pistol.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/D/AZ/86Q6VZEU75WSGAJOWR6P2E.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,30 +34,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://2" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/atomic" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -568,7 +540,12 @@
       <workItem from="1730236878554" duration="6900000" />
       <workItem from="1730252035210" duration="4948000" />
       <workItem from="1730257357878" duration="1224000" />
-      <workItem from="1730295471442" duration="1989000" />
+      <workItem from="1730295471442" duration="5417000" />
+      <workItem from="1730309529244" duration="1607000" />
+      <workItem from="1730311862195" duration="1247000" />
+      <workItem from="1730313492452" duration="3115000" />
+      <workItem from="1730327938991" duration="1698000" />
+      <workItem from="1730333079702" duration="2545000" />
     </task>
     <servers />
   </component>

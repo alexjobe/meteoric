@@ -24,7 +24,7 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 
 void AMETWeapon::Fire() const
 {
-	if(ensure(OwningCharacter))
+	if(ensure(OwningCharacter) && WeaponFireAnim)
 	{
 		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
 		Mesh->PlayAnimation(WeaponFireAnim, false);

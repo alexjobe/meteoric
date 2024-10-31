@@ -62,10 +62,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RightHandRelSight;
 
-	/* Left Hand Relative to Sight */
-	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform LeftHandRelSight;
-
 	/* Sight Relative to Spine */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform SightRelSpine;
@@ -73,10 +69,6 @@ protected:
 	/* Right Hand Relative to Spine */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RightHandRelSpine;
-	
-	/* Left Hand Relative to Spine */
-	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform LeftHandRelSpine;
 
 private:
 
