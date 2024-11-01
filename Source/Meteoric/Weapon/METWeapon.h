@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "METWeapon.generated.h"
 
+UENUM(BlueprintType)
+enum EWeaponFiringMode
+{
+	SingleShot,
+	Automatic
+};
+
 UCLASS()
 class METEORIC_API AMETWeapon : public AActor
 {
@@ -21,10 +28,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
 	float AimDownSightsSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
+	TEnumAsByte<EWeaponFiringMode> FiringMode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
+	float FiringRate;
+
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
-	void Fire() const;
+	void OnFireStarted();
+	void OnFireHeld();
 
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 
@@ -43,6 +57,8 @@ protected:
 	
 	virtual void BeginPlay() override;
 
+	void Fire();
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -52,4 +68,5 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
 
+	float LastTimeFired;
 };

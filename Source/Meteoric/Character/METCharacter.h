@@ -71,11 +71,12 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	/** Called for ADS input */
-	void AimDownSights();
-	void StopAimDownSights();
+	void AimDownSightsStarted();
+	void AimDownSightsCompleted();
 
 	/** Called for firing input */
-	void Fire();
+	void FireStarted();
+	void FireHeld();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

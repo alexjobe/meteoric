@@ -68,7 +68,7 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::AimDownSights()
+void AMETCharacter::AimDownSightsStarted()
 {
 	if(CurrentWeapon)
 	{
@@ -77,17 +77,25 @@ void AMETCharacter::AimDownSights()
 	}
 }
 
-void AMETCharacter::StopAimDownSights()
+void AMETCharacter::AimDownSightsCompleted()
 {
 	bIsAiming = false;
 	AimDownSightsEvent.Broadcast(bIsAiming);
 }
 
-void AMETCharacter::Fire()
+void AMETCharacter::FireStarted()
 {
 	if(CurrentWeapon)
 	{
-		CurrentWeapon->Fire();
+		CurrentWeapon->OnFireStarted();
+	}
+}
+
+void AMETCharacter::FireHeld()
+{
+	if(CurrentWeapon)
+	{
+		CurrentWeapon->OnFireHeld();
 	}
 }
 
@@ -106,10 +114,11 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMETCharacter::Look);
 
 		// Aiming
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimDownSights);
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::StopAimDownSights);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimDownSightsStarted);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::AimDownSightsCompleted);
 
 		// Firing
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::Fire);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::FireStarted);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Ongoing, this, &AMETCharacter::FireHeld);
 	}
 }

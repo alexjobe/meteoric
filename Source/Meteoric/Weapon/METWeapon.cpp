@@ -9,6 +9,9 @@
 AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
+	, FiringMode(SingleShot)
+	, FiringRate(0.2f)
+	, LastTimeFired(0.f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -22,8 +25,35 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	OwningCharacter = InOwningCharacter;
 }
 
-void AMETWeapon::Fire() const
+void AMETWeapon::OnFireStarted()
 {
+	if(FiringMode == SingleShot)
+	{
+		Fire();	
+	}
+}
+
+void AMETWeapon::OnFireHeld()
+{
+	if(FiringMode == Automatic)
+	{
+		Fire();
+	}
+}
+
+void AMETWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AMETWeapon::Fire()
+{
+	const float TimeSinceCreation = GetGameTimeSinceCreation();
+	
+	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
+
+	LastTimeFired = TimeSinceCreation;
+	
 	if(ensure(OwningCharacter) && WeaponFireAnim)
 	{
 		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
@@ -31,13 +61,6 @@ void AMETWeapon::Fire() const
 	}
 }
 
-// Called when the game starts or when spawned
-void AMETWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
 void AMETWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
