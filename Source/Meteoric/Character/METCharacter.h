@@ -52,6 +52,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, const AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
+	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<AMETWeapon> CurrentWeapon;
@@ -78,5 +81,6 @@ protected:
 
 private:
 	FWeaponEquippedEvent WeaponEquippedEvent;
+	FAimDownSightsEvent AimDownSightsEvent;
 
 };

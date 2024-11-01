@@ -47,7 +47,7 @@ protected:
 	bool bIsFalling;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Control")
-	FRotator ControlRotationDelta;
+	FRotator ActorControlRotationDelta;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	float SightCameraOffset;
@@ -57,6 +57,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	float AimAlpha;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon Sway")
+	FRotator WeaponSway;
 
 	/* Right Hand Relative to Sight */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
@@ -71,14 +74,19 @@ protected:
 	FTransform RightHandRelSpine;
 
 private:
+	TOptional<FRotator> PreviousControlRotation;
 
 	void UpdateMovementData();
+	void UpdateWeaponSway(float DeltaSeconds);
 	
-	void SetControlRotationDelta();
+	void SetActorControlRotationDelta();
 	void SetHandRelativeToSight();
 	void SetSightRelativeToSpine();
 	void SetHandRelativeToSpine();
 
 	UFUNCTION()
 	void OnWeaponEquipped(const class AMETWeapon* InWeapon);
+
+	UFUNCTION()
+	void OnAimDownSights(bool bInIsAiming);
 };

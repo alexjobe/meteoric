@@ -27,6 +27,8 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 	
 	MovementComponent = Character->GetCharacterMovement();
 	Character->OnWeaponEquipped().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
+	Character->OnAimDownSights().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnAimDownSights);
+	
 	OnWeaponEquipped(Character->GetCurrentWeapon());
 }
 
@@ -36,7 +38,7 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateMovementData();
 	
-	SetControlRotationDelta();
+	SetActorControlRotationDelta();
 	SetSightRelativeToSpine();
 	SetHandRelativeToSpine();
 
@@ -48,6 +50,8 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		AimAlpha = FMath::InterpSinInOut(AimAlpha, 0.f, AimDownSightsSpeed * DeltaSeconds);
 	}
+
+	UpdateWeaponSway(DeltaSeconds);
 }
 
 void UMETCharacterAnimInstance::UpdateMovementData()
@@ -60,7 +64,44 @@ void UMETCharacterAnimInstance::UpdateMovementData()
 	bIsFalling = MovementComponent->IsFalling();
 }
 
-void UMETCharacterAnimInstance::SetControlRotationDelta()
+void UMETCharacterAnimInstance::UpdateWeaponSway(float DeltaSeconds)
+{
+	const FRotator ControlRotation = Character->GetControlRotation();
+	if(PreviousControlRotation.IsSet())
+	{
+		FRotator Delta = PreviousControlRotation.GetValue() - ControlRotation;
+		Delta.Normalize();
+		Delta.Pitch = 0.f;
+		Delta.Roll = 0.f;
+
+		if(Delta.IsNearlyZero() && !WeaponSway.IsNearlyZero())
+		{
+			WeaponSway = FMath::InterpSinInOut(WeaponSway, FRotator::ZeroRotator, DeltaSeconds * 12.f);
+		}
+		else
+		{
+			const float SwayRatePitch = AimAlpha > .8f ? .7f : 3.f;
+			const float SwayRateYaw = AimAlpha > .8f ? .7f : 1.f;
+			FRotator TargetWeaponSway = WeaponSway;
+			
+			TargetWeaponSway.Pitch += Delta.Yaw;
+			TargetWeaponSway.Pitch = FMath::Clamp(TargetWeaponSway.Pitch, -SwayRatePitch, SwayRatePitch);
+
+			TargetWeaponSway.Yaw += Delta.Yaw;
+			TargetWeaponSway.Yaw = FMath::Clamp(TargetWeaponSway.Yaw , -SwayRateYaw, SwayRateYaw);
+
+			WeaponSway = FMath::InterpSinInOut(WeaponSway, TargetWeaponSway, DeltaSeconds * 12.f);
+		}
+
+		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ControlRotationDelta: %s"), *ActorControlRotationDelta.ToString()));
+		GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString::Printf(TEXT("Weapon Sway: %s"), *WeaponSway.ToString()));
+		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("Delta: %s"), *Delta.ToString()));
+	}
+
+	PreviousControlRotation = ControlRotation;
+}
+
+void UMETCharacterAnimInstance::SetActorControlRotationDelta()
 {
 	if(!ensure(Character)) return;
 	
@@ -70,9 +111,9 @@ void UMETCharacterAnimInstance::SetControlRotationDelta()
 	FRotator Delta = ActorRotation - ControlRotation;
 	Delta.Normalize();
 
-	ControlRotationDelta.Pitch = 0.f;
-	ControlRotationDelta.Yaw = Delta.Yaw;
-	ControlRotationDelta.Roll = Delta.Pitch / 5.f;
+	ActorControlRotationDelta.Pitch = 0.f;
+	ActorControlRotationDelta.Yaw = Delta.Yaw;
+	ActorControlRotationDelta.Roll = Delta.Pitch / 5.f;
 }
 
 void UMETCharacterAnimInstance::SetHandRelativeToSight()
@@ -124,4 +165,9 @@ void UMETCharacterAnimInstance::OnWeaponEquipped(const AMETWeapon* InWeapon)
 		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;
 		SetHandRelativeToSight();
 	}
+}
+
+void UMETCharacterAnimInstance::OnAimDownSights(bool bInIsAiming)
+{
+	WeaponSway = FRotator::ZeroRotator;
 }
