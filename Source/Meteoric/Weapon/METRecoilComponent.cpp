@@ -7,18 +7,20 @@
 #include "GameFramework/Character.h"
 
 UMETRecoilComponent::UMETRecoilComponent()
-	: RecoilCurve(nullptr)
-	, VerticalRecoilMultiplier(1.f)
-	, HorizontalRecoilMultiplier(1.f)
-	, RecoilNoise(0.01f)
+	: AimRecoilCurve(nullptr)
+	, VerticalAimRecoilMultiplier(1.f)
+	, HorizontalAimRecoilMultiplier(1.f)
+	, AimRecoilNoise(0.01f)
+	, FiringMode(SingleShot)
 	, FireActionStartTime(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UMETRecoilComponent::OnWeaponEquipped(ACharacter* InOwningCharacter)
+void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)
 {
 	OwningCharacter = InOwningCharacter;
+	FiringMode = InFiringMode;
 }
 
 void UMETRecoilComponent::OnFireActionStarted()
@@ -30,12 +32,12 @@ void UMETRecoilComponent::OnFireActionStarted()
 
 void UMETRecoilComponent::OnFireActionHeld()
 {
-	if(RecoilCurve)
+	if(AimRecoilCurve && FiringMode == Automatic)
 	{
 		LastRecoilCurvePos = CurrentRecoilCurvePos;
 		const float ElapsedRecoilTime = GetWorld()->GetTimeSeconds() - FireActionStartTime;
-		float CurveValue = RecoilCurve->GetFloatValue(GetWorld()->GetTimeSeconds() - FireActionStartTime);
-		CurveValue = FMath::FRandRange(CurveValue - RecoilNoise, CurveValue + RecoilNoise);
+		float CurveValue = AimRecoilCurve->GetFloatValue(GetWorld()->GetTimeSeconds() - FireActionStartTime);
+		CurveValue = FMath::FRandRange(CurveValue - AimRecoilNoise, CurveValue + AimRecoilNoise);
 		CurrentRecoilCurvePos = FVector2d(ElapsedRecoilTime, CurveValue);
 
 		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ElapsedRecoilTime: %f"), ElapsedRecoilTime));
@@ -46,13 +48,13 @@ void UMETRecoilComponent::OnWeaponFired()
 {
 	if(!ensure(OwningCharacter)) return;
 	
-	if(RecoilCurve)
+	if(AimRecoilCurve && FiringMode == Automatic)
 	{
 		FRotator ControlRotation = OwningCharacter->GetController()->GetControlRotation();
 		FVector2d RecoilDirection = CurrentRecoilCurvePos - LastRecoilCurvePos;
 		RecoilDirection.Normalize();
 		
-		ControlRotation += FRotator(RecoilDirection.X * VerticalRecoilMultiplier, -RecoilDirection.Y * HorizontalRecoilMultiplier, 0.f);
+		ControlRotation += FRotator(RecoilDirection.X * VerticalAimRecoilMultiplier, -RecoilDirection.Y * HorizontalAimRecoilMultiplier, 0.f);
 		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 	}
 }

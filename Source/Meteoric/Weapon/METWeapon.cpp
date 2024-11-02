@@ -26,7 +26,7 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
 	if(!ensure(RecoilComponent)) return;
 	OwningCharacter = InOwningCharacter;
-	RecoilComponent->OnWeaponEquipped(OwningCharacter);
+	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 }
 
 void AMETWeapon::OnFireActionStarted()

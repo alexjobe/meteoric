@@ -4,14 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "METWeaponTypes.h"
 #include "METWeapon.generated.h"
-
-UENUM(BlueprintType)
-enum EWeaponFiringMode
-{
-	SingleShot,
-	Automatic
-};
 
 UCLASS()
 class METEORIC_API AMETWeapon : public AActor

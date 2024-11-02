@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "METWeaponTypes.h"
 #include "METRecoilComponent.generated.h"
 
 
@@ -12,30 +13,36 @@ class METEORIC_API UMETRecoilComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UMETRecoilComponent();
 
-	void OnWeaponEquipped(ACharacter* InOwningCharacter);
+	void OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode);
 	void OnFireActionStarted();
 	void OnFireActionHeld();
 	void OnWeaponFired();
 
 protected:
+	/* Aim recoil pattern */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil")
-	UCurveFloat* RecoilCurve;
+	UCurveFloat* AimRecoilCurve;
 
+	/* Multiplier applied to vertical aim recoil direction after normalizing */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
-	float VerticalRecoilMultiplier;
+	float VerticalAimRecoilMultiplier;
 
+	/* Multiplier applied to horizontal aim recoil direction after normalizing */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
-	float HorizontalRecoilMultiplier;
+	float HorizontalAimRecoilMultiplier;
 
+	/* Determines min/max random value added to recoil yaw */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
-	float RecoilNoise;
+	float AimRecoilNoise;
 
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
+	
+	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
 	float FireActionStartTime;
 	FVector2d CurrentRecoilCurvePos;
