@@ -2,10 +2,11 @@
 
 
 #include "METWeapon.h"
+
+#include "METRecoilComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 
-// Sets default values
 AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
@@ -13,34 +14,44 @@ AMETWeapon::AMETWeapon()
 	, FiringRate(0.2f)
 	, LastTimeFired(0.f)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
+
+	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
+	if(!ensure(RecoilComponent)) return;
 	OwningCharacter = InOwningCharacter;
+	RecoilComponent->OnWeaponEquipped(OwningCharacter);
 }
 
-void AMETWeapon::OnFireStarted()
+void AMETWeapon::OnFireActionStarted()
 {
 	if(FiringMode == SingleShot)
 	{
 		Fire();	
 	}
+	
+	if(ensure(RecoilComponent))
+	{
+		RecoilComponent->OnFireActionStarted();
+	}
 }
 
-void AMETWeapon::OnFireHeld()
+void AMETWeapon::OnFireActionHeld()
 {
 	if(FiringMode == Automatic)
 	{
-		FRotator ControlRotation = OwningCharacter->GetController()->GetControlRotation();
-		ControlRotation += FRotator(0.2f, 0.f, 0.f);
-		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 		Fire();
+	}
+
+	if(ensure(RecoilComponent))
+	{
+		RecoilComponent->OnFireActionHeld();
 	}
 }
 
@@ -61,6 +72,11 @@ void AMETWeapon::Fire()
 	{
 		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
 		Mesh->PlayAnimation(WeaponFireAnim, false);
+	}
+
+	if(ensure(RecoilComponent))
+	{
+		RecoilComponent->OnWeaponFired();
 	}
 }
 

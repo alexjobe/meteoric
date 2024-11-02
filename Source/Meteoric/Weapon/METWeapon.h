@@ -37,14 +37,17 @@ public:
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
-	void OnFireStarted();
-	void OnFireHeld();
+	void OnFireActionStarted();
+	void OnFireActionHeld();
 
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETRecoilComponent> RecoilComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterFireMontage;

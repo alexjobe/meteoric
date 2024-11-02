@@ -75,8 +75,8 @@ protected:
 	void AimDownSightsCompleted();
 
 	/** Called for firing input */
-	void FireStarted();
-	void FireHeld();
+	void FireActionStarted();
+	void FireActionHeld();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

@@ -97,9 +97,9 @@ void UMETCharacterAnimInstance::UpdateWeaponSway(float DeltaSeconds)
 			WeaponSway = FMath::InterpSinInOut(WeaponSway, TargetWeaponSway, DeltaSeconds * 20.f);
 		}
 
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ControlRotationDelta: %s"), *ControlRotation.ToString()));
+		/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ControlRotationDelta: %s"), *ControlRotation.ToString()));
 		GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString::Printf(TEXT("Weapon Sway: %s"), *WeaponSway.ToString()));
-		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("Delta: %s"), *Delta.ToString()));
+		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("Delta: %s"), *Delta.ToString()));*/
 	}
 
 	PreviousControlRotation = ControlRotation;
