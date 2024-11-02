@@ -37,6 +37,9 @@ void AMETWeapon::OnFireHeld()
 {
 	if(FiringMode == Automatic)
 	{
+		FRotator ControlRotation = OwningCharacter->GetController()->GetControlRotation();
+		ControlRotation += FRotator(0.2f, 0.f, 0.f);
+		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 		Fire();
 	}
 }

@@ -75,6 +75,7 @@ protected:
 
 private:
 	TOptional<FRotator> PreviousControlRotation;
+	FRotator TargetWeaponSway;
 
 	void UpdateMovementData();
 	void UpdateWeaponSway(float DeltaSeconds);
