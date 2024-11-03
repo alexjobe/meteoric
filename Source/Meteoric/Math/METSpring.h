@@ -30,9 +30,11 @@ struct FMETSpring
 
 	void Initialize();
 
+	void Reset();
+
 	void AddInstantaneousForce(float InForce, float InDeltaTime = 0.1f);
 
-	float UpdateSpring(float InDeltaTime);
+	float Update(float InDeltaTime);
 
 	float GetCurrentDisplacement() const { return CurrentDisplacement; }
 
@@ -41,16 +43,22 @@ struct FMETSpring
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spring", meta = (AllowPrivateAccess = "true"))
 	float DampingRatio;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spring", meta = (AllowPrivateAccess = "true"))
 	float DampedAngularFrequency;
 	
 	float ImpulseVelocity;
 	float CurrentVelocity;
 	float InitialDisplacement;
 	float CurrentDisplacement;
+	float LastDisplacement;
 	float ElapsedTime;
 	
 	TQueue<float> DisplacementQueue;
 	int DisplacementQueueSize;
-	float TotalDisplacement;
+	float DisplacementQueueTotal;
+	bool bSettled;
+
+	void UpdateSpring(float InDeltaTime);
+	void UpdateDisplacementQueue();
 };

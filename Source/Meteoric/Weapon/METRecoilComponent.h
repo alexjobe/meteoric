@@ -54,6 +54,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
 	FMETSpring RecoilSpring_Pitch;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	float RecoilForce_Z;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	float RecoilForce_Y;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	float RecoilForce_Pitch;
+
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;

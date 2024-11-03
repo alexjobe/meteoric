@@ -11,6 +11,9 @@ UMETRecoilComponent::UMETRecoilComponent()
 	, VerticalAimRecoilMultiplier(1.f)
 	, HorizontalAimRecoilMultiplier(1.f)
 	, AimRecoilNoise(0.01f)
+	, RecoilForce_Z(100.f)
+	, RecoilForce_Y(200.f)
+	, RecoilForce_Pitch(100.f)
 	, FiringMode(SingleShot)
 	, FireActionStartTime(0.f)
 {
@@ -31,9 +34,9 @@ void UMETRecoilComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	RecoilSpring_Z.UpdateSpring(DeltaTime);
-	RecoilSpring_Y.UpdateSpring(DeltaTime);
-	RecoilSpring_Pitch.UpdateSpring(DeltaTime);
+	RecoilSpring_Z.Update(DeltaTime);
+	RecoilSpring_Y.Update(DeltaTime);
+	RecoilSpring_Pitch.Update(DeltaTime);
 }
 
 void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)
@@ -77,7 +80,7 @@ void UMETRecoilComponent::OnWeaponFired()
 		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 	}
 
-	RecoilSpring_Z.AddInstantaneousForce(100.f);
-	RecoilSpring_Y.AddInstantaneousForce(200.f);
-	RecoilSpring_Pitch.AddInstantaneousForce(100.f);
+	RecoilSpring_Z.AddInstantaneousForce(RecoilForce_Z);
+	RecoilSpring_Y.AddInstantaneousForce(RecoilForce_Y);
+	RecoilSpring_Pitch.AddInstantaneousForce(RecoilForce_Pitch);
 }
