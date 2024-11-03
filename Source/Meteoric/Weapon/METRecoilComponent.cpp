@@ -14,7 +14,19 @@ UMETRecoilComponent::UMETRecoilComponent()
 	, FiringMode(SingleShot)
 	, FireActionStartTime(0.f)
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+
+	SpringConstant = 100.f;
+	DampingRatio = 0.5f;
+	DampedAngularFrequency = FMath::Sqrt(SpringConstant - FMath::Square(DampingRatio));
+}
+
+void UMETRecoilComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	UpdateSpringRecoil(DeltaTime);
 }
 
 void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)
@@ -40,7 +52,7 @@ void UMETRecoilComponent::OnFireActionHeld()
 		CurveValue = FMath::FRandRange(CurveValue - AimRecoilNoise, CurveValue + AimRecoilNoise);
 		CurrentRecoilCurvePos = FVector2d(ElapsedRecoilTime, CurveValue);
 
-		GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ElapsedRecoilTime: %f"), ElapsedRecoilTime));
+		//GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ElapsedRecoilTime: %f"), ElapsedRecoilTime));
 	}
 }
 
@@ -57,4 +69,28 @@ void UMETRecoilComponent::OnWeaponFired()
 		ControlRotation += FRotator(RecoilDirection.X * VerticalAimRecoilMultiplier, -RecoilDirection.Y * HorizontalAimRecoilMultiplier, 0.f);
 		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 	}
+
+	SpringRecoilInitialVelocity = SpringRecoilCurrentVelocity + 100.f;
+	SpringRecoilInitialDisplacement = SpringRecoilCurrentDisplacement;
+	SpringRecoilElapsedTime = 0.f;
+}
+
+void UMETRecoilComponent::UpdateSpringRecoil(float DeltaTime)
+{
+	if(SpringRecoilInitialVelocity == 0.f) return;
+	
+	SpringRecoilElapsedTime += DeltaTime;
+	
+	const float A = SpringRecoilInitialDisplacement;
+	const float B = (SpringRecoilInitialVelocity + DampingRatio * SpringRecoilInitialDisplacement) / DampedAngularFrequency;
+	constexpr float e = 2.71828f;
+
+	const float C = (B * DampedAngularFrequency - A * DampingRatio) * FMath::Cos(DampedAngularFrequency * SpringRecoilElapsedTime)
+	- (A * DampedAngularFrequency + B * DampingRatio) * FMath::Sin(DampedAngularFrequency * SpringRecoilElapsedTime);
+
+	SpringRecoilCurrentVelocity = FMath::Pow(e, -DampingRatio * SpringRecoilElapsedTime) * C;
+
+	SpringRecoilCurrentDisplacement = SpringRecoilCurrentDisplacement + SpringRecoilCurrentVelocity * DeltaTime;
+
+	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), SpringRecoilCurrentDisplacement));
 }

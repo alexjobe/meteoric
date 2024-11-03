@@ -38,13 +38,26 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
 	float AimRecoilNoise;
 
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
-	
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
+	/* Aim recoil*/
 	float FireActionStartTime;
 	FVector2d CurrentRecoilCurvePos;
 	FVector2d LastRecoilCurvePos;
+
+	float SpringConstant;
+	float DampingRatio;
+	float DampedAngularFrequency;
+	float SpringRecoilInitialVelocity;
+	float SpringRecoilCurrentVelocity;
+	float SpringRecoilInitialDisplacement;
+	float SpringRecoilCurrentDisplacement;
+	float SpringRecoilElapsedTime;
+
+	void UpdateSpringRecoil(float DeltaTime);
 };

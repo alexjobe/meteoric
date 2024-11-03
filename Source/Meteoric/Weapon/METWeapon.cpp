@@ -14,7 +14,7 @@ AMETWeapon::AMETWeapon()
 	, FiringRate(0.2f)
 	, LastTimeFired(0.f)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
