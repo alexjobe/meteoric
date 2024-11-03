@@ -49,7 +49,7 @@ public:
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 	bool IsAiming() const { return bIsAiming; }
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, const AMETWeapon*, NewWeapon);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);

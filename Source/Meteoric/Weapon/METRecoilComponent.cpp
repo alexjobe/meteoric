@@ -16,17 +16,24 @@ UMETRecoilComponent::UMETRecoilComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
+}
 
-	SpringConstant = 100.f;
-	DampingRatio = 0.5f;
-	DampedAngularFrequency = FMath::Sqrt(SpringConstant - FMath::Square(DampingRatio));
+void UMETRecoilComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RecoilSpring_Z.Initialize();
+	RecoilSpring_Y.Initialize();
+	RecoilSpring_Pitch.Initialize();
 }
 
 void UMETRecoilComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UpdateSpringRecoil(DeltaTime);
+	RecoilSpring_Z.UpdateSpring(DeltaTime);
+	RecoilSpring_Y.UpdateSpring(DeltaTime);
+	RecoilSpring_Pitch.UpdateSpring(DeltaTime);
 }
 
 void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)
@@ -70,27 +77,7 @@ void UMETRecoilComponent::OnWeaponFired()
 		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
 	}
 
-	SpringRecoilInitialVelocity = SpringRecoilCurrentVelocity + 100.f;
-	SpringRecoilInitialDisplacement = SpringRecoilCurrentDisplacement;
-	SpringRecoilElapsedTime = 0.f;
-}
-
-void UMETRecoilComponent::UpdateSpringRecoil(float DeltaTime)
-{
-	if(SpringRecoilInitialVelocity == 0.f) return;
-	
-	SpringRecoilElapsedTime += DeltaTime;
-	
-	const float A = SpringRecoilInitialDisplacement;
-	const float B = (SpringRecoilInitialVelocity + DampingRatio * SpringRecoilInitialDisplacement) / DampedAngularFrequency;
-	constexpr float e = 2.71828f;
-
-	const float C = (B * DampedAngularFrequency - A * DampingRatio) * FMath::Cos(DampedAngularFrequency * SpringRecoilElapsedTime)
-	- (A * DampedAngularFrequency + B * DampingRatio) * FMath::Sin(DampedAngularFrequency * SpringRecoilElapsedTime);
-
-	SpringRecoilCurrentVelocity = FMath::Pow(e, -DampingRatio * SpringRecoilElapsedTime) * C;
-
-	SpringRecoilCurrentDisplacement = SpringRecoilCurrentDisplacement + SpringRecoilCurrentVelocity * DeltaTime;
-
-	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), SpringRecoilCurrentDisplacement));
+	RecoilSpring_Z.AddInstantaneousForce(100.f);
+	RecoilSpring_Y.AddInstantaneousForce(200.f);
+	RecoilSpring_Pitch.AddInstantaneousForce(100.f);
 }

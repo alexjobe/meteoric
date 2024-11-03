@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "METWeaponTypes.h"
+#include "Meteoric/Math/METSpring.h"
 #include "METRecoilComponent.generated.h"
 
 
@@ -16,6 +17,8 @@ class METEORIC_API UMETRecoilComponent : public UActorComponent
 public:
 	UMETRecoilComponent();
 
+	virtual void BeginPlay() override;
+
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode);
 	void OnFireActionStarted();
 	void OnFireActionHeld();
@@ -23,41 +26,41 @@ public:
 
 protected:
 	/* Aim recoil pattern */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Aim")
 	UCurveFloat* AimRecoilCurve;
 
 	/* Multiplier applied to vertical aim recoil direction after normalizing */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil|Aim")
 	float VerticalAimRecoilMultiplier;
 
 	/* Multiplier applied to horizontal aim recoil direction after normalizing */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil|Aim")
 	float HorizontalAimRecoilMultiplier;
 
 	/* Determines min/max random value added to recoil yaw */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil|Aim")
 	float AimRecoilNoise;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+public:
+	/* Spring recoil */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	FMETSpring RecoilSpring_Z;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	FMETSpring RecoilSpring_Y;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
+	FMETSpring RecoilSpring_Pitch;
 
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
-	/* Aim recoil*/
+	/* Aim recoil */
 	float FireActionStartTime;
 	FVector2d CurrentRecoilCurvePos;
 	FVector2d LastRecoilCurvePos;
-
-	float SpringConstant;
-	float DampingRatio;
-	float DampedAngularFrequency;
-	float SpringRecoilInitialVelocity;
-	float SpringRecoilCurrentVelocity;
-	float SpringRecoilInitialDisplacement;
-	float SpringRecoilCurrentDisplacement;
-	float SpringRecoilElapsedTime;
-
-	void UpdateSpringRecoil(float DeltaTime);
 };

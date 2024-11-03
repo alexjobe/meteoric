@@ -34,6 +34,7 @@ public:
 	void OnFireActionStarted();
 	void OnFireActionHeld();
 
+	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 
 protected:
@@ -41,7 +42,7 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<class UMETRecoilComponent> RecoilComponent;
+	TObjectPtr<UMETRecoilComponent> RecoilComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterFireMontage;

@@ -6,6 +6,7 @@
 #include "METCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Meteoric/Weapon/METRecoilComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
@@ -41,6 +42,7 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	SetActorControlRotationDelta();
 	SetSightRelativeToSpine();
 	SetHandRelativeToSpine();
+	UpdateRecoilOffset();
 
 	if(Character->IsAiming())
 	{
@@ -74,9 +76,9 @@ void UMETCharacterAnimInstance::UpdateWeaponSway(float DeltaSeconds)
 
 		TargetWeaponSway = FMath::InterpSinInOut(TargetWeaponSway, FRotator::ZeroRotator, DeltaSeconds * 12.f);
 
-		const float SwayRateRoll = AimAlpha > .8f ? .7f : 3.f;
-		const float SwayRateYaw = AimAlpha > .8f ? .2f : 3.f;
-		const float SwayRatePitch = AimAlpha > .8f ? .7f : 2.f;
+		const float SwayRateRoll = AimAlpha > .8f ? .7f : 2.f;
+		const float SwayRateYaw = AimAlpha > .8f ? .2f : 1.f;
+		const float SwayRatePitch = AimAlpha > .8f ? .7f : 1.5f;
 
 		if(FMath::Abs(Delta.Yaw) > FMath::Abs(Delta.Pitch))
 		{
@@ -117,6 +119,8 @@ void UMETCharacterAnimInstance::SetActorControlRotationDelta()
 
 	ActorControlRotationDelta.Pitch = 0.f;
 	ActorControlRotationDelta.Yaw = Delta.Yaw;
+
+	// Divide by five spine bones
 	ActorControlRotationDelta.Roll = Delta.Pitch / 5.f;
 }
 
@@ -160,10 +164,26 @@ void UMETCharacterAnimInstance::SetHandRelativeToSpine()
 	RightHandRelSpine = RightHandRelSight * SightRelSpine;
 }
 
-void UMETCharacterAnimInstance::OnWeaponEquipped(const AMETWeapon* InWeapon)
+void UMETCharacterAnimInstance::UpdateRecoilOffset()
+{
+	if(CurrentWeapon)
+	{
+		const float Displacement_Z = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Z.GetCurrentDisplacement();
+		const float Displacement_Y = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Y.GetCurrentDisplacement();
+		const float Displacement_Pitch = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Pitch.GetCurrentDisplacement();
+
+		const FRotator RecoilRotation(0.f, 0.f, -Displacement_Pitch);
+		
+		RecoilOffset.SetTranslation({0.f, -Displacement_Y, Displacement_Z });
+		RecoilOffset.SetRotation(RecoilRotation.Quaternion());
+	}
+}
+
+void UMETCharacterAnimInstance::OnWeaponEquipped(AMETWeapon* InWeapon)
 {
 	if(InWeapon)
 	{
+		CurrentWeapon = InWeapon;
 		IdleWeaponAnim = InWeapon->GetCharacterIdleWeaponAnim();
 		SightCameraOffset = InWeapon->SightCameraOffset;
 		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;

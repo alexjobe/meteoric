@@ -29,6 +29,9 @@ protected:
 	TObjectPtr<class AMETCharacter> Character;
 
 	UPROPERTY(Transient)
+	TObjectPtr<class AMETWeapon> CurrentWeapon;
+
+	UPROPERTY(Transient)
 	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
@@ -73,6 +76,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RightHandRelSpine;
 
+	/* Right Hand Offset from Recoil */
+	UPROPERTY(BlueprintReadOnly, Category = "ADS")
+	FTransform RecoilOffset;
+
 private:
 	TOptional<FRotator> PreviousControlRotation;
 	FRotator TargetWeaponSway;
@@ -84,9 +91,10 @@ private:
 	void SetHandRelativeToSight();
 	void SetSightRelativeToSpine();
 	void SetHandRelativeToSpine();
+	void UpdateRecoilOffset();
 
 	UFUNCTION()
-	void OnWeaponEquipped(const class AMETWeapon* InWeapon);
+	void OnWeaponEquipped(AMETWeapon* InWeapon);
 
 	UFUNCTION()
 	void OnAimDownSights(bool bInIsAiming);
