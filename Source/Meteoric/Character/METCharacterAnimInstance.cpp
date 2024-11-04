@@ -168,14 +168,7 @@ void UMETCharacterAnimInstance::UpdateRecoilOffset()
 {
 	if(CurrentWeapon)
 	{
-		const float Displacement_Z = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Z.GetCurrentDisplacement();
-		const float Displacement_Y = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Y.GetCurrentDisplacement();
-		const float Displacement_Pitch = CurrentWeapon->GetRecoilComponent()->RecoilSpring_Pitch.GetCurrentDisplacement();
-
-		const FRotator RecoilRotation(0.f, 0.f, -Displacement_Pitch);
-		
-		RecoilOffset.SetTranslation({0.f, -Displacement_Y, Displacement_Z });
-		RecoilOffset.SetRotation(RecoilRotation.Quaternion());
+		RecoilOffset = CurrentWeapon->GetRecoilComponent()->GetSpringRecoilTransform();
 	}
 }
 

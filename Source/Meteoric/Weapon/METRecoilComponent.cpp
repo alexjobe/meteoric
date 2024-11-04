@@ -34,9 +34,20 @@ void UMETRecoilComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	RecoilSpring_Z.Update(DeltaTime);
-	RecoilSpring_Y.Update(DeltaTime);
-	RecoilSpring_Pitch.Update(DeltaTime);
+	constexpr float TranslationEaseExp = 10.f;
+	constexpr float RotationEaseExp = 20.f;
+
+	FVector RecoilTranslation = SpringRecoilTransform.GetTranslation();
+	RecoilTranslation.Y -= RecoilSpring_Y.Update(DeltaTime);
+	RecoilTranslation.Z += RecoilSpring_Z.Update(DeltaTime);
+	RecoilTranslation = FMath::InterpEaseOut(RecoilTranslation, FVector::ZeroVector, DeltaTime, TranslationEaseExp);
+
+	FRotator RecoilRotation = SpringRecoilTransform.GetRotation().Rotator();
+	RecoilRotation.Roll -= RecoilSpring_Pitch.Update(DeltaTime);
+	RecoilRotation = FMath::InterpEaseOut(RecoilRotation, FRotator::ZeroRotator, DeltaTime, RotationEaseExp);
+
+	SpringRecoilTransform.SetTranslation(RecoilTranslation);
+	SpringRecoilTransform.SetRotation(RecoilRotation.Quaternion());
 }
 
 void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)

@@ -78,34 +78,11 @@ void FMETSpring::AddInstantaneousForce(float InForce, float InDeltaTime)
 
 float FMETSpring::Update(float InDeltaTime)
 {
-	if(bSettled && CurrentDisplacement == 0.f) return 0.f;
-
+	if(bSettled) return 0.f;
+	
 	UpdateSpring(InDeltaTime);
-	CurrentDisplacement = FMath::Lerp(CurrentDisplacement, 0.f, InDeltaTime * 10.f);
-
-	if(FMath::IsNearlyZero(CurrentDisplacement))
-	{
-		Reset();
-		bSettled = true;
-	}
 	
-	/*if(bSettled)
-	{
-		if(!FMath::IsNearlyZero(CurrentDisplacement))
-		{
-			CurrentDisplacement = FMath::InterpSinInOut(CurrentDisplacement, 0.f, InDeltaTime * 10.f);
-		}
-		else
-		{
-			Reset();
-		}
-	}
-	else
-	{
-		UpdateSpring(InDeltaTime);
-	}*/
-	
-	return CurrentDisplacement;
+	return CurrentDisplacement - LastDisplacement;
 }
 
 void FMETSpring::UpdateSpring(float InDeltaTime)
@@ -126,7 +103,7 @@ void FMETSpring::UpdateSpring(float InDeltaTime)
 
 	GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), CurrentDisplacement));
 
-	//UpdateDisplacementQueue();
+	UpdateDisplacementQueue();
 }
 
 FMETSpring& FMETSpring::operator=(const FMETSpring& Other)
@@ -147,7 +124,7 @@ void FMETSpring::UpdateDisplacementQueue()
 	DisplacementQueueSize++;
 	DisplacementQueueTotal += FMath::Abs(Magnitude);
 
-	constexpr int MaxQueueSize = 5;
+	constexpr int MaxQueueSize = 100;
 
 	if(DisplacementQueueSize > MaxQueueSize)
 	{
@@ -159,6 +136,7 @@ void FMETSpring::UpdateDisplacementQueue()
 		if(DisplacementQueueTotal < DisplacementQueueSize * 0.01f)
 		{
 			bSettled = true;
+			Reset();
 		}
 	}
 }

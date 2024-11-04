@@ -24,6 +24,8 @@ public:
 	void OnFireActionHeld();
 	void OnWeaponFired();
 
+	FTransform GetSpringRecoilTransform() const { return SpringRecoilTransform; }
+
 protected:
 	/* Aim recoil pattern */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Aim")
@@ -42,8 +44,7 @@ protected:
 	float AimRecoilNoise;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-public:
+	
 	/* Spring recoil */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")
 	FMETSpring RecoilSpring_Z;
@@ -72,4 +73,6 @@ private:
 	float FireActionStartTime;
 	FVector2d CurrentRecoilCurvePos;
 	FVector2d LastRecoilCurvePos;
+
+	FTransform SpringRecoilTransform;
 };
