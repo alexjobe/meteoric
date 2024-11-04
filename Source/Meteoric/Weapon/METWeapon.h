@@ -33,8 +33,10 @@ public:
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void OnFireActionStarted();
 	void OnFireActionHeld();
+	void OnAimDownSights(bool bInIsAiming) const;
 
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
+	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 
 protected:
@@ -43,6 +45,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETRecoilComponent> RecoilComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterFireMontage;

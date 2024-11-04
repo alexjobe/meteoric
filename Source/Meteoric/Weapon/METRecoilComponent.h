@@ -19,6 +19,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void UpdateRecoil(float InDeltaTime);
+
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode);
 	void OnFireActionStarted();
 	void OnFireActionHeld();
@@ -42,8 +44,6 @@ protected:
 	/* Determines min/max random value added to recoil yaw */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil|Aim")
 	float AimRecoilNoise;
-
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	/* Spring recoil */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil|Spring")

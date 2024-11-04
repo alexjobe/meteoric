@@ -14,12 +14,14 @@
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/7/YY/69PMMGWPRAPQA9CEYXKDL4.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Math/METSpring.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Math/METSpring.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METRecoilComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METRecoilComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METRecoilComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METRecoilComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +35,30 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://3" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://11" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AutomationWindow/Private/SAutomationTestItem.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Classes/FunctionalTestingManager.h" root0="FORCE_HIGHLIGHTING" />
@@ -49,7 +74,9 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/TransformVectorized.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/UnrealMathUtility.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Math/UnrealMathVectorCommon.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/Class.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectHandle.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Animation/AnimNodeBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Animation/AnimationAsset.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/ActorComponent.h" root0="FORCE_HIGHLIGHTING" />
@@ -73,6 +100,8 @@
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Weapon/METRecoilComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponSwayComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponSwayComponent.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="Toolset" />
@@ -580,7 +609,8 @@
       <workItem from="1730589402209" duration="11411000" />
       <workItem from="1730651753988" duration="14426000" />
       <workItem from="1730666233579" duration="5124000" />
-      <workItem from="1730678373564" duration="3522000" />
+      <workItem from="1730678373564" duration="4283000" />
+      <workItem from="1730741556464" duration="5294000" />
     </task>
     <servers />
   </component>

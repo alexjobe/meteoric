@@ -4,6 +4,7 @@
 #include "METWeapon.h"
 
 #include "METRecoilComponent.h"
+#include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 
@@ -15,18 +16,22 @@ AMETWeapon::AMETWeapon()
 	, LastTimeFired(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
+	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
-	if(!ensure(RecoilComponent)) return;
+	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 	OwningCharacter = InOwningCharacter;
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
+	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
+	SetActorTickEnabled(true);
 }
 
 void AMETWeapon::OnFireActionStarted()
@@ -52,6 +57,14 @@ void AMETWeapon::OnFireActionHeld()
 	if(ensure(RecoilComponent))
 	{
 		RecoilComponent->OnFireActionHeld();
+	}
+}
+
+void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
+{
+	if(ensure(WeaponSwayComponent))
+	{
+		WeaponSwayComponent->OnAimDownSights(bInIsAiming);
 	}
 }
 
@@ -83,6 +96,9 @@ void AMETWeapon::Fire()
 void AMETWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 
+	RecoilComponent->UpdateRecoil(DeltaTime);
+	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
 }
 

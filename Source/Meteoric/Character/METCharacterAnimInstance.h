@@ -81,11 +81,8 @@ protected:
 	FTransform RecoilOffset;
 
 private:
-	TOptional<FRotator> PreviousControlRotation;
-	FRotator TargetWeaponSway;
-
 	void UpdateMovementData();
-	void UpdateWeaponSway(float DeltaSeconds);
+	void UpdateWeaponSway();
 	
 	void SetActorControlRotationDelta();
 	void SetHandRelativeToSight();
@@ -95,7 +92,4 @@ private:
 
 	UFUNCTION()
 	void OnWeaponEquipped(AMETWeapon* InWeapon);
-
-	UFUNCTION()
-	void OnAimDownSights(bool bInIsAiming);
 };

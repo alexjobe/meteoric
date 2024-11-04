@@ -73,6 +73,7 @@ void AMETCharacter::AimDownSightsStarted()
 	if(CurrentWeapon)
 	{
 		bIsAiming = true;
+		CurrentWeapon->OnAimDownSights(bIsAiming);
 		AimDownSightsEvent.Broadcast(bIsAiming);
 	}
 }
@@ -80,7 +81,11 @@ void AMETCharacter::AimDownSightsStarted()
 void AMETCharacter::AimDownSightsCompleted()
 {
 	bIsAiming = false;
-	AimDownSightsEvent.Broadcast(bIsAiming);
+	if(CurrentWeapon)
+	{
+		CurrentWeapon->OnAimDownSights(bIsAiming);
+		AimDownSightsEvent.Broadcast(bIsAiming);
+	}
 }
 
 void AMETCharacter::FireActionStarted()

@@ -17,8 +17,7 @@ UMETRecoilComponent::UMETRecoilComponent()
 	, FiringMode(SingleShot)
 	, FireActionStartTime(0.f)
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UMETRecoilComponent::BeginPlay()
@@ -30,21 +29,21 @@ void UMETRecoilComponent::BeginPlay()
 	RecoilSpring_Pitch.Initialize();
 }
 
-void UMETRecoilComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UMETRecoilComponent::UpdateRecoil(float InDeltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	constexpr float TranslationEaseExp = 10.f;
 	constexpr float RotationEaseExp = 20.f;
 
 	FVector RecoilTranslation = SpringRecoilTransform.GetTranslation();
-	RecoilTranslation.Y -= RecoilSpring_Y.Update(DeltaTime);
-	RecoilTranslation.Z += RecoilSpring_Z.Update(DeltaTime);
-	RecoilTranslation = FMath::InterpEaseOut(RecoilTranslation, FVector::ZeroVector, DeltaTime, TranslationEaseExp);
+	RecoilTranslation.Y -= RecoilSpring_Y.Update(InDeltaTime);
+	RecoilTranslation.Z += RecoilSpring_Z.Update(InDeltaTime);
 
 	FRotator RecoilRotation = SpringRecoilTransform.GetRotation().Rotator();
-	RecoilRotation.Roll -= RecoilSpring_Pitch.Update(DeltaTime);
-	RecoilRotation = FMath::InterpEaseOut(RecoilRotation, FRotator::ZeroRotator, DeltaTime, RotationEaseExp);
+	RecoilRotation.Roll -= RecoilSpring_Pitch.Update(InDeltaTime);
+
+	/* The spring can settle in a position that isn't exactly zero. To compensate, we constantly interp recoil to zero */
+	RecoilTranslation = FMath::InterpEaseOut(RecoilTranslation, FVector::ZeroVector, InDeltaTime, TranslationEaseExp);
+	RecoilRotation = FMath::InterpEaseOut(RecoilRotation, FRotator::ZeroRotator, InDeltaTime, RotationEaseExp);
 
 	SpringRecoilTransform.SetTranslation(RecoilTranslation);
 	SpringRecoilTransform.SetRotation(RecoilRotation.Quaternion());
