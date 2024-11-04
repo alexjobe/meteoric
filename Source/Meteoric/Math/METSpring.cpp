@@ -101,7 +101,7 @@ void FMETSpring::UpdateSpring(float InDeltaTime)
 	LastDisplacement = CurrentDisplacement;
 	CurrentDisplacement = CurrentDisplacement + CurrentVelocity * InDeltaTime;
 
-	GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), CurrentDisplacement));
+	//GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), CurrentDisplacement));
 
 	UpdateDisplacementQueue();
 }

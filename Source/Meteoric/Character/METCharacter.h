@@ -19,6 +19,9 @@ class METEORIC_API AMETCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETWeaponManager> WeaponManager;
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> LookAction;
@@ -41,24 +44,16 @@ class METEORIC_API AMETCharacter : public ACharacter
 
 public:
 	AMETCharacter();
-
-	UFUNCTION(BlueprintCallable)
-	void EquipWeapon(class AMETWeapon* const InWeapon);
-
-	AMETWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+	
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
+	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	
 	bool IsAiming() const { return bIsAiming; }
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
-	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<AMETWeapon> CurrentWeapon;
-
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
 	
@@ -81,7 +76,6 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	FWeaponEquippedEvent WeaponEquippedEvent;
 	FAimDownSightsEvent AimDownSightsEvent;
 
 };

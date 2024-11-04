@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
+#include "Meteoric/Weapon/METWeaponManager.h"
 
 DEFINE_LOG_CATEGORY(LogMETCharacter);
 
@@ -28,16 +29,8 @@ AMETCharacter::AMETCharacter()
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
 	MainCamera->SetupAttachment(CameraBoom);
 	MainCamera->bUsePawnControlRotation = true;
-}
 
-void AMETCharacter::EquipWeapon(AMETWeapon* const InWeapon)
-{
-	CurrentWeapon = InWeapon;
-	if(!ensure(CurrentWeapon)) return;
-
-	CurrentWeapon->OnEquipped(this);
-	CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
-	WeaponEquippedEvent.Broadcast(CurrentWeapon);
+	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 }
 
 void AMETCharacter::BeginPlay()
@@ -70,7 +63,7 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 
 void AMETCharacter::AimDownSightsStarted()
 {
-	if(CurrentWeapon)
+	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
 		bIsAiming = true;
 		CurrentWeapon->OnAimDownSights(bIsAiming);
@@ -81,7 +74,7 @@ void AMETCharacter::AimDownSightsStarted()
 void AMETCharacter::AimDownSightsCompleted()
 {
 	bIsAiming = false;
-	if(CurrentWeapon)
+	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
 		CurrentWeapon->OnAimDownSights(bIsAiming);
 		AimDownSightsEvent.Broadcast(bIsAiming);
@@ -90,7 +83,7 @@ void AMETCharacter::AimDownSightsCompleted()
 
 void AMETCharacter::FireActionStarted()
 {
-	if(CurrentWeapon)
+	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
 		CurrentWeapon->OnFireActionStarted();
 	}
@@ -98,7 +91,7 @@ void AMETCharacter::FireActionStarted()
 
 void AMETCharacter::FireActionHeld()
 {
-	if(CurrentWeapon)
+	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
 		CurrentWeapon->OnFireActionHeld();
 	}

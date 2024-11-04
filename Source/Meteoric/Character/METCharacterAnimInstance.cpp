@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/Weapon/METRecoilComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
+#include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/METWeaponSwayComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
@@ -28,9 +29,12 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 	if(!Character) return;
 	
 	MovementComponent = Character->GetCharacterMovement();
-	Character->OnWeaponEquipped().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
-	
-	OnWeaponEquipped(Character->GetCurrentWeapon());
+
+	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
+	{
+		WeaponManager->OnWeaponEquipped().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
+		OnWeaponEquipped(WeaponManager->GetCurrentWeapon());
+	}
 }
 
 void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -100,7 +104,8 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 	if(!ensure(Character)) return;
 	
 	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
-	const AMETWeapon* Weapon = Character->GetCurrentWeapon();
+	const UMETWeaponManager* WeaponManager = Character->GetWeaponManager();
+	const AMETWeapon* Weapon = WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
 	const USkeletalMeshComponent* WeaponMesh = Weapon ? Weapon->GetMesh() : nullptr;
 
 	if(CharacterMesh && WeaponMesh)
