@@ -62,10 +62,8 @@ void UMETWeaponSwayComponent::UpdateWeaponSway(float InDeltaTime)
 
 void UMETWeaponSwayComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter)
 {
+	Reset();
 	OwningCharacter = InOwningCharacter;
-	bIsAiming = false;
-	CurrentWeaponSway = FRotator::ZeroRotator;
-	TargetWeaponSway = FRotator::ZeroRotator;
 }
 
 void UMETWeaponSwayComponent::OnAimDownSights(bool bInIsAiming)
@@ -73,4 +71,13 @@ void UMETWeaponSwayComponent::OnAimDownSights(bool bInIsAiming)
 	bIsAiming = bInIsAiming;
 	CurrentWeaponSway = FRotator::ZeroRotator;
 	TargetWeaponSway = FRotator::ZeroRotator;
+}
+
+void UMETWeaponSwayComponent::Reset()
+{
+	OwningCharacter = nullptr;
+	PreviousControlRotation = FRotator::ZeroRotator;
+	CurrentWeaponSway = FRotator::ZeroRotator;
+	TargetWeaponSway = FRotator::ZeroRotator;
+	bIsAiming = false;
 }

@@ -12,9 +12,7 @@
 #include "Meteoric/Weapon/METWeaponSwayComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
-	: Character(nullptr)
-	, MovementComponent(nullptr)
-	, GroundSpeed(0.f)
+	: GroundSpeed(0.f)
 	, bShouldMove(false)
 	, bIsFalling(false)
 	, SightCameraOffset(30.f)

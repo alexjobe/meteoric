@@ -26,6 +26,8 @@ public:
 	void OnFireActionHeld();
 	void OnWeaponFired();
 
+	void Reset();
+
 	FTransform GetSpringRecoilTransform() const { return SpringRecoilTransform; }
 
 protected:

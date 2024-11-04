@@ -51,6 +51,7 @@ void UMETRecoilComponent::UpdateRecoil(float InDeltaTime)
 
 void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode)
 {
+	Reset();
 	OwningCharacter = InOwningCharacter;
 	FiringMode = InFiringMode;
 }
@@ -93,4 +94,14 @@ void UMETRecoilComponent::OnWeaponFired()
 	RecoilSpring_Z.AddInstantaneousForce(RecoilForce_Z);
 	RecoilSpring_Y.AddInstantaneousForce(RecoilForce_Y);
 	RecoilSpring_Pitch.AddInstantaneousForce(RecoilForce_Pitch);
+}
+
+void UMETRecoilComponent::Reset()
+{
+	OwningCharacter = nullptr;
+	FiringMode = SingleShot;
+	FireActionStartTime = 0.f;
+	CurrentRecoilCurvePos = FVector2d::ZeroVector;
+	LastRecoilCurvePos = FVector2d::ZeroVector;
+	SpringRecoilTransform = FTransform::Identity;
 }

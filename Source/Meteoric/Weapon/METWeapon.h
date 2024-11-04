@@ -31,6 +31,7 @@ public:
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
+	void OnUnequipped();
 	void OnFireActionStarted();
 	void OnFireActionHeld();
 	void OnAimDownSights(bool bInIsAiming) const;

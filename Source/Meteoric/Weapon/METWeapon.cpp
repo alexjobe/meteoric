@@ -34,6 +34,15 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	SetActorTickEnabled(true);
 }
 
+void AMETWeapon::OnUnequipped()
+{
+	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	SetActorTickEnabled(false);
+	OwningCharacter = nullptr;
+	RecoilComponent->Reset();
+	WeaponSwayComponent->Reset();
+}
+
 void AMETWeapon::OnFireActionStarted()
 {
 	if(FiringMode == SingleShot)

@@ -18,7 +18,13 @@ public:
 	virtual void InitializeComponent() override;
 	
 	UFUNCTION(BlueprintCallable)
-	void EquipWeapon(class AMETWeapon* const InWeapon);
+	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
+
+	UFUNCTION(BlueprintCallable)
+	void UnequipCurrentWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void CycleWeapon();
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
@@ -29,9 +35,17 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<AMETWeapon> CurrentWeapon;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
+	int MaxWeapons;
+
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
 
+	UPROPERTY(Transient, VisibleAnywhere)
+	TArray<TObjectPtr<AMETWeapon>> Weapons;
+
 	FWeaponEquippedEvent WeaponEquippedEvent;
+
+	int CurrentWeaponSlot;
 };

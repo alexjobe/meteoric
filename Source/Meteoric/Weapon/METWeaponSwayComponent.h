@@ -38,6 +38,8 @@ public:
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter);
 	void OnAimDownSights(bool bInIsAiming);
 
+	void Reset();
+
 	FRotator GetWeaponSway() const { return CurrentWeaponSway; }
 
 private:
