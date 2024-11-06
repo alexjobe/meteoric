@@ -74,7 +74,7 @@ private:
 	float LastTimeFired;
 
 	UFUNCTION()
-	void OnRep_OwningCharacter(ACharacter* InOwner);
+	void OnRep_OwningCharacter(ACharacter* InOldOwner);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

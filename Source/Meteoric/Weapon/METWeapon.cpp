@@ -102,13 +102,13 @@ void AMETWeapon::Tick(float DeltaTime)
 	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
 }
 
-void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOwner)
+void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOldOwner)
 {
-	if(InOwner == OwningCharacter) return;
+	if(InOldOwner == OwningCharacter) return;
 
 	if(OwningCharacter)
 	{
-		OnEquipped(InOwner);
+		OnEquipped(OwningCharacter);
 	}
 	else
 	{

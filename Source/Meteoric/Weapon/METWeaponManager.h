@@ -22,10 +22,7 @@ public:
 	virtual void InitializeComponent() override;
 
 	UFUNCTION(BlueprintCallable)
-	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
-
-	UFUNCTION(BlueprintCallable)
-	void UnequipCurrentWeapon();
+	void StartEquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
@@ -33,28 +30,38 @@ public:
 	AMETWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon", ReplicatedUsing = OnRep_CurrentWeapon, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<AMETWeapon> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	int MaxWeapons;
+	
+	void EquipWeapon(AMETWeapon* const InWeapon) const;
+	static void UnequipWeapon(AMETWeapon* const InWeapon);
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon) const;
 
 	/** Called for cycle weapon input */
 	void CycleWeaponInput(const struct FInputActionValue& Value);
 
 	void CycleWeapon(bool bInNext);
 
+	UFUNCTION(Server, Reliable)
+	void Server_CycleWeapon(bool bInNext);
+
 private:
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, Replicated)
 	TObjectPtr<ACharacter> OwningCharacter;
 
-	UPROPERTY(Transient, VisibleAnywhere)
+	UPROPERTY(Transient, VisibleAnywhere, Replicated)
 	TArray<TObjectPtr<AMETWeapon>> Weapons;
 	
-	int CurrentWeaponSlot;
+	int SelectedWeaponSlot;
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
 
 public:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 };
