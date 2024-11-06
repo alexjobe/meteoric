@@ -84,37 +84,47 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 void AMETCharacter::AimDownSightsStarted()
 {
 	SetAiming(true);
+
+	if(!HasAuthority())
+	{
+		Server_SetAiming(true);
+	}
 }
 
 void AMETCharacter::AimDownSightsCompleted()
 {
 	SetAiming(false);
+	
+	if(!HasAuthority())
+	{
+		Server_SetAiming(false);
+	}
 }
 
 void AMETCharacter::FireActionStarted()
 {
 	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon) return;
+	if(!CurrentWeapon || !CurrentWeapon->CanFire()) return;
 	
-	const ENetRole LocalRole = GetLocalRole();
-	if (LocalRole == ROLE_AutonomousProxy)
+	Fire(false);
+
+	if(!HasAuthority())
 	{
-		Fire(false);
+		Server_Fire(false);
 	}
-	Server_Fire(false);
 }
 
 void AMETCharacter::FireActionHeld()
 {
 	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon || CurrentWeapon->FiringMode != Automatic) return;
+	if(!CurrentWeapon || !CurrentWeapon->CanFire() || CurrentWeapon->FiringMode != Automatic) return;
 	
-	const ENetRole LocalRole = GetLocalRole();
-	if (LocalRole == ROLE_AutonomousProxy)
+	Fire(true);
+	
+	if(!HasAuthority())
 	{
-		Fire(true);
+		Server_Fire(true);
 	}
-	Server_Fire(true);
 }
 
 void AMETCharacter::Fire(bool bInHeld)
@@ -123,17 +133,22 @@ void AMETCharacter::Fire(bool bInHeld)
 	{
 		CurrentWeapon->Fire(bInHeld);
 	}
+
+	if(HasAuthority())
+	{
+		Multicast_Fire(bInHeld);
+	}
 }
 
 void AMETCharacter::Server_Fire_Implementation(bool bInHeld)
 {
-	Multicast_Fire(bInHeld);
+	Fire(bInHeld);
 }
 
 void AMETCharacter::Multicast_Fire_Implementation(bool bInHeld)
 {
 	const ENetRole LocalRole = GetLocalRole();
-	if (LocalRole != ROLE_AutonomousProxy)
+	if (LocalRole == ROLE_SimulatedProxy)
 	{
 		Fire(bInHeld);
 	}
@@ -146,11 +161,6 @@ void AMETCharacter::SetAiming(bool bInIsAiming)
 		bIsAiming = bInIsAiming;
 		CurrentWeapon->OnAimDownSights(bIsAiming);
 		AimDownSightsEvent.Broadcast(bIsAiming);
-	}
-
-	if(!HasAuthority())
-	{
-		Server_SetAiming(bInIsAiming);
 	}
 }
 
@@ -186,6 +196,8 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::FireActionStarted);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Ongoing, this, &AMETCharacter::FireActionHeld);
 	}
+
+	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

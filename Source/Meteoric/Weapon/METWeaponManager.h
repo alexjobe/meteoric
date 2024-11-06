@@ -12,6 +12,10 @@ class METEORIC_API UMETWeaponManager : public UActorComponent
 {
 	GENERATED_BODY()
 
+	/** Next Weapon Input Action*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> NextWeaponAction;
+
 public:	
 	UMETWeaponManager();
 
@@ -22,9 +26,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UnequipCurrentWeapon();
-
-	UFUNCTION(BlueprintCallable)
-	void CycleWeapon();
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
@@ -38,6 +39,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	int MaxWeapons;
 
+	/** Called for cycle weapon input */
+	void CycleWeaponInput(const struct FInputActionValue& Value);
+
+	void CycleWeapon(bool bInNext);
+
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
@@ -48,4 +54,7 @@ private:
 	int CurrentWeaponSlot;
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
+
+public:
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 };

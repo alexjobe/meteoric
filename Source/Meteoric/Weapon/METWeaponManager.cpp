@@ -3,12 +3,13 @@
 
 #include "METWeaponManager.h"
 
+#include "EnhancedInputComponent.h"
 #include "METWeapon.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
 UMETWeaponManager::UMETWeaponManager()
-	: MaxWeapons(4)
+	: MaxWeapons(2)
 	, CurrentWeaponSlot(0)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -47,16 +48,34 @@ void UMETWeaponManager::UnequipCurrentWeapon()
 	CurrentWeapon = nullptr;
 }
 
-void UMETWeaponManager::CycleWeapon()
+void UMETWeaponManager::CycleWeapon(bool bInNext)
 {
-	int NewSlot = (CurrentWeaponSlot + 1) % MaxWeapons;
-	while(NewSlot != CurrentWeaponSlot)
+	if(MaxWeapons <= 1) return;
+	
+	int NewSlot = CurrentWeaponSlot + (bInNext ? 1 : -1);
+	if(NewSlot < 0) NewSlot = MaxWeapons - 1;
+	if(NewSlot >= MaxWeapons) NewSlot = 0;
+
+	CurrentWeaponSlot = NewSlot;
+	
+	if(Weapons[NewSlot] != nullptr)
 	{
-		if(Weapons[NewSlot] != nullptr)
-		{
-			EquipWeapon(Weapons[NewSlot], NewSlot);
-			return;
-		}
-		NewSlot = (NewSlot + 1) % MaxWeapons;
+		EquipWeapon(Weapons[NewSlot], NewSlot);
+	}
+	
+	//GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("CurrentWeaponSlot: %i"), CurrentWeaponSlot));
+}
+
+void UMETWeaponManager::CycleWeaponInput(const FInputActionValue& Value)
+{
+	const float Axis = Value.Get<float>();
+	CycleWeapon(Axis > 0);
+}
+
+void UMETWeaponManager::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(NextWeaponAction, ETriggerEvent::Started, this, &UMETWeaponManager::CycleWeaponInput);
 	}
 }

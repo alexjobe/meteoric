@@ -7,6 +7,7 @@
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 
 AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
@@ -17,7 +18,7 @@ AMETWeapon::AMETWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
-	SetReplicates(true);
+	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
@@ -28,17 +29,12 @@ AMETWeapon::AMETWeapon()
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
+	if(!InOwningCharacter) return;
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 	OwningCharacter = InOwningCharacter;
-	SetOwner(OwningCharacter->GetOwner());
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
 	SetActorTickEnabled(true);
-
-	if(HasAuthority())
-	{
-		Multicast_OnEquipped(InOwningCharacter);
-	}
 }
 
 void AMETWeapon::OnUnequipped()
@@ -48,11 +44,6 @@ void AMETWeapon::OnUnequipped()
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
-
-	if(HasAuthority())
-	{
-		Multicast_OnUnequipped();
-	}
 }
 
 void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
@@ -73,9 +64,7 @@ void AMETWeapon::Fire(bool bInHeld)
 	if(bInHeld && FiringMode != Automatic) return;
 	
 	const float TimeSinceCreation = GetGameTimeSinceCreation();
-	
 	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
-
 	LastTimeFired = TimeSinceCreation;
 	
 	if(ensure(OwningCharacter) && WeaponFireAnim)
@@ -98,20 +87,10 @@ void AMETWeapon::Fire(bool bInHeld)
 	}
 }
 
-void AMETWeapon::Multicast_OnEquipped_Implementation(ACharacter* InOwningCharacter)
+bool AMETWeapon::CanFire() const
 {
-	if(!HasAuthority())
-	{
-		OnEquipped(InOwningCharacter);
-	}
-}
-
-void AMETWeapon::Multicast_OnUnequipped_Implementation()
-{
-	if(!HasAuthority())
-	{
-		OnUnequipped();
-	}
+	const float TimeSinceCreation = GetGameTimeSinceCreation();
+	return TimeSinceCreation - LastTimeFired >= FiringRate;
 }
 
 void AMETWeapon::Tick(float DeltaTime)
@@ -121,5 +100,26 @@ void AMETWeapon::Tick(float DeltaTime)
 
 	RecoilComponent->UpdateRecoil(DeltaTime);
 	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
+}
+
+void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOwner)
+{
+	if(InOwner == OwningCharacter) return;
+
+	if(OwningCharacter)
+	{
+		OnEquipped(InOwner);
+	}
+	else
+	{
+		OnUnequipped();
+	}
+}
+
+void AMETWeapon::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMETWeapon, OwningCharacter)
 }
 

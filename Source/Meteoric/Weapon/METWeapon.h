@@ -35,6 +35,7 @@ public:
 	void OnAimDownSights(bool bInIsAiming) const;
 
 	void Fire(bool bInHeld);
+	bool CanFire() const;
 
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
@@ -61,20 +62,20 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnEquipped(ACharacter* InOwningCharacter);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnUnequipped();
-
 public:	
 	virtual void Tick(float DeltaTime) override;
 
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
 private:
-	UPROPERTY(Transient)
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
 	TObjectPtr<ACharacter> OwningCharacter;
 
 	float LastTimeFired;
+
+	UFUNCTION()
+	void OnRep_OwningCharacter(ACharacter* InOwner);
+
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
