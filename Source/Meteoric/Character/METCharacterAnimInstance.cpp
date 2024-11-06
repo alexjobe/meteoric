@@ -10,6 +10,7 @@
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/METWeaponSwayComponent.h"
+#include "Net/UnrealNetwork.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	: GroundSpeed(0.f)
@@ -82,19 +83,10 @@ void UMETCharacterAnimInstance::UpdateWeaponSway()
 
 void UMETCharacterAnimInstance::SetActorControlRotationDelta()
 {
-	if(!ensure(Character)) return;
-	
-	const FRotator ActorRotation = Character->GetActorRotation();
-	const FRotator ControlRotation = Character->GetControlRotation();
-
-	FRotator Delta = ActorRotation - ControlRotation;
-	Delta.Normalize();
-
-	ActorControlRotationDelta.Pitch = 0.f;
-	ActorControlRotationDelta.Yaw = Delta.Yaw;
-
-	// Divide by five spine bones
-	ActorControlRotationDelta.Roll = Delta.Pitch / 5.f;
+	if(ensure(Character))
+	{
+		ActorControlRotationDelta = Character->GetActorControlRotationDelta();
+	}
 }
 
 void UMETCharacterAnimInstance::SetHandRelativeToSight()

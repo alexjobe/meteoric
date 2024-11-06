@@ -32,9 +32,9 @@ public:
 
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void OnUnequipped();
-	void OnFireActionStarted();
-	void OnFireActionHeld();
 	void OnAimDownSights(bool bInIsAiming) const;
+
+	void Fire(bool bInHeld);
 
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
@@ -61,7 +61,11 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-	void Fire();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnEquipped(ACharacter* InOwningCharacter);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnUnequipped();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

@@ -80,15 +80,17 @@ void UMETRecoilComponent::OnFireActionHeld()
 void UMETRecoilComponent::OnWeaponFired()
 {
 	if(!ensure(OwningCharacter)) return;
+
+	AController* Controller = OwningCharacter->GetController();
 	
-	if(AimRecoilCurve && FiringMode == Automatic)
+	if(Controller && AimRecoilCurve && FiringMode == Automatic)
 	{
-		FRotator ControlRotation = OwningCharacter->GetController()->GetControlRotation();
+		FRotator ControlRotation = Controller->GetControlRotation();
 		FVector2d RecoilDirection = CurrentRecoilCurvePos - LastRecoilCurvePos;
 		RecoilDirection.Normalize();
 		
 		ControlRotation += FRotator(RecoilDirection.X * VerticalAimRecoilMultiplier, -RecoilDirection.Y * HorizontalAimRecoilMultiplier, 0.f);
-		OwningCharacter->GetController()->SetControlRotation(ControlRotation);
+		Controller->SetControlRotation(ControlRotation);
 	}
 
 	RecoilSpring_Z.AddInstantaneousForce(RecoilForce_Z);

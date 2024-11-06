@@ -16,7 +16,7 @@ public:
 	UMETWeaponManager();
 
 	virtual void InitializeComponent() override;
-	
+
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
 
@@ -44,8 +44,8 @@ private:
 
 	UPROPERTY(Transient, VisibleAnywhere)
 	TArray<TObjectPtr<AMETWeapon>> Weapons;
+	
+	int CurrentWeaponSlot;
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
-
-	int CurrentWeaponSlot;
 };

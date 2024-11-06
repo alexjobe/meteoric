@@ -5,7 +5,7 @@
 
 #include "METWeapon.h"
 #include "GameFramework/Character.h"
-
+#include "Net/UnrealNetwork.h"
 
 UMETWeaponManager::UMETWeaponManager()
 	: MaxWeapons(4)

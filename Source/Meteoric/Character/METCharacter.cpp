@@ -10,12 +10,15 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY(LogMETCharacter);
 
 AMETCharacter::AMETCharacter()
 	: bIsAiming(false)
 {
+	SetReplicates(true);
+	
 	GetCapsuleComponent()->InitCapsuleSize(35.f, 90.0f);
 	
 	GetMesh()->SetupAttachment(GetCapsuleComponent());
@@ -33,10 +36,27 @@ AMETCharacter::AMETCharacter()
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 }
 
-void AMETCharacter::BeginPlay()
+void AMETCharacter::Tick(float DeltaSeconds)
 {
-	Super::BeginPlay();
+	Super::Tick(DeltaSeconds);
+}
+
+FRotator AMETCharacter::GetActorControlRotationDelta()
+{
+	const ENetRole LocalRole = GetLocalRole();
+	if (LocalRole == ROLE_Authority || LocalRole == ROLE_AutonomousProxy)
+	{
+		FRotator Delta = GetActorRotation() - GetControlRotation();
+		Delta.Normalize();
+
+		ActorControlRotationDelta.Pitch = 0.f;
+		ActorControlRotationDelta.Yaw = Delta.Yaw;
+
+		// Divide by five spine bones
+		ActorControlRotationDelta.Roll = Delta.Pitch / 5.f;
+	}
 	
+	return ActorControlRotationDelta;
 }
 
 void AMETCharacter::Move(const FInputActionValue& Value)
@@ -63,38 +83,85 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 
 void AMETCharacter::AimDownSightsStarted()
 {
-	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
-	{
-		bIsAiming = true;
-		CurrentWeapon->OnAimDownSights(bIsAiming);
-		AimDownSightsEvent.Broadcast(bIsAiming);
-	}
+	SetAiming(true);
 }
 
 void AMETCharacter::AimDownSightsCompleted()
 {
-	bIsAiming = false;
-	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
-	{
-		CurrentWeapon->OnAimDownSights(bIsAiming);
-		AimDownSightsEvent.Broadcast(bIsAiming);
-	}
+	SetAiming(false);
 }
 
 void AMETCharacter::FireActionStarted()
 {
-	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
+	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
+	if(!CurrentWeapon) return;
+	
+	const ENetRole LocalRole = GetLocalRole();
+	if (LocalRole == ROLE_AutonomousProxy)
 	{
-		CurrentWeapon->OnFireActionStarted();
+		Fire(false);
 	}
+	Server_Fire(false);
 }
 
 void AMETCharacter::FireActionHeld()
 {
+	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
+	if(!CurrentWeapon || CurrentWeapon->FiringMode != Automatic) return;
+	
+	const ENetRole LocalRole = GetLocalRole();
+	if (LocalRole == ROLE_AutonomousProxy)
+	{
+		Fire(true);
+	}
+	Server_Fire(true);
+}
+
+void AMETCharacter::Fire(bool bInHeld)
+{
 	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
-		CurrentWeapon->OnFireActionHeld();
+		CurrentWeapon->Fire(bInHeld);
 	}
+}
+
+void AMETCharacter::Server_Fire_Implementation(bool bInHeld)
+{
+	Multicast_Fire(bInHeld);
+}
+
+void AMETCharacter::Multicast_Fire_Implementation(bool bInHeld)
+{
+	const ENetRole LocalRole = GetLocalRole();
+	if (LocalRole != ROLE_AutonomousProxy)
+	{
+		Fire(bInHeld);
+	}
+}
+
+void AMETCharacter::SetAiming(bool bInIsAiming)
+{
+	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
+	{
+		bIsAiming = bInIsAiming;
+		CurrentWeapon->OnAimDownSights(bIsAiming);
+		AimDownSightsEvent.Broadcast(bIsAiming);
+	}
+
+	if(!HasAuthority())
+	{
+		Server_SetAiming(bInIsAiming);
+	}
+}
+
+void AMETCharacter::Server_SetAiming_Implementation(bool bInIsAiming)
+{
+	SetAiming(bInIsAiming);
+}
+
+void AMETCharacter::OnRep_IsAiming()
+{
+	SetAiming(bIsAiming);
 }
 
 void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,4 +186,12 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::FireActionStarted);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Ongoing, this, &AMETCharacter::FireActionHeld);
 	}
+}
+
+void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AMETCharacter, ActorControlRotationDelta, COND_SkipOwner)
+	DOREPLIFETIME_CONDITION(AMETCharacter, bIsAiming, COND_SkipOwner)
 }

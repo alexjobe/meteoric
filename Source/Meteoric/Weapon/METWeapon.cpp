@@ -17,6 +17,7 @@ AMETWeapon::AMETWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	SetReplicates(true);
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
@@ -29,9 +30,15 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 	OwningCharacter = InOwningCharacter;
+	SetOwner(OwningCharacter->GetOwner());
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
 	SetActorTickEnabled(true);
+
+	if(HasAuthority())
+	{
+		Multicast_OnEquipped(InOwningCharacter);
+	}
 }
 
 void AMETWeapon::OnUnequipped()
@@ -41,31 +48,10 @@ void AMETWeapon::OnUnequipped()
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
-}
 
-void AMETWeapon::OnFireActionStarted()
-{
-	if(FiringMode == SingleShot)
+	if(HasAuthority())
 	{
-		Fire();	
-	}
-	
-	if(ensure(RecoilComponent))
-	{
-		RecoilComponent->OnFireActionStarted();
-	}
-}
-
-void AMETWeapon::OnFireActionHeld()
-{
-	if(FiringMode == Automatic)
-	{
-		Fire();
-	}
-
-	if(ensure(RecoilComponent))
-	{
-		RecoilComponent->OnFireActionHeld();
+		Multicast_OnUnequipped();
 	}
 }
 
@@ -82,8 +68,10 @@ void AMETWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AMETWeapon::Fire()
+void AMETWeapon::Fire(bool bInHeld)
 {
+	if(bInHeld && FiringMode != Automatic) return;
+	
 	const float TimeSinceCreation = GetGameTimeSinceCreation();
 	
 	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
@@ -99,6 +87,30 @@ void AMETWeapon::Fire()
 	if(ensure(RecoilComponent))
 	{
 		RecoilComponent->OnWeaponFired();
+		if(bInHeld)
+		{
+			RecoilComponent->OnFireActionHeld();
+		}
+		else
+		{
+			RecoilComponent->OnFireActionStarted();
+		}
+	}
+}
+
+void AMETWeapon::Multicast_OnEquipped_Implementation(ACharacter* InOwningCharacter)
+{
+	if(!HasAuthority())
+	{
+		OnEquipped(InOwningCharacter);
+	}
+}
+
+void AMETWeapon::Multicast_OnUnequipped_Implementation()
+{
+	if(!HasAuthority())
+	{
+		OnUnequipped();
 	}
 }
 

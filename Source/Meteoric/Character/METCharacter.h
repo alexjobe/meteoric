@@ -44,6 +44,8 @@ class METEORIC_API AMETCharacter : public ACharacter
 
 public:
 	AMETCharacter();
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
@@ -53,11 +55,11 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
+	FRotator GetActorControlRotationDelta();
+
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
-	
-	virtual void BeginPlay() override;
 
 	/** Called for movement input */
 	void Move(const struct FInputActionValue& Value);
@@ -73,9 +75,31 @@ protected:
 	void FireActionStarted();
 	void FireActionHeld();
 
+	void Fire(bool bInHeld);
+
+	UFUNCTION(Server, Reliable)
+	void Server_Fire(bool bInHeld);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Fire(bool bInHeld);
+
+	/* Aim down sights */
+	void SetAiming(bool bInIsAiming);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_SetAiming(bool bInIsAiming);
+
+	UFUNCTION()
+	void OnRep_IsAiming();
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	UPROPERTY(Replicated)
+	FRotator ActorControlRotationDelta;
+	
 	FAimDownSightsEvent AimDownSightsEvent;
 
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };
