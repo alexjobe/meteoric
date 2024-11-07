@@ -32,7 +32,7 @@ public:
 
 	AMETWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
 	bool IsChangingWeapons() const { return bIsChangingWeapons; }
-	void FinishEquipWeapon();
+	void OnEquipWeaponNotify();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", ReplicatedUsing = OnRep_CurrentWeapon, meta=(AllowPrivateAccess = "true"))
@@ -42,6 +42,7 @@ protected:
 	int MaxWeapons;
 	
 	void StartEquipWeapon(AMETWeapon* const InWeapon);
+	void FinishEquipWeapon();
 	static void UnequipWeapon(AMETWeapon* const InWeapon);
 
 	UFUNCTION()

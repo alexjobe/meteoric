@@ -62,7 +62,7 @@ protected:
 	float AimAlpha;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon Sway")
-	FRotator WeaponSway;
+	FRotator WeaponSwayRotation;
 
 	/* Right Hand Relative to Sight */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")

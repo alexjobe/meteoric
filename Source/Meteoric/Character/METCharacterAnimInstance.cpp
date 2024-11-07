@@ -63,7 +63,7 @@ void UMETCharacterAnimInstance::AnimNotify_EquipWeapon() const
 {
 	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
 	{
-		WeaponManager->FinishEquipWeapon();
+		WeaponManager->OnEquipWeaponNotify();
 	}
 }
 
@@ -81,11 +81,11 @@ void UMETCharacterAnimInstance::UpdateWeaponSway()
 {
 	if(CurrentWeapon)
 	{
-		WeaponSway = CurrentWeapon->GetWeaponSwayComponent()->GetWeaponSway();
+		WeaponSwayRotation = CurrentWeapon->GetWeaponSwayComponent()->GetWeaponSway();
 	}
 	else
 	{
-		WeaponSway = FRotator::ZeroRotator;
+		WeaponSwayRotation = FRotator::ZeroRotator;
 	}
 }
 
@@ -148,6 +148,12 @@ void UMETCharacterAnimInstance::UpdateRecoilOffset()
 
 void UMETCharacterAnimInstance::OnWeaponEquipped(AMETWeapon* InWeapon)
 {
+	RecoilOffset = FTransform::Identity;
+	WeaponSwayRotation = FRotator::ZeroRotator;
+	RightHandRelSight = FTransform::Identity;
+	SightRelSpine = FTransform::Identity;
+	RightHandRelSpine = FTransform::Identity;
+	
 	if(InWeapon)
 	{
 		CurrentWeapon = InWeapon;

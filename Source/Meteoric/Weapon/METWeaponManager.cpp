@@ -48,17 +48,33 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
 	CurrentWeapon = InWeapon;
 	OwningCharacter->PlayAnimMontage(CurrentWeapon->GetCharacterEquipWeaponMontage());
+
+	if(UAnimMontage* EquipMontage = CurrentWeapon->GetCharacterEquipWeaponMontage())
+	{
+		UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
+		if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(EquipMontage) : nullptr)
+		{
+			MontageInstance->OnMontageBlendingOutStarted.BindLambda([this](UAnimMontage*, bool)
+			{
+				FinishEquipWeapon();
+			});
+		}
+	}
 }
 
-void UMETWeaponManager::FinishEquipWeapon()
+void UMETWeaponManager::OnEquipWeaponNotify()
 {
 	if(!ensure(OwningCharacter) || !ensure(CurrentWeapon)) return;
 	UnequipWeapon(PreviousWeapon);
 	PreviousWeapon = nullptr;
-	CurrentWeapon->OnEquipped(OwningCharacter);
 	CurrentWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
-	WeaponEquippedEvent.Broadcast(CurrentWeapon);
 	CurrentWeapon->GetMesh()->SetVisibility(true, true);
+	CurrentWeapon->OnEquipped(OwningCharacter);
+	WeaponEquippedEvent.Broadcast(CurrentWeapon);
+}
+
+void UMETWeaponManager::FinishEquipWeapon()
+{
 	bIsChangingWeapons = false;
 	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 }
