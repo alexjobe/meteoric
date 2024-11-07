@@ -22,12 +22,17 @@ public:
 	virtual void InitializeComponent() override;
 
 	UFUNCTION(BlueprintCallable)
-	void StartEquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
+	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
-	FWeaponEquippedEvent& OnWeaponEquipped() { return WeaponEquippedEvent; }
+	FWeaponEquippedEvent& OnWeaponEquippedEvent() { return WeaponEquippedEvent; }
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChangingWeaponsEvent, bool, bIsChangingWeapons);
+	FChangingWeaponsEvent& OnChangingWeaponsEvent() { return ChangingWeaponsEvent; }
 
 	AMETWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
+	bool IsChangingWeapons() const { return bIsChangingWeapons; }
+	void FinishEquipWeapon();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon", ReplicatedUsing = OnRep_CurrentWeapon, meta=(AllowPrivateAccess = "true"))
@@ -36,11 +41,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	int MaxWeapons;
 	
-	void EquipWeapon(AMETWeapon* const InWeapon) const;
+	void StartEquipWeapon(AMETWeapon* const InWeapon);
 	static void UnequipWeapon(AMETWeapon* const InWeapon);
 
 	UFUNCTION()
-	void OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon) const;
+	void OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon);
 
 	/** Called for cycle weapon input */
 	void CycleWeaponInput(const struct FInputActionValue& Value);
@@ -56,10 +61,16 @@ private:
 
 	UPROPERTY(Transient, VisibleAnywhere, Replicated)
 	TArray<TObjectPtr<AMETWeapon>> Weapons;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AMETWeapon> PreviousWeapon;
 	
 	int SelectedWeaponSlot;
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
+	FChangingWeaponsEvent ChangingWeaponsEvent;
+
+	bool bIsChangingWeapons;
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

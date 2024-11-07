@@ -11,6 +11,7 @@
 UMETWeaponManager::UMETWeaponManager()
 	: MaxWeapons(2)
 	, SelectedWeaponSlot(0)
+	, bIsChangingWeapons(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
@@ -23,27 +24,43 @@ void UMETWeaponManager::InitializeComponent()
 	OwningCharacter = Cast<ACharacter>(GetOwner());
 }
 
-void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon, int InSlot)
+void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 {
 	if(!ensure(InSlot >= 0 && InSlot < MaxWeapons)) return;
 	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
-	if(!OwningCharacter->HasAuthority()) return;
+	if(bIsChangingWeapons) return;
 
-	UnequipWeapon(CurrentWeapon);
-	CurrentWeapon = InWeapon;
-	EquipWeapon(CurrentWeapon);
+	bIsChangingWeapons = true;
+	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 
-	Weapons[InSlot] = CurrentWeapon;
-	SelectedWeaponSlot = InSlot;
+	if(OwningCharacter->HasAuthority())
+	{
+		PreviousWeapon = CurrentWeapon;
+		StartEquipWeapon(InWeapon);
+
+		Weapons[InSlot] = CurrentWeapon;
+		SelectedWeaponSlot = InSlot;
+	}
 }
 
-void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon) const
+void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 {
 	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
-	InWeapon->OnEquipped(OwningCharacter);
-	InWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, InWeapon->ParentAttachmentSocket);
-	WeaponEquippedEvent.Broadcast(InWeapon);
-	InWeapon->GetMesh()->SetVisibility(true, true);
+	CurrentWeapon = InWeapon;
+	OwningCharacter->PlayAnimMontage(CurrentWeapon->GetCharacterEquipWeaponMontage());
+}
+
+void UMETWeaponManager::FinishEquipWeapon()
+{
+	if(!ensure(OwningCharacter) || !ensure(CurrentWeapon)) return;
+	UnequipWeapon(PreviousWeapon);
+	PreviousWeapon = nullptr;
+	CurrentWeapon->OnEquipped(OwningCharacter);
+	CurrentWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
+	WeaponEquippedEvent.Broadcast(CurrentWeapon);
+	CurrentWeapon->GetMesh()->SetVisibility(true, true);
+	bIsChangingWeapons = false;
+	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 }
 
 void UMETWeaponManager::UnequipWeapon(AMETWeapon* const InWeapon)
@@ -53,18 +70,23 @@ void UMETWeaponManager::UnequipWeapon(AMETWeapon* const InWeapon)
 	InWeapon->GetMesh()->SetVisibility(false, true);
 }
 
-void UMETWeaponManager::OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon) const
+void UMETWeaponManager::OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon)
 {
 	if(InOldWeapon)
 	{
-		UnequipWeapon(InOldWeapon);
+		PreviousWeapon = InOldWeapon;
 	}
-	EquipWeapon(CurrentWeapon);
+
+	if(CurrentWeapon)
+	{
+		StartEquipWeapon(CurrentWeapon);
+	}
 }
 
 void UMETWeaponManager::CycleWeapon(bool bInNext)
 {
 	if(MaxWeapons <= 1) return;
+	if(bIsChangingWeapons) return;
 	
 	int NewSlot = SelectedWeaponSlot + (bInNext ? 1 : -1);
 	if(NewSlot < 0) NewSlot = MaxWeapons - 1;
@@ -74,7 +96,7 @@ void UMETWeaponManager::CycleWeapon(bool bInNext)
 	
 	if(Weapons[NewSlot] != nullptr)
 	{
-		StartEquipWeapon(Weapons[NewSlot], NewSlot);
+		EquipWeapon(Weapons[NewSlot], NewSlot);
 	}
 }
 

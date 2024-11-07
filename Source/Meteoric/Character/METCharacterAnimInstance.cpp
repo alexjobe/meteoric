@@ -31,7 +31,7 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 
 	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
 	{
-		WeaponManager->OnWeaponEquipped().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
+		WeaponManager->OnWeaponEquippedEvent().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
 		OnWeaponEquipped(WeaponManager->GetCurrentWeapon());
 	}
 }
@@ -57,6 +57,14 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	UpdateWeaponSway();
+}
+
+void UMETCharacterAnimInstance::AnimNotify_EquipWeapon() const
+{
+	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
+	{
+		WeaponManager->FinishEquipWeapon();
+	}
 }
 
 void UMETCharacterAnimInstance::UpdateMovementData()

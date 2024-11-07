@@ -5,6 +5,7 @@ FMETSpring::FMETSpring()
 	, Mass(1.f)
 	, bCriticallyDamped(true)
 	, DampingConstant(0.1f)
+	, MaxDisplacement(100.f)
 	, DampingRatio(5.f)
 	, DampedAngularFrequency(.5f)
 	, ImpulseVelocity(0)
@@ -101,8 +102,9 @@ void FMETSpring::UpdateSpring(float InDeltaTime)
 	LastDisplacement = CurrentDisplacement;
 	CurrentDisplacement = CurrentDisplacement + CurrentVelocity * InDeltaTime;
 
-	//GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Blue, FString::Printf(TEXT("SpringRecoilCurrentDisplacement: %f"), CurrentDisplacement));
+	CurrentDisplacement = FMath::Clamp(CurrentDisplacement, -FMath::Abs(MaxDisplacement), FMath::Abs(MaxDisplacement));
 
+	/* We keep track of previous displacements so we can determine when the spring is "settled", i.e. barely moving anymore */
 	UpdateDisplacementQueue();
 }
 

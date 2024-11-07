@@ -34,6 +34,7 @@ AMETCharacter::AMETCharacter()
 	MainCamera->bUsePawnControlRotation = true;
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
+	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::OnChangingWeapons);
 }
 
 void AMETCharacter::Tick(float DeltaSeconds)
@@ -81,8 +82,10 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::AimDownSightsStarted()
+void AMETCharacter::AimingStarted()
 {
+	if(!ensure(WeaponManager) || WeaponManager->IsChangingWeapons()) return;
+	
 	SetAiming(true);
 
 	if(!HasAuthority())
@@ -91,7 +94,7 @@ void AMETCharacter::AimDownSightsStarted()
 	}
 }
 
-void AMETCharacter::AimDownSightsCompleted()
+void AMETCharacter::AimingCompleted()
 {
 	SetAiming(false);
 	
@@ -103,8 +106,9 @@ void AMETCharacter::AimDownSightsCompleted()
 
 void AMETCharacter::FireActionStarted()
 {
+	if(!ensure(WeaponManager)) return;
 	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon || !CurrentWeapon->CanFire()) return;
+	if(!CurrentWeapon || !CurrentWeapon->CanFire() || WeaponManager->IsChangingWeapons()) return;
 	
 	Fire(false);
 
@@ -116,8 +120,9 @@ void AMETCharacter::FireActionStarted()
 
 void AMETCharacter::FireActionHeld()
 {
+	if(!ensure(WeaponManager)) return;
 	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon || !CurrentWeapon->CanFire() || CurrentWeapon->FiringMode != Automatic) return;
+	if(!CurrentWeapon || !CurrentWeapon->CanFire() || WeaponManager->IsChangingWeapons()) return;
 	
 	Fire(true);
 	
@@ -174,6 +179,14 @@ void AMETCharacter::OnRep_IsAiming()
 	SetAiming(bIsAiming);
 }
 
+void AMETCharacter::OnChangingWeapons(bool bInIsChangingWeapons)
+{
+	if(bInIsChangingWeapons && bIsAiming)
+	{
+		AimingCompleted();
+	}
+}
+
 void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -189,8 +202,8 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMETCharacter::Look);
 
 		// Aiming
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimDownSightsStarted);
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::AimDownSightsCompleted);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimingStarted);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::AimingCompleted);
 
 		// Firing
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::FireActionStarted);

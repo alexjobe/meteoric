@@ -80,6 +80,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RecoilOffset;
 
+	UFUNCTION()
+	void AnimNotify_EquipWeapon() const;
+
 private:
 	void UpdateMovementData();
 	void UpdateWeaponSway();

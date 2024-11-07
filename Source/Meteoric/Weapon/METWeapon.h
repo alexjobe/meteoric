@@ -40,6 +40,7 @@ public:
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
+	UAnimMontage* GetCharacterEquipWeaponMontage() const { return CharacterEquipWeaponMontage; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
@@ -56,6 +57,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> CharacterIdleWeaponAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> CharacterEquipWeaponMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> WeaponFireAnim;

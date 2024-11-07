@@ -26,6 +26,9 @@ struct FMETSpring
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spring")
 	float DampingConstant;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spring")
+	float MaxDisplacement;
+	
 	FMETSpring();
 
 	void Initialize();

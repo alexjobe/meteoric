@@ -68,8 +68,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	/** Called for ADS input */
-	void AimDownSightsStarted();
-	void AimDownSightsCompleted();
+	void AimingStarted();
+	void AimingCompleted();
 
 	/** Called for firing input */
 	void FireActionStarted();
@@ -91,6 +91,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_IsAiming();
+
+	UFUNCTION()
+	void OnChangingWeapons(bool bInIsChangingWeapons);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
