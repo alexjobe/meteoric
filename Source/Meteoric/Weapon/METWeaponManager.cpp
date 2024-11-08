@@ -145,6 +145,6 @@ void UMETWeaponManager::SetupPlayerInputComponent(class UInputComponent* PlayerI
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(NextWeaponAction, ETriggerEvent::Started, this, &UMETWeaponManager::CycleWeaponInput);
+		EnhancedInputComponent->BindAction(CycleWeaponAction, ETriggerEvent::Started, this, &UMETWeaponManager::CycleWeaponInput);
 	}
 }

@@ -65,16 +65,16 @@ protected:
 	FRotator WeaponSwayRotation;
 
 	/* Right Hand Relative to Sight */
-	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform RightHandRelSight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
+	FTransform RightHandToSight;
 
 	/* Sight Relative to Spine */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform SightRelSpine;
+	FTransform SightToSpine;
 
 	/* Right Hand Relative to Spine */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform RightHandRelSpine;
+	FTransform RightHandToSpine;
 
 	/* Right Hand Offset from Recoil */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")

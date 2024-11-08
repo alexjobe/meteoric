@@ -14,7 +14,7 @@ class METEORIC_API UMETWeaponManager : public UActorComponent
 
 	/** Next Weapon Input Action*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> NextWeaponAction;
+	TObjectPtr<class UInputAction> CycleWeaponAction;
 
 public:	
 	UMETWeaponManager();

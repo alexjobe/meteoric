@@ -100,10 +100,12 @@ void UMETCharacterAnimInstance::SetActorControlRotationDelta()
 void UMETCharacterAnimInstance::SetHandRelativeToSight()
 {
 	if(!ensure(Character)) return;
+	/* If we already precomputed the value, return */
+	if(!RightHandToSight.Equals(FTransform::Identity)) return;
 	
 	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
 	const UMETWeaponManager* WeaponManager = Character->GetWeaponManager();
-	const AMETWeapon* Weapon = WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
+	AMETWeapon* Weapon = WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
 	const USkeletalMeshComponent* WeaponMesh = Weapon ? Weapon->GetMesh() : nullptr;
 
 	if(CharacterMesh && WeaponMesh)
@@ -111,7 +113,8 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 		const FTransform RightHandTransform = CharacterMesh->GetBoneTransform(FName("hand_r"));
 		const FTransform SightTransform = WeaponMesh->GetSocketTransform(FName("S_Sight"));
 
-		RightHandRelSight = RightHandTransform.GetRelativeTransform(SightTransform);
+		RightHandToSight = RightHandTransform.GetRelativeTransform(SightTransform);
+		Weapon->RightHandToSight = RightHandToSight;
 	}
 }
 
@@ -127,15 +130,15 @@ void UMETCharacterAnimInstance::SetSightRelativeToSpine()
 		const FTransform CameraTransform = MainCamera->GetComponentToWorld();
 		const FTransform SpineTransform = CharacterMesh->GetBoneTransform(FName("spine_05"));
 
-		SightRelSpine = CameraTransform.GetRelativeTransform(SpineTransform);
-		SightRelSpine.SetLocation(SightRelSpine.GetLocation() + SightRelSpine.GetRotation().GetForwardVector() * SightCameraOffset);
+		SightToSpine = CameraTransform.GetRelativeTransform(SpineTransform);
+		SightToSpine.SetLocation(SightToSpine.GetLocation() + SightToSpine.GetRotation().GetForwardVector() * SightCameraOffset);
 	}
 	
 }
 
 void UMETCharacterAnimInstance::SetHandRelativeToSpine()
 {
-	RightHandRelSpine = RightHandRelSight * SightRelSpine;
+	RightHandToSpine = RightHandToSight * SightToSpine;
 }
 
 void UMETCharacterAnimInstance::UpdateRecoilOffset()
@@ -150,9 +153,9 @@ void UMETCharacterAnimInstance::OnWeaponEquipped(AMETWeapon* InWeapon)
 {
 	RecoilOffset = FTransform::Identity;
 	WeaponSwayRotation = FRotator::ZeroRotator;
-	RightHandRelSight = FTransform::Identity;
-	SightRelSpine = FTransform::Identity;
-	RightHandRelSpine = FTransform::Identity;
+	RightHandToSight = FTransform::Identity;
+	SightToSpine = FTransform::Identity;
+	RightHandToSpine = FTransform::Identity;
 	
 	if(InWeapon)
 	{
@@ -160,6 +163,7 @@ void UMETCharacterAnimInstance::OnWeaponEquipped(AMETWeapon* InWeapon)
 		IdleWeaponAnim = InWeapon->GetCharacterIdleWeaponAnim();
 		SightCameraOffset = InWeapon->SightCameraOffset;
 		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;
+		RightHandToSight = InWeapon->RightHandToSight;
 		SetHandRelativeToSight();
 	}
 }

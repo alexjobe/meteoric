@@ -22,6 +22,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ADS")
 	float AimDownSightsSpeed;
 
+	/* Right Hand Relative to Sight */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
+	FTransform RightHandToSight;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
