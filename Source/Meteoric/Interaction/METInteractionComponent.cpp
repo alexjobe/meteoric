@@ -31,6 +31,11 @@ void UMETInteractionComponent::Interact() const
 	}
 }
 
+void UMETInteractionComponent::Server_Interact_Implementation()
+{
+	Interact();
+}
+
 UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent() const
 {
 	if(!ensure(CameraComponent)) return nullptr;
@@ -59,6 +64,11 @@ UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent()
 void UMETInteractionComponent::InteractInput()
 {
 	Interact();
+
+	if(!GetOwner()->HasAuthority())
+	{
+		Server_Interact();
+	}
 }
 
 void UMETInteractionComponent::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

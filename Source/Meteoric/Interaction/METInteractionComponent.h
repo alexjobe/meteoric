@@ -26,6 +26,9 @@ public:
 
 	void Interact() const;
 
+	UFUNCTION(Server, Reliable)
+	void Server_Interact();
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractEvent, AActor*, Interactable);
 	FInteractEvent& OnInteractEvent() { return InteractEvent; }
 

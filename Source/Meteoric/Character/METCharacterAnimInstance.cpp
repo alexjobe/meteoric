@@ -31,8 +31,8 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 
 	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
 	{
-		WeaponManager->OnWeaponEquippedEvent().AddUniqueDynamic(this, &UMETCharacterAnimInstance::OnWeaponEquipped);
-		OnWeaponEquipped(WeaponManager->GetCurrentWeapon());
+		WeaponManager->OnWeaponEquippedEvent().AddUniqueDynamic(this, &UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent);
+		WeaponManager_OnWeaponEquippedEvent(WeaponManager->GetCurrentWeapon());
 	}
 }
 
@@ -149,7 +149,7 @@ void UMETCharacterAnimInstance::UpdateRecoilOffset()
 	}
 }
 
-void UMETCharacterAnimInstance::OnWeaponEquipped(AMETWeapon* InWeapon)
+void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* InWeapon)
 {
 	RecoilOffset = FTransform::Identity;
 	WeaponSwayRotation = FRotator::ZeroRotator;

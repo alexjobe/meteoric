@@ -96,7 +96,7 @@ protected:
 	void OnRep_IsAiming();
 
 	UFUNCTION()
-	void OnChangingWeapons(bool bInIsChangingWeapons);
+	void WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapons);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

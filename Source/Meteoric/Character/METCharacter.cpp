@@ -35,7 +35,7 @@ AMETCharacter::AMETCharacter()
 	MainCamera->bUsePawnControlRotation = true;
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
-	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::OnChangingWeapons);
+	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 }
@@ -182,7 +182,7 @@ void AMETCharacter::OnRep_IsAiming()
 	SetAiming(bIsAiming);
 }
 
-void AMETCharacter::OnChangingWeapons(bool bInIsChangingWeapons)
+void AMETCharacter::WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapons)
 {
 	if(bInIsChangingWeapons && bIsAiming)
 	{

@@ -32,14 +32,14 @@ void UMETWeaponManager::InitializeComponent()
 void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 {
 	if(!ensure(InSlot >= 0 && InSlot < MaxWeapons)) return;
-	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
+	if(!ensure(OwningCharacter) || !ensure(InWeapon) || InWeapon == CurrentWeapon) return;
 	if(bIsChangingWeapons) return;
-
-	bIsChangingWeapons = true;
-	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 
 	if(OwningCharacter->HasAuthority())
 	{
+		bIsChangingWeapons = true;
+		ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
+		
 		PreviousWeapon = CurrentWeapon;
 		StartEquipWeapon(InWeapon);
 
@@ -56,7 +56,7 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 
 	if(UAnimMontage* EquipMontage = CurrentWeapon->GetCharacterEquipWeaponMontage())
 	{
-		UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
+		const UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
 		if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(EquipMontage) : nullptr)
 		{
 			MontageInstance->OnMontageBlendingOutStarted.BindLambda([this](UAnimMontage*, bool)
@@ -123,14 +123,22 @@ void UMETWeaponManager::CycleWeapon(bool bInNext)
 
 int UMETWeaponManager::ChooseEquipSlot() const
 {
+	if(Weapons[SelectedWeaponSlot] != nullptr)
+	{
+		for(int Slot = 0; Slot < MaxWeapons; ++Slot)
+		{
+			if(Weapons[Slot] == nullptr) return Slot;
+		}
+	}
+
+	return SelectedWeaponSlot;
 }
 
 void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
 {
 	if(AMETWeapon* Weapon = Cast<AMETWeapon>(InInteractable))
 	{
-		int EquipSlot = ChooseEquipSlot();
-		EquipWeapon(Weapon, EquipSlot);
+		EquipWeapon(Weapon, ChooseEquipSlot());
 	}
 }
 
@@ -142,9 +150,12 @@ void UMETWeaponManager::Server_CycleWeapon_Implementation(bool bInNext)
 void UMETWeaponManager::CycleWeaponInput(const FInputActionValue& Value)
 {
 	const bool bNext = Value.Get<float>() > 0.f;;
-	CycleWeapon(bNext);
 
-	if(!GetOwner()->HasAuthority())
+	if(GetOwner()->HasAuthority())
+	{
+		CycleWeapon(bNext);
+	}
+	else
 	{
 		Server_CycleWeapon(bNext);
 	}

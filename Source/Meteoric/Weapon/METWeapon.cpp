@@ -105,6 +105,7 @@ void AMETWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 
+	// Note: If performance is a concern, we can just update recoil on the locally-controlled pawn
 	RecoilComponent->UpdateRecoil(DeltaTime);
 	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
 }

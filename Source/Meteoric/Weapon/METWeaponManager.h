@@ -75,7 +75,7 @@ private:
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
 	FChangingWeaponsEvent ChangingWeaponsEvent;
-
+	
 	bool bIsChangingWeapons;
 
 public:

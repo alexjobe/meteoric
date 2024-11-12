@@ -97,6 +97,7 @@ void FMETSpring::UpdateSpring(float InDeltaTime)
 	const float C = (B * DampedAngularFrequency - A * DampingRatio) * FMath::Cos(DampedAngularFrequency * ElapsedTime)
 	- (A * DampedAngularFrequency + B * DampingRatio) * FMath::Sin(DampedAngularFrequency * ElapsedTime);
 
+	// TODO: If performance is a concern, we may be able to approximate this value to avoid the exponent
 	CurrentVelocity = FMath::Pow(e, -DampingRatio * ElapsedTime) * C;
 
 	LastDisplacement = CurrentDisplacement;

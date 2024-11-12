@@ -94,5 +94,5 @@ private:
 	void UpdateRecoilOffset();
 
 	UFUNCTION()
-	void OnWeaponEquipped(AMETWeapon* InWeapon);
+	void WeaponManager_OnWeaponEquippedEvent(AMETWeapon* InWeapon);
 };
