@@ -7,6 +7,8 @@
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Meteoric/Meteoric.h"
+#include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AMETWeapon::AMETWeapon()
@@ -23,8 +25,13 @@ AMETWeapon::AMETWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Mesh->SetCollisionResponseToChannel(ECC_Interaction, ECR_Block);
+
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
+	InteractableComponent = CreateDefaultSubobject<UMETInteractableComponent>("InteractableComponent");
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)

@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "METWeapon.h"
 #include "GameFramework/Character.h"
+#include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UMETWeaponManager::UMETWeaponManager()
@@ -22,6 +23,10 @@ UMETWeaponManager::UMETWeaponManager()
 void UMETWeaponManager::InitializeComponent()
 {
 	OwningCharacter = Cast<ACharacter>(GetOwner());
+	if(UMETInteractionComponent* InteractionComponent = OwningCharacter->FindComponentByClass<UMETInteractionComponent>())
+	{
+		InteractionComponent->OnInteractEvent().AddUniqueDynamic(this, &UMETWeaponManager::InteractionComponent_OnInteractEvent);
+	}
 }
 
 void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
@@ -113,6 +118,19 @@ void UMETWeaponManager::CycleWeapon(bool bInNext)
 	if(Weapons[NewSlot] != nullptr)
 	{
 		EquipWeapon(Weapons[NewSlot], NewSlot);
+	}
+}
+
+int UMETWeaponManager::ChooseEquipSlot() const
+{
+}
+
+void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
+{
+	if(AMETWeapon* Weapon = Cast<AMETWeapon>(InInteractable))
+	{
+		int EquipSlot = ChooseEquipSlot();
+		EquipWeapon(Weapon, EquipSlot);
 	}
 }
 

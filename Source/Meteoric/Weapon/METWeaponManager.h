@@ -53,8 +53,13 @@ protected:
 
 	void CycleWeapon(bool bInNext);
 
+	int ChooseEquipSlot() const;
+
 	UFUNCTION(Server, Reliable)
 	void Server_CycleWeapon(bool bInNext);
+
+	UFUNCTION()
+	void InteractionComponent_OnInteractEvent(AActor* InInteractable);
 
 private:
 	UPROPERTY(Transient, Replicated)

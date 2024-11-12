@@ -56,6 +56,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETInteractableComponent> InteractableComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterFireMontage;
 

@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -35,6 +36,8 @@ AMETCharacter::AMETCharacter()
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::OnChangingWeapons);
+
+	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 void AMETCharacter::Tick(float DeltaSeconds)
@@ -211,6 +214,7 @@ void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	}
 
 	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);
+	if(InteractionComponent) InteractionComponent->SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

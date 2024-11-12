@@ -22,6 +22,9 @@ class METEORIC_API AMETCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETWeaponManager> WeaponManager;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETInteractionComponent> InteractionComponent;
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> LookAction;
