@@ -26,9 +26,11 @@ public:
 
 	void Interact(const FMinimalViewInfo& InViewInfo) const;
 
+private:
 	UFUNCTION(Server, Reliable)
 	void Server_Interact(const FMinimalViewInfo& InViewInfo);
 
+public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractEvent, AActor*, Interactable);
 	FInteractEvent& OnInteractEvent() { return InteractEvent; }
 

@@ -35,16 +35,34 @@ void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 	if(!ensure(OwningCharacter) || !ensure(InWeapon) || InWeapon == CurrentWeapon) return;
 	if(bIsChangingWeapons) return;
 
-	if(OwningCharacter->HasAuthority())
-	{
-		bIsChangingWeapons = true;
-		ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
-		
-		PreviousWeapon = CurrentWeapon;
-		StartEquipWeapon(InWeapon);
+	bIsChangingWeapons = true;
+	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 
-		Weapons[InSlot] = CurrentWeapon;
-		SelectedWeaponSlot = InSlot;
+	if(Weapons[InSlot] == CurrentWeapon && CurrentWeapon != nullptr)
+	{
+		CurrentWeapon->Drop();
+		Weapons[InSlot] = nullptr;
+		CurrentWeapon = nullptr;
+		PreviousWeapon = nullptr;
+	}
+	
+	PreviousWeapon = CurrentWeapon;
+	StartEquipWeapon(InWeapon);
+
+	Weapons[InSlot] = CurrentWeapon;
+	SelectedWeaponSlot = InSlot;
+
+	if(GetOwner()->HasAuthority())
+	{
+		Multicast_EquipWeapon(InWeapon, InSlot);
+	}
+}
+
+void UMETWeaponManager::Multicast_EquipWeapon_Implementation(AMETWeapon* InWeapon, int InSlot)
+{
+	if(!GetOwner()->HasAuthority())
+	{
+		EquipWeapon(InWeapon, InSlot);
 	}
 }
 
@@ -92,16 +110,17 @@ void UMETWeaponManager::UnequipWeapon(AMETWeapon* const InWeapon)
 	InWeapon->GetMesh()->SetVisibility(false, true);
 }
 
-void UMETWeaponManager::OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon)
+void UMETWeaponManager::CycleWeaponInput(const FInputActionValue& Value)
 {
-	if(InOldWeapon)
-	{
-		PreviousWeapon = InOldWeapon;
-	}
+	const bool bNext = Value.Get<float>() > 0.f;;
 
-	if(CurrentWeapon)
+	if(GetOwner()->HasAuthority())
 	{
-		StartEquipWeapon(CurrentWeapon);
+		CycleWeapon(bNext);
+	}
+	else
+	{
+		Server_CycleWeapon(bNext);
 	}
 }
 
@@ -120,6 +139,11 @@ void UMETWeaponManager::CycleWeapon(bool bInNext)
 	{
 		EquipWeapon(Weapons[NewSlot], NewSlot);
 	}
+}
+
+void UMETWeaponManager::Server_CycleWeapon_Implementation(bool bInNext)
+{
+	CycleWeapon(bInNext);
 }
 
 int UMETWeaponManager::ChooseEquipSlot() const
@@ -141,33 +165,7 @@ void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteracta
 	if(!NewWeapon) return;
 
 	const int EquipSlot = ChooseEquipSlot();
-	if(Weapons[EquipSlot] == CurrentWeapon && CurrentWeapon != nullptr)
-	{
-		CurrentWeapon->Drop();
-		Weapons[EquipSlot] = nullptr;
-		CurrentWeapon = nullptr;
-		PreviousWeapon = nullptr;
-	}
 	EquipWeapon(NewWeapon, EquipSlot);
-}
-
-void UMETWeaponManager::Server_CycleWeapon_Implementation(bool bInNext)
-{
-	CycleWeapon(bInNext);
-}
-
-void UMETWeaponManager::CycleWeaponInput(const FInputActionValue& Value)
-{
-	const bool bNext = Value.Get<float>() > 0.f;;
-
-	if(GetOwner()->HasAuthority())
-	{
-		CycleWeapon(bNext);
-	}
-	else
-	{
-		Server_CycleWeapon(bNext);
-	}
 }
 
 void UMETWeaponManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

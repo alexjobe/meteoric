@@ -7,7 +7,6 @@
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -25,9 +24,6 @@ AMETWeapon::AMETWeapon()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
-
-	Mesh->SetIsReplicated(true);
-	SetReplicatingMovement(true);
 
 	SetWeaponDropped(true);
 
@@ -67,7 +63,7 @@ void AMETWeapon::Drop()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetWeaponDropped(true);
-	//OnUnequipped();
+	OnUnequipped();
 
 	if(HasAuthority())
 	{
@@ -89,6 +85,8 @@ void AMETWeapon::SetWeaponDropped(bool bInDropped)
 	
 	if(bInDropped)
 	{
+		Mesh->SetIsReplicated(true);
+		SetReplicatingMovement(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Mesh->SetCollisionObjectType(ECC_WorldDynamic);
 		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -100,6 +98,8 @@ void AMETWeapon::SetWeaponDropped(bool bInDropped)
 	}
 	else
 	{
+		Mesh->SetIsReplicated(false);
+		SetReplicatingMovement(false);
 		Mesh->SetEnableGravity(false);
 		Mesh->SetSimulatePhysics(false);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);

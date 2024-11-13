@@ -41,8 +41,11 @@ public:
 	
 	void Drop();
 
+private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Drop();
+	
+public:
 
 	void SetWeaponDropped(bool bInDropped);
 

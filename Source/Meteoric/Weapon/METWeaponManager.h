@@ -24,6 +24,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
 
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_EquipWeapon(AMETWeapon* InWeapon, int InSlot);
+
+public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponEquippedEvent, AMETWeapon*, NewWeapon);
 	FWeaponEquippedEvent& OnWeaponEquippedEvent() { return WeaponEquippedEvent; }
 	
@@ -35,7 +40,7 @@ public:
 	void OnEquipWeaponNotify();
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon", ReplicatedUsing = OnRep_CurrentWeapon, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon", Replicated, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<AMETWeapon> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
@@ -45,18 +50,14 @@ protected:
 	void FinishEquipWeapon();
 	static void UnequipWeapon(AMETWeapon* const InWeapon);
 
-	UFUNCTION()
-	void OnRep_CurrentWeapon(AMETWeapon* const InOldWeapon);
-
 	/** Called for cycle weapon input */
 	void CycleWeaponInput(const struct FInputActionValue& Value);
-
 	void CycleWeapon(bool bInNext);
-
-	int ChooseEquipSlot() const;
 
 	UFUNCTION(Server, Reliable)
 	void Server_CycleWeapon(bool bInNext);
+
+	int ChooseEquipSlot() const;
 
 	UFUNCTION()
 	void InteractionComponent_OnInteractEvent(AActor* InInteractable);
