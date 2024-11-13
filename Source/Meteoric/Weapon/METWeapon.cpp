@@ -17,15 +17,16 @@ AMETWeapon::AMETWeapon()
 	, FiringMode(SingleShot)
 	, FiringRate(0.2f)
 	, LastTimeFired(0.f)
+	, ElapsedTimeSinceDropped(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
-	SetWeaponDropped(true);
+	SetWeaponDroppedState(true);
 
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
@@ -61,9 +62,15 @@ void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
 
 void AMETWeapon::Drop()
 {
+	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	SetWeaponDropped(true);
-	OnUnequipped();
+	SetWeaponDroppedState(true);
+	ElapsedTimeSinceDropped = 0.f;
+
+	OwningCharacter = nullptr;
+	RecoilComponent->Reset();
+	WeaponSwayComponent->Reset();
 
 	if(HasAuthority())
 	{
@@ -79,29 +86,22 @@ void AMETWeapon::Multicast_Drop_Implementation()
 	}
 }
 
-void AMETWeapon::SetWeaponDropped(bool bInDropped)
+void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
 {
 	if(!ensure(Mesh)) return;
 	
 	if(bInDropped)
 	{
-		Mesh->SetIsReplicated(true);
-		SetReplicatingMovement(true);
+		SetWeaponPhysicsEnabled(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Mesh->SetCollisionObjectType(ECC_WorldDynamic);
 		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-		Mesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 		Mesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 		Mesh->SetCollisionResponseToChannel(ECC_Interaction, ECR_Block);
-		Mesh->SetEnableGravity(true);
-		Mesh->SetSimulatePhysics(true);
 	}
 	else
 	{
-		Mesh->SetIsReplicated(false);
-		SetReplicatingMovement(false);
-		Mesh->SetEnableGravity(false);
-		Mesh->SetSimulatePhysics(false);
+		SetWeaponPhysicsEnabled(false);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	}
@@ -149,11 +149,23 @@ bool AMETWeapon::CanFire() const
 void AMETWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	if(!ensure(Mesh) || !ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 
 	// Note: If performance is a concern, we can just update recoil on the locally-controlled pawn
 	RecoilComponent->UpdateRecoil(DeltaTime);
 	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
+
+	if(Mesh->IsSimulatingPhysics())
+	{
+		// We only need physics enabled when we drop the weapon. Once it hits the ground and stops moving, we can turn
+		// off physics and stop ticking
+		ElapsedTimeSinceDropped += DeltaTime;
+		if(Mesh->GetComponentVelocity().IsNearlyZero() && ElapsedTimeSinceDropped > 5.f)
+		{
+			SetWeaponPhysicsEnabled(false);
+			SetActorTickEnabled(false);
+		}
+	}
 }
 
 void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOldOwner)
@@ -168,6 +180,15 @@ void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOldOwner)
 	{
 		OnUnequipped();
 	}
+}
+
+void AMETWeapon::SetWeaponPhysicsEnabled(bool bInEnabled)
+{
+	if(!ensure(Mesh)) return;
+	SetReplicatingMovement(bInEnabled);
+	Mesh->SetIsReplicated(bInEnabled);
+	Mesh->SetEnableGravity(bInEnabled);
+	Mesh->SetSimulatePhysics(bInEnabled);
 }
 
 void AMETWeapon::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

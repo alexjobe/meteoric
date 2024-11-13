@@ -46,8 +46,7 @@ private:
 	void Multicast_Drop();
 	
 public:
-
-	void SetWeaponDropped(bool bInDropped);
+	void SetWeaponDroppedState(bool bInDropped);
 
 	void Fire(bool bInHeld);
 	bool CanFire() const;
@@ -94,9 +93,12 @@ private:
 	TObjectPtr<ACharacter> OwningCharacter;
 
 	float LastTimeFired;
+	float ElapsedTimeSinceDropped;
 
 	UFUNCTION()
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);
+
+	void SetWeaponPhysicsEnabled(bool bInEnabled);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

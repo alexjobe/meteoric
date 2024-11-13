@@ -90,7 +90,7 @@ void UMETWeaponManager::OnEquipWeaponNotify()
 	if(!ensure(OwningCharacter) || !ensure(CurrentWeapon)) return;
 	UnequipWeapon(PreviousWeapon);
 	PreviousWeapon = nullptr;
-	CurrentWeapon->SetWeaponDropped(false);
+	CurrentWeapon->SetWeaponDroppedState(false);
 	CurrentWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
 	CurrentWeapon->GetMesh()->SetVisibility(true, true);
 	CurrentWeapon->OnEquipped(OwningCharacter);
