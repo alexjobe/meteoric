@@ -72,6 +72,7 @@ void UMETWeaponManager::OnEquipWeaponNotify()
 	if(!ensure(OwningCharacter) || !ensure(CurrentWeapon)) return;
 	UnequipWeapon(PreviousWeapon);
 	PreviousWeapon = nullptr;
+	CurrentWeapon->SetWeaponDropped(false);
 	CurrentWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
 	CurrentWeapon->GetMesh()->SetVisibility(true, true);
 	CurrentWeapon->OnEquipped(OwningCharacter);
@@ -136,10 +137,18 @@ int UMETWeaponManager::ChooseEquipSlot() const
 
 void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
 {
-	if(AMETWeapon* Weapon = Cast<AMETWeapon>(InInteractable))
+	AMETWeapon* NewWeapon = Cast<AMETWeapon>(InInteractable);
+	if(!NewWeapon) return;
+
+	const int EquipSlot = ChooseEquipSlot();
+	if(Weapons[EquipSlot] == CurrentWeapon && CurrentWeapon != nullptr)
 	{
-		EquipWeapon(Weapon, ChooseEquipSlot());
+		CurrentWeapon->Drop();
+		Weapons[EquipSlot] = nullptr;
+		CurrentWeapon = nullptr;
+		PreviousWeapon = nullptr;
 	}
+	EquipWeapon(NewWeapon, EquipSlot);
 }
 
 void UMETWeaponManager::Server_CycleWeapon_Implementation(bool bInNext)

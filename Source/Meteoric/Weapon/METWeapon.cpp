@@ -7,6 +7,7 @@
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -25,9 +26,10 @@ AMETWeapon::AMETWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-	Mesh->SetCollisionResponseToChannel(ECC_Interaction, ECR_Block);
+	Mesh->SetIsReplicated(true);
+	SetReplicatingMovement(true);
+
+	SetWeaponDropped(true);
 
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
@@ -58,6 +60,50 @@ void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
 	if(ensure(WeaponSwayComponent))
 	{
 		WeaponSwayComponent->OnAimDownSights(bInIsAiming);
+	}
+}
+
+void AMETWeapon::Drop()
+{
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	SetWeaponDropped(true);
+	//OnUnequipped();
+
+	if(HasAuthority())
+	{
+		Multicast_Drop();
+	}
+}
+
+void AMETWeapon::Multicast_Drop_Implementation()
+{
+	if(!HasAuthority())
+	{
+		Drop();
+	}
+}
+
+void AMETWeapon::SetWeaponDropped(bool bInDropped)
+{
+	if(!ensure(Mesh)) return;
+	
+	if(bInDropped)
+	{
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Mesh->SetCollisionObjectType(ECC_WorldDynamic);
+		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+		Mesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		Mesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+		Mesh->SetCollisionResponseToChannel(ECC_Interaction, ECR_Block);
+		Mesh->SetEnableGravity(true);
+		Mesh->SetSimulatePhysics(true);
+	}
+	else
+	{
+		Mesh->SetEnableGravity(false);
+		Mesh->SetSimulatePhysics(false);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	}
 }
 

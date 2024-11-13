@@ -22,29 +22,24 @@ void UMETInteractionComponent::InitializeComponent()
 	CameraComponent = OwningCharacter->FindComponentByClass<UCameraComponent>();
 }
 
-void UMETInteractionComponent::Interact() const
+void UMETInteractionComponent::Interact(const FMinimalViewInfo& InViewInfo) const
 {
-	if(UMETInteractableComponent* InteractableComponent = FindInteractableComponent())
+	if(UMETInteractableComponent* InteractableComponent = FindInteractableComponent(InViewInfo))
 	{
 		InteractableComponent->Interact(OwningCharacter);
 		InteractEvent.Broadcast(InteractableComponent->GetOwner());
 	}
 }
 
-void UMETInteractionComponent::Server_Interact_Implementation()
+void UMETInteractionComponent::Server_Interact_Implementation(const FMinimalViewInfo& InViewInfo)
 {
-	Interact();
+	Interact(InViewInfo);
 }
 
-UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent() const
+UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent(const FMinimalViewInfo& InViewInfo) const
 {
-	if(!ensure(CameraComponent)) return nullptr;
-
-	FMinimalViewInfo ViewInfo;
-	CameraComponent->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);
-
-	const FVector TraceStart = ViewInfo.Location;
-	const FVector TraceEnd = TraceStart + ViewInfo.Rotation.Vector() * LineTraceDistance;
+	const FVector TraceStart = InViewInfo.Location;
+	const FVector TraceEnd = TraceStart + InViewInfo.Rotation.Vector() * LineTraceDistance;
 
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 5.f);
 
@@ -63,11 +58,18 @@ UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent()
 
 void UMETInteractionComponent::InteractInput()
 {
-	Interact();
-
-	if(!GetOwner()->HasAuthority())
+	if(!ensure(CameraComponent)) return;
+	
+	FMinimalViewInfo ViewInfo;
+	CameraComponent->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);
+	
+	if(GetOwner()->HasAuthority())
 	{
-		Server_Interact();
+		Interact(ViewInfo);
+	}
+	else
+	{
+		Server_Interact(ViewInfo);
 	}
 }
 

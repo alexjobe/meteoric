@@ -24,10 +24,10 @@ public:
 
 	virtual void InitializeComponent() override;
 
-	void Interact() const;
+	void Interact(const FMinimalViewInfo& InViewInfo) const;
 
 	UFUNCTION(Server, Reliable)
-	void Server_Interact();
+	void Server_Interact(const FMinimalViewInfo& InViewInfo);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractEvent, AActor*, Interactable);
 	FInteractEvent& OnInteractEvent() { return InteractEvent; }
@@ -41,7 +41,7 @@ private:
 
 	FInteractEvent InteractEvent;
 
-	class UMETInteractableComponent* FindInteractableComponent() const;
+	class UMETInteractableComponent* FindInteractableComponent(const FMinimalViewInfo& InViewInfo) const;
 
 	/** Called for interact input */
 	void InteractInput();

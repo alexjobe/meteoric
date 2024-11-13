@@ -13,17 +13,19 @@
   <component name="ChangeListManager">
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/4/5I/9NOBH59Q3WG4YCPM8P9T4H.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/4/5I/9NOBH59Q3WG4YCPM8P9T4H.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/8/18/3XD6F2CV47RZ6QYFOWTD36.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/8/18/3XD6F2CV47RZ6QYFOWTD36.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/9/DM/G4YS6ICWZQGI71I2MUCA5O.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/A/2Z/PYWWXRDDVJUA98H59BNIYO.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/A/2Z/PYWWXRDDVJUA98H59BNIYO.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/D/KP/7V4OGALWU2GG9RJ3VMSXUZ.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/E/IL/HYWQ29FSL494Z4PFL0Y8YD.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/_Main/Maps/TestMap/E/IL/HYWQ29FSL494Z4PFL0Y8YD.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Interaction/METInteractionComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Interaction/METInteractionComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Interaction/METInteractionComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Interaction/METInteractionComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Math/METSpring.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Math/METSpring.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponManager.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponManager.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponManager.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeaponManager.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +57,24 @@
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="cidr-memory-view://5" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://6" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AudioFormatOpus/Private/AudioFormatOpus.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AutomationWindow/Private/SAutomationTestItem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -63,6 +82,11 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/Datasmith/DatasmithExporterUI/Private/DirectLinkUI.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/Datasmith/DatasmithExporterUI/Private/Widgets/SDirectLinkStreamManager.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Classes/FunctionalTestingManager.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Classes/TraceQueryTestResults.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Private/FunctionalTestUtilityLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/FunctionalTesting/Private/TraceQueryTestResults.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/Localization/Private/PortableObjectFormatDOM.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/ProjectLauncher/Private/Widgets/Deploy/SProjectLauncherDeployTargetListRow.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/ShaderCompilerCommon/Private/ShaderConductorContext.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/ShaderCompilerCommon/Public/ShaderConductorContext.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/ToolMenus/Private/ToolMenuEntry.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -70,17 +94,22 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Editor/AnimationBlueprintEditor/Private/AnimationStateNodes/SGraphNodeAnimTransition.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Gauntlet/Gauntlet.Automation.csproj" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Gauntlet/SelfTest/TestData/LogParser/Win64FatalError.txt" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Gauntlet/Unreal/Base/Gauntlet.UnrealAppConfig.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Gauntlet/Unreal/Base/Gauntlet.UnrealTestConfiguration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Scripts/FixPerforceCase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Scripts/SyncPerforceServers.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/AutomationTool/Win/Win.Automation.csproj" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Core/Boxed.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Core/DirectoryReference.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.OIDC/EpicGames.OIDC.csproj" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Perforce/EpicGames.Perforce.csproj" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.Tracing/EpicGames.Tracing.csproj" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.UHT/Specifiers/UhtDefaultSpecifiers.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.UHT/Tables/UhtSpecifierTable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Programs/Shared/EpicGames.UHT/Utils/UhtUtilities.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/AnimGraphRuntime/Private/KismetAnimationLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Private/Logging/StructuredLog.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Private/ProfilingDebugging/CpuProfilerTrace.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Containers/Queue.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/Delegates/DelegateSignatureImpl.inl" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Core/Public/GenericPlatform/GenericPlatformMath.h" root0="FORCE_HIGHLIGHTING" />
@@ -109,21 +138,27 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/ActorInstanceHandle.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/EngineTypes.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/HitResult.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/ReplicatedState.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Engine/World.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Character.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/MovementComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/Pawn.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/GameFramework/ProjectileMovementComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Actor.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Animation/AnimSequence.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Camera/CameraComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Character.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/ActorComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/MovementComponent.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/ProjectileMovementComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/SkeletalMeshComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Components/SkinnedMeshComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/KismetMathLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/KismetSystemLibrary.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/Pawn.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Private/PlayerController.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Public/BonePose.h" root0="FORCE_HIGHLIGHTING" />
@@ -131,6 +166,7 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Public/DrawDebugHelpers.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Public/Net/UnrealNetwork.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/MovieSceneTracks/Private/Sections/MovieSceneSkeletalAnimationSection.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Slate/Private/Framework/Docking/TabManager.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/atomic" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Meteoric/UHT/METWeapon.gen.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Meteoric/UHT/METWeaponManager.gen.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -676,7 +712,10 @@
       <workItem from="1731026867573" duration="2720000" />
       <workItem from="1731260031042" duration="3815000" />
       <workItem from="1731367260528" duration="6310000" />
-      <workItem from="1731431004669" duration="2916000" />
+      <workItem from="1731431004669" duration="6777000" />
+      <workItem from="1731438749447" duration="4280000" />
+      <workItem from="1731452633744" duration="9214000" />
+      <workItem from="1731518672832" duration="3411000" />
     </task>
     <servers />
   </component>

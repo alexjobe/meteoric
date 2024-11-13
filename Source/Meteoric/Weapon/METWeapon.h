@@ -7,6 +7,7 @@
 #include "METWeaponTypes.h"
 #include "METWeapon.generated.h"
 
+
 UCLASS()
 class METEORIC_API AMETWeapon : public AActor
 {
@@ -37,6 +38,13 @@ public:
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void OnUnequipped();
 	void OnAimDownSights(bool bInIsAiming) const;
+	
+	void Drop();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Drop();
+
+	void SetWeaponDropped(bool bInDropped);
 
 	void Fire(bool bInHeld);
 	bool CanFire() const;
