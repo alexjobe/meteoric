@@ -81,6 +81,12 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 			{
 				FinishEquipWeapon();
 			});
+
+			MontageInstance->OnMontageEnded.BindLambda([this](UAnimMontage*, bool)
+			{
+				//TODO: Sometimes the blend out delegate doesn't fire
+				FinishEquipWeapon();
+			});
 		}
 	}
 }
@@ -99,6 +105,7 @@ void UMETWeaponManager::OnEquipWeaponNotify()
 
 void UMETWeaponManager::FinishEquipWeapon()
 {
+	if(!bIsChangingWeapons) return;
 	bIsChangingWeapons = false;
 	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 }
@@ -161,6 +168,8 @@ int UMETWeaponManager::ChooseEquipSlot() const
 
 void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
 {
+	if(bIsChangingWeapons) return;
+	
 	AMETWeapon* NewWeapon = Cast<AMETWeapon>(InInteractable);
 	if(!NewWeapon) return;
 
