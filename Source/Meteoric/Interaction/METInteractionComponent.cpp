@@ -7,10 +7,11 @@
 #include "METInteractableComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Meteoric/Meteoric.h"
 
 UMETInteractionComponent::UMETInteractionComponent()
-	: LineTraceDistance(300.f)
+	: LineTraceDistance(200.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
@@ -41,16 +42,15 @@ UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent(c
 	const FVector TraceStart = InViewInfo.Location;
 	const FVector TraceEnd = TraceStart + InViewInfo.Rotation.Vector() * LineTraceDistance;
 
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 5.f);
-
 	FHitResult HitResult;
 
-	if(GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Interaction))
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(OwningCharacter);
+	UKismetSystemLibrary::SphereTraceSingle(this, TraceStart, TraceEnd, 20.f, UEngineTypes::ConvertToTraceType(ECC_Interaction), false, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
+	
+	if(const AActor* HitActor = HitResult.GetActor())
 	{
-		if(AActor* HitActor = HitResult.GetActor())
-		{
-			return HitActor->FindComponentByClass<UMETInteractableComponent>();
-		}
+		return HitActor->FindComponentByClass<UMETInteractableComponent>();
 	}
 
 	return nullptr;
@@ -59,6 +59,8 @@ UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent(c
 void UMETInteractionComponent::InteractInput()
 {
 	if(!ensure(CameraComponent)) return;
+
+	// TODO: Implement cooldown
 	
 	FMinimalViewInfo ViewInfo;
 	CameraComponent->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);
