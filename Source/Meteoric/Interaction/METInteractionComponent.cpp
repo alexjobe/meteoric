@@ -12,6 +12,8 @@
 
 UMETInteractionComponent::UMETInteractionComponent()
 	: LineTraceDistance(200.f)
+	, InteractionCooldown(1.f)
+	, LastTimeInteracted(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
@@ -60,7 +62,9 @@ void UMETInteractionComponent::InteractInput()
 {
 	if(!ensure(CameraComponent)) return;
 
-	// TODO: Implement cooldown
+	const float GameTimeSeconds = GetWorld()->GetTimeSeconds();
+	if(GameTimeSeconds - LastTimeInteracted < InteractionCooldown) return;
+	LastTimeInteracted = GameTimeSeconds;
 	
 	FMinimalViewInfo ViewInfo;
 	CameraComponent->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);

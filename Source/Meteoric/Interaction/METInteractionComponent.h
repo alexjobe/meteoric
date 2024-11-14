@@ -19,6 +19,10 @@ class METEORIC_API UMETInteractionComponent : public UActorComponent
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float LineTraceDistance;
+
+	/* How long the player has to wait between triggering interactions */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	float InteractionCooldown;
 	
 	UMETInteractionComponent();
 
@@ -40,6 +44,8 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UCameraComponent> CameraComponent;
+
+	float LastTimeInteracted;
 
 	FInteractEvent InteractEvent;
 
