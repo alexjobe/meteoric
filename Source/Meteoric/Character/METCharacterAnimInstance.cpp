@@ -10,7 +10,6 @@
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/METWeaponSwayComponent.h"
-#include "Net/UnrealNetwork.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	: GroundSpeed(0.f)
@@ -19,6 +18,7 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
+	, bIsTurningInPlace(false)
 {
 }
 
@@ -42,7 +42,9 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateMovementData();
 	
-	SetActorControlRotationDelta();
+	ActorControlRotationDelta = Character->GetActorControlRotationDelta();
+	bIsTurningInPlace = Character->IsTurningInPlace();
+	
 	SetSightRelativeToSpine();
 	SetHandRelativeToSpine();
 	UpdateRecoilOffset();
@@ -89,17 +91,10 @@ void UMETCharacterAnimInstance::UpdateWeaponSway()
 	}
 }
 
-void UMETCharacterAnimInstance::SetActorControlRotationDelta()
-{
-	if(ensure(Character))
-	{
-		ActorControlRotationDelta = Character->GetActorControlRotationDelta();
-	}
-}
-
 void UMETCharacterAnimInstance::SetHandRelativeToSight()
 {
 	if(!ensure(Character)) return;
+	
 	/* If we already precomputed the value, return */
 	if(!RightHandToSight.Equals(FTransform::Identity)) return;
 	

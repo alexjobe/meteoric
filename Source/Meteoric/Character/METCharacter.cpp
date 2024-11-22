@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
@@ -17,6 +18,7 @@ DEFINE_LOG_CATEGORY(LogMETCharacter);
 
 AMETCharacter::AMETCharacter()
 	: bIsAiming(false)
+	, bIsTurningInPlace(false)
 {
 	SetReplicates(true);
 	
@@ -26,13 +28,15 @@ AMETCharacter::AMETCharacter()
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -89.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
+	GetMesh()->AddTickPrerequisiteActor(this);
+	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh(), FName("CameraSocket"));
 	CameraBoom->TargetArmLength = 0.f;
 
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
 	MainCamera->SetupAttachment(CameraBoom);
-	MainCamera->bUsePawnControlRotation = true;
+	MainCamera->bUsePawnControlRotation = false;
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
@@ -43,24 +47,67 @@ AMETCharacter::AMETCharacter()
 void AMETCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-}
-
-FRotator AMETCharacter::GetActorControlRotationDelta()
-{
+	
 	const ENetRole LocalRole = GetLocalRole();
 	if (LocalRole == ROLE_Authority || LocalRole == ROLE_AutonomousProxy)
 	{
-		FRotator Delta = GetActorRotation() - GetControlRotation();
-		Delta.Normalize();
-
-		ActorControlRotationDelta.Pitch = 0.f;
-		ActorControlRotationDelta.Yaw = Delta.Yaw;
-
-		// Divide by five spine bones
-		ActorControlRotationDelta.Roll = Delta.Pitch / 5.f;
+		RepControlRotation = GetControlRotation();
 	}
 	
-	return ActorControlRotationDelta;
+	if (FMath::Abs(ActorControlRotationDelta.Yaw) > 90.f)
+	{
+		bIsTurningInPlace = true;
+	}
+
+	const FVector Velocity = GetCharacterMovement()->Velocity;
+	const float GroundSpeed = Velocity.Size2D();
+	const bool bIsMoving = GroundSpeed > 3.f && !GetCharacterMovement()->GetCurrentAcceleration().Equals(FVector::ZeroVector, 0.f);
+
+	if (bIsTurningInPlace || (bIsMoving && !IsActorControlRotationAligned()))
+	{
+		FRotator TargetActorRotation = GetActorRotation();
+		TargetActorRotation.Yaw = RepControlRotation.Yaw;
+		
+		const float InterpSpeed = bIsMoving ? 20.f : 10.f;
+		FRotator NewActorRotation = FMath::InterpSinInOut(GetActorRotation(), TargetActorRotation, DeltaSeconds * InterpSpeed);
+		NewActorRotation.Normalize();
+		
+		SetActorRotation(NewActorRotation);
+	}
+
+	UpdateActorControlRotationDelta();
+
+	if (IsActorControlRotationAligned())
+	{
+		bIsTurningInPlace = false;
+	}
+
+	if (bIsMoving && IsActorControlRotationAligned())
+	{
+		bUseControllerRotationYaw = true;
+	}
+
+	if (!bIsMoving)
+	{
+		bUseControllerRotationYaw = false;
+	}
+}
+
+void AMETCharacter::UpdateActorControlRotationDelta()
+{
+	FRotator Delta = GetActorRotation() - RepControlRotation;
+	Delta.Normalize();
+
+	ActorControlRotationDelta.Roll = 0.f;
+	ActorControlRotationDelta.Yaw = -Delta.Yaw;
+
+	// Divide by four spine bones (first spine bone used for yaw)
+	ActorControlRotationDelta.Pitch = Delta.Pitch / 4.f;
+}
+
+bool AMETCharacter::IsActorControlRotationAligned() const
+{
+	return FMath::Abs(ActorControlRotationDelta.Yaw) < 5.f;
 }
 
 void AMETCharacter::Move(const FInputActionValue& Value)
@@ -221,6 +268,7 @@ void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AMETCharacter, ActorControlRotationDelta, COND_SkipOwner)
+	DOREPLIFETIME_CONDITION(AMETCharacter, RepControlRotation, COND_SkipOwner)
 	DOREPLIFETIME_CONDITION(AMETCharacter, bIsAiming, COND_SkipOwner)
+	DOREPLIFETIME_CONDITION(AMETCharacter, bIsTurningInPlace, COND_SkipOwner)
 }

@@ -84,10 +84,12 @@ protected:
 	void AnimNotify_EquipWeapon() const;
 
 private:
+	UPROPERTY(BlueprintReadOnly, Category = "Turning", meta=(AllowPrivateAccess = "true"))
+	bool bIsTurningInPlace;
+	
 	void UpdateMovementData();
 	void UpdateWeaponSway();
 	
-	void SetActorControlRotationDelta();
 	void SetHandRelativeToSight();
 	void SetSightRelativeToSpine();
 	void SetHandRelativeToSpine();

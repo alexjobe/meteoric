@@ -54,11 +54,12 @@ public:
 	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
 	
 	bool IsAiming() const { return bIsAiming; }
+	bool IsTurningInPlace() const { return bIsTurningInPlace; }
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
-	FRotator GetActorControlRotationDelta();
+	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
 
 protected:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
@@ -102,9 +103,17 @@ protected:
 
 private:
 	UPROPERTY(Replicated)
+	FRotator RepControlRotation;
+	
 	FRotator ActorControlRotationDelta;
 	
 	FAimDownSightsEvent AimDownSightsEvent;
+
+	UPROPERTY(Replicated)
+	bool bIsTurningInPlace;
+
+	void UpdateActorControlRotationDelta();
+	bool IsActorControlRotationAligned() const;
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
