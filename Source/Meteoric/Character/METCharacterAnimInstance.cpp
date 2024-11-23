@@ -4,6 +4,7 @@
 #include "METCharacterAnimInstance.h"
 
 #include "METCharacter.h"
+#include "METPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/Weapon/METRecoilComponent.h"
@@ -118,7 +119,8 @@ void UMETCharacterAnimInstance::SetSightRelativeToSpine()
 	if(!ensure(Character)) return;
 
 	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
-	const UCameraComponent* MainCamera = Character->GetMainCamera();
+	const AMETPlayerCharacter* PlayerCharacter = Cast<AMETPlayerCharacter>(Character);
+	const UCameraComponent* MainCamera = PlayerCharacter ? PlayerCharacter->GetMainCamera() : nullptr;
 
 	if (CharacterMesh && MainCamera)
 	{

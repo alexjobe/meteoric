@@ -3,13 +3,9 @@
 
 #include "METCharacter.h"
 
-#include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
-#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -29,19 +25,9 @@ AMETCharacter::AMETCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	GetMesh()->AddTickPrerequisiteActor(this);
-	
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetMesh(), FName("CameraSocket"));
-	CameraBoom->TargetArmLength = 0.f;
-
-	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
-	MainCamera->SetupAttachment(CameraBoom);
-	MainCamera->bUsePawnControlRotation = false;
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
-
-	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 void AMETCharacter::Tick(float DeltaSeconds)
@@ -235,33 +221,6 @@ void AMETCharacter::WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapo
 	{
 		AimingCompleted();
 	}
-}
-
-void AMETCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMETCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMETCharacter::Look);
-
-		// Aiming
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMETCharacter::AimingStarted);
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMETCharacter::AimingCompleted);
-
-		// Firing
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETCharacter::FireActionStarted);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Ongoing, this, &AMETCharacter::FireActionHeld);
-	}
-
-	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);
-	if(InteractionComponent) InteractionComponent->SetupPlayerInputComponent(PlayerInputComponent);
 }
 
 void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

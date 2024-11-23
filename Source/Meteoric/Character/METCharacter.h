@@ -12,46 +12,13 @@ UCLASS(config=Game)
 class METEORIC_API AMETCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UCameraComponent> MainCamera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class USpringArmComponent> CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UMETWeaponManager> WeaponManager;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UMETInteractionComponent> InteractionComponent;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> LookAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-
-	/** Aim Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> AimAction;
-
-	/** Fire Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> FireAction;
 
 public:
 	AMETCharacter();
 
 	virtual void Tick(float DeltaSeconds) override;
 	
-	UCameraComponent* GetMainCamera() const { return MainCamera; }
-	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	class UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
 	
 	bool IsAiming() const { return bIsAiming; }
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
@@ -62,6 +29,12 @@ public:
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
 
 protected:
+	UPROPERTY(Transient)
+	TObjectPtr<class UMETAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMETWeaponManager> WeaponManager;
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
 
@@ -98,8 +71,6 @@ protected:
 
 	UFUNCTION()
 	void WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapons);
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
 	UPROPERTY(Replicated)

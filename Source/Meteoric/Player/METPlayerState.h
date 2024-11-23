@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "METPlayerState.generated.h"
 
@@ -10,8 +11,19 @@
  * 
  */
 UCLASS()
-class METEORIC_API AMETPlayerState : public APlayerState
+class METEORIC_API AMETPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
+	
+public:
+	AMETPlayerState();
+
+	//~ Begin IAbilitySystemInterface interface
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//~ End IAbilitySystemInterface interface
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
+	TObjectPtr<class UMETAbilitySystemComponent> AbilitySystemComponent;
 	
 };
