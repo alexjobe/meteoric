@@ -73,9 +73,5 @@ Plugins/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Content Packs
-Content/AnimStarterPack*
-Content/Characters*
-Content/MilitaryWeapDark*
-Content/StarterContent*
-Content/ThirdPerson*
+# Assets
+Content/Assets/*
