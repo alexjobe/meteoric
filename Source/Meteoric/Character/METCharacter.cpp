@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -28,6 +29,11 @@ AMETCharacter::AMETCharacter()
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
+}
+
+UAbilitySystemComponent* AMETCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AMETCharacter::Tick(float DeltaSeconds)
@@ -94,6 +100,21 @@ void AMETCharacter::UpdateActorControlRotationDelta()
 bool AMETCharacter::IsActorControlRotationAligned() const
 {
 	return FMath::Abs(ActorControlRotationDelta.Yaw) < 5.f;
+}
+
+void AMETCharacter::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const
+{
+	if (!ensure(AbilitySystemComponent) || !ensure(InEffectClass)) return;
+
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InEffectClass, InLevel, ContextHandle);
+	AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AMETCharacter::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(DefaultAttributes, 1);
 }
 
 void AMETCharacter::Move(const FInputActionValue& Value)

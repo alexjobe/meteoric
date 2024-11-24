@@ -22,8 +22,12 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface interface
 
+	class UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
-	TObjectPtr<class UMETAbilitySystemComponent> AbilitySystemComponent;
-	
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
+	TObjectPtr<UAttributeSet> AttributeSet;
 };

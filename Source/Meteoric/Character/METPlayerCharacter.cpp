@@ -27,33 +27,27 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 void AMETPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	if (AMETPlayerState* PS = GetPlayerState<AMETPlayerState>())
-	{
-		if (UMETAbilitySystemComponent* ASC = Cast<UMETAbilitySystemComponent>(PS->GetAbilitySystemComponent()))
-		{
-			// Set the ASC for clients. Server does this in PossessedBy.
-			AbilitySystemComponent = ASC;
-			
-			// Init ASC Actor Info for clients. Server will init its ASC when it possesses a new Actor.
-			AbilitySystemComponent->InitAbilityActorInfo(PS, this);
-		}
-	}
+	InitAbilityActorInfo();
 }
 
 void AMETPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	InitAbilityActorInfo();
+}
 
-	if (AMETPlayerState* PS = GetPlayerState<AMETPlayerState>())
+void AMETPlayerCharacter::InitAbilityActorInfo()
+{
+	AMETPlayerState* PS = GetPlayerState<AMETPlayerState>();
+	check(PS)
+	
+	if (UMETAbilitySystemComponent* ASC = Cast<UMETAbilitySystemComponent>(PS->GetAbilitySystemComponent()))
 	{
-		if (UMETAbilitySystemComponent* ASC = Cast<UMETAbilitySystemComponent>(PS->GetAbilitySystemComponent()))
-		{
-			// Set the ASC on the Server. Clients do this in OnRep_PlayerState()
-			AbilitySystemComponent = ASC;
-			AbilitySystemComponent->InitAbilityActorInfo(PS, this);
-		}
+		AbilitySystemComponent = ASC;
+		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 	}
+
+	InitializeDefaultAttributes();
 }
 
 void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

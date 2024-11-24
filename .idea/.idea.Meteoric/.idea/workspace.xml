@@ -15,11 +15,10 @@
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Meteoric.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Meteoric.uproject" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Meteoric.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Meteoric.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerState.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerState.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerState.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerState.h" afterDir="false" />
     </list>
@@ -161,6 +160,8 @@
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAttributeSet.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAttributeSet.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GameMode/METGameModeBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GameMode/METGameModeBase.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Interaction/METInteractableComponent.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -765,7 +766,10 @@
       <workItem from="1732320696494" duration="6055000" />
       <workItem from="1732382500431" duration="2800000" />
       <workItem from="1732385426174" duration="3626000" />
-      <workItem from="1732389585778" duration="1614000" />
+      <workItem from="1732389585778" duration="2080000" />
+      <workItem from="1732401671218" duration="905000" />
+      <workItem from="1732471025725" duration="3226000" />
+      <workItem from="1732474736062" duration="800000" />
     </task>
     <servers />
   </component>

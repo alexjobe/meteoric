@@ -3,18 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
 
 UCLASS(config=Game)
-class METEORIC_API AMETCharacter : public ACharacter
+class METEORIC_API AMETCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	AMETCharacter();
+
+	//~ Begin IAbilitySystemInterface interface
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//~ End IAbilitySystemInterface interface
 
 	virtual void Tick(float DeltaSeconds) override;
 	
@@ -37,6 +42,12 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+
+	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const;
+	void InitializeDefaultAttributes() const;
 
 	/** Called for movement input */
 	void Move(const struct FInputActionValue& Value);

@@ -45,14 +45,15 @@ class METEORIC_API AMETPlayerCharacter : public AMETCharacter
 
 public:
 	AMETPlayerCharacter();
-	
+
+	//~ Begin ACharacter interface
 	virtual void OnRep_PlayerState() override;
-	
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	//~ End ACharacter interface
 
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+private:
+	void InitAbilityActorInfo();
 };
