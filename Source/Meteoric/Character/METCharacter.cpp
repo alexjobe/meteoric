@@ -39,7 +39,10 @@ UAbilitySystemComponent* AMETCharacter::GetAbilitySystemComponent() const
 void AMETCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+
+	/*
+	 * TODO: Clean up Turn-In-Place
+	 */
 	const ENetRole LocalRole = GetLocalRole();
 	if (LocalRole == ROLE_Authority || LocalRole == ROLE_AutonomousProxy)
 	{
