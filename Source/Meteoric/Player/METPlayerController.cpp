@@ -3,8 +3,10 @@
 
 #include "METPlayerController.h"
 
+#include "AbilitySystemGlobals.h"
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
+#include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Input/METInputComponent.h"
 
 void AMETPlayerController::BeginPlay()
@@ -28,15 +30,34 @@ void AMETPlayerController::SetupInputComponent()
 
 void AMETPlayerController::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input_AbilityInputTagPressed: %s"), *InputTag.ToString());
+	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->Input_AbilityInputTagPressed(InputTag);
+	}
 }
 
 void AMETPlayerController::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input_AbilityInputTagReleased: %s"), *InputTag.ToString());
+	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->Input_AbilityInputTagReleased(InputTag);
+	}
 }
 
 void AMETPlayerController::Input_AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Input_AbilityInputTagHeld: %s"), *InputTag.ToString());
+	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
+	{
+		ASC->Input_AbilityInputTagHeld(InputTag);
+	}
+}
+
+UMETAbilitySystemComponent* AMETPlayerController::GetAbilitySystemComponent()
+{
+	if (AbilitySystemComponent == nullptr)
+	{
+		UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetPawn());
+		AbilitySystemComponent = CastChecked<UMETAbilitySystemComponent>(ASC);
+	}
+	return AbilitySystemComponent;
 }

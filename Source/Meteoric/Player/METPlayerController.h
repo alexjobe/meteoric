@@ -28,5 +28,11 @@ protected:
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 	void Input_AbilityInputTagHeld(FGameplayTag InputTag);
+
+	class UMETAbilitySystemComponent* GetAbilitySystemComponent();
+
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<UMETAbilitySystemComponent> AbilitySystemComponent;
 	
 };

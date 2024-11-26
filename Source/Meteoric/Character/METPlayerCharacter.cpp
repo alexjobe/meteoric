@@ -34,6 +34,7 @@ void AMETPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 }
 
 void AMETPlayerCharacter::InitAbilityActorInfo()
@@ -70,7 +71,7 @@ void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Firing
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETPlayerCharacter::FireActionStarted);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Ongoing, this, &AMETPlayerCharacter::FireActionHeld);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMETPlayerCharacter::FireActionHeld);
 	}
 
 	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);

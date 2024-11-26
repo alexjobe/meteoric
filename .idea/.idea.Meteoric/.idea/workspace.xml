@@ -14,11 +14,16 @@
   <component name="ChangeListManager">
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultInput.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultInput.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Player/BP_MetPlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Player/BP_MetPlayerController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/GAS/GameplayEffects/DefaultAttributes/GE_DefaultAttributes_Player.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Fire.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Fire.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Meteoric.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/Meteoric.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Input/IMC_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Input/IMC_Default.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.h" afterDir="false" />
     </list>
@@ -34,7 +39,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://2" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AudioFormatOpus/Private/AudioFormatOpus.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AutomationWindow/Private/SAutomationTestItem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -158,6 +163,8 @@
     <setting file="file://$PROJECT_DIR$/Intermediate/Build/Win64/UnrealEditor/Inc/Meteoric/UHT/METWeaponManager.gen.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/Character/METCharacterAnimInstance.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/Abilities/METGameplayAbility.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/Abilities/METGameplayAbility.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/Meteoric/GAS/METAttributeSet.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -776,6 +783,11 @@
       <workItem from="1732561617928" duration="326000" />
       <workItem from="1732562475186" duration="4644000" />
       <workItem from="1732573753405" duration="495000" />
+      <workItem from="1732574282719" duration="393000" />
+      <workItem from="1732644884645" duration="268000" />
+      <workItem from="1732645968480" duration="2193000" />
+      <workItem from="1732648600969" duration="2517000" />
+      <workItem from="1732651603274" duration="2879000" />
     </task>
     <servers />
   </component>

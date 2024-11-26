@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "METCharacter.generated.h"
 
@@ -43,8 +44,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+
+	virtual void AddCharacterAbilities();
 
 	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const;
 	void InitializeDefaultAttributes() const;

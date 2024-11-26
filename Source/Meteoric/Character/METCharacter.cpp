@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
+#include "Meteoric/GAS/Abilities/METGameplayAbility.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -103,6 +104,16 @@ void AMETCharacter::UpdateActorControlRotationDelta()
 bool AMETCharacter::IsActorControlRotationAligned() const
 {
 	return FMath::Abs(ActorControlRotationDelta.Yaw) < 5.f;
+}
+
+void AMETCharacter::AddCharacterAbilities()
+{
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent)
+	{
+		return;
+	}
+
+	AbilitySystemComponent->AddAbilities(CharacterAbilities);
 }
 
 void AMETCharacter::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const
