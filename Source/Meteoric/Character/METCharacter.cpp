@@ -7,7 +7,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
-#include "Meteoric/GAS/Abilities/METGameplayAbility.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -153,28 +152,6 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::AimingStarted()
-{
-	if(!ensure(WeaponManager) || WeaponManager->IsChangingWeapons()) return;
-	
-	SetAiming(true);
-
-	if(!HasAuthority())
-	{
-		Server_SetAiming(true);
-	}
-}
-
-void AMETCharacter::AimingCompleted()
-{
-	SetAiming(false);
-	
-	if(!HasAuthority())
-	{
-		Server_SetAiming(false);
-	}
-}
-
 void AMETCharacter::FireActionStarted()
 {
 	if(!ensure(WeaponManager)) return;
@@ -254,7 +231,7 @@ void AMETCharacter::WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapo
 {
 	if(bInIsChangingWeapons && bIsAiming)
 	{
-		AimingCompleted();
+		SetAiming(false);
 	}
 }
 

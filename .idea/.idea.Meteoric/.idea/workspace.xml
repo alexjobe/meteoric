@@ -13,19 +13,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Source/Meteoric/METGameplayTags.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/Meteoric/METGameplayTags.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Characters/BP_MetCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/GAS/GameplayEffects/DefaultAttributes/GE_DefaultAttributes_Player.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Fire.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Fire.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Aim.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Input/Actions/IA_Fire.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Input/DA_InputConfig.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Input/DA_InputConfig.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Input/IMC_Default.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Input/IMC_Default.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METPlayerCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Player/METPlayerController.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +40,26 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://3" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AudioFormatOpus/Private/AudioFormatOpus.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AutomationWindow/Private/SAutomationTestItem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -787,7 +807,10 @@
       <workItem from="1732644884645" duration="268000" />
       <workItem from="1732645968480" duration="2193000" />
       <workItem from="1732648600969" duration="2517000" />
-      <workItem from="1732651603274" duration="2879000" />
+      <workItem from="1732651603274" duration="4636000" />
+      <workItem from="1732660367706" duration="2365000" />
+      <workItem from="1732663390802" duration="2949000" />
+      <workItem from="1732666511614" duration="2311000" />
     </task>
     <servers />
   </component>

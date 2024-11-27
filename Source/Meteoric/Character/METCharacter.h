@@ -25,6 +25,10 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	class UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+
+	/* Aim down sights */
+	UFUNCTION(BlueprintCallable)
+	void SetAiming(bool bInIsAiming);
 	
 	bool IsAiming() const { return bIsAiming; }
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
@@ -48,7 +52,7 @@ protected:
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class UGameplayEffect> DefaultAttributes;
+	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 	virtual void AddCharacterAbilities();
 
@@ -61,10 +65,6 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	/** Called for ADS input */
-	void AimingStarted();
-	void AimingCompleted();
-
 	/** Called for firing input */
 	void FireActionStarted();
 	void FireActionHeld();
@@ -76,9 +76,6 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Fire(bool bInHeld);
-
-	/* Aim down sights */
-	void SetAiming(bool bInIsAiming);
 	
 	UFUNCTION(Server, Reliable)
 	void Server_SetAiming(bool bInIsAiming);

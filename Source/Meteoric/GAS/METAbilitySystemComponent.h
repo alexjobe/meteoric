@@ -22,6 +22,12 @@ public:
 	void Input_AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void Input_AbilityInputTagReleased(const FGameplayTag& InputTag);
 
+protected:
+	//~ Begin UAbilitySystemComponent interface
+	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
+	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
+	//~ End UAbilitySystemComponent interface
+
 private:
 	void ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy);
 };
