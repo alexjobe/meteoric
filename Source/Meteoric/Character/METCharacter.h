@@ -33,6 +33,9 @@ public:
 	bool IsAiming() const { return bIsAiming; }
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
 
+	UFUNCTION(BlueprintPure)
+	bool CanFireWeapon() const;
+
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
@@ -55,8 +58,7 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 	virtual void AddCharacterAbilities();
-
-	void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const;
+	
 	void InitializeDefaultAttributes() const;
 
 	/** Called for movement input */
@@ -65,17 +67,11 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	/** Called for firing input */
-	void FireActionStarted();
-	void FireActionHeld();
-
-	void Fire(bool bInHeld);
-
-	UFUNCTION(Server, Reliable)
-	void Server_Fire(bool bInHeld);
+	UFUNCTION(BlueprintCallable)
+	void FireWeapon(bool bInHeld);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_Fire(bool bInHeld);
+	void Multicast_FireWeapon(bool bInHeld);
 
 	UFUNCTION()
 	void OnRep_IsAiming();
@@ -98,5 +94,5 @@ private:
 	bool IsActorControlRotationAligned() const;
 
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
+#include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Net/UnrealNetwork.h"
@@ -115,19 +116,9 @@ void AMETCharacter::AddCharacterAbilities()
 	AbilitySystemComponent->AddAbilities(CharacterAbilities);
 }
 
-void AMETCharacter::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel) const
-{
-	if (!ensure(AbilitySystemComponent) || !ensure(InEffectClass)) return;
-
-	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
-	ContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(InEffectClass, InLevel, ContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
-}
-
 void AMETCharacter::InitializeDefaultAttributes() const
 {
-	ApplyEffectToSelf(DefaultAttributes, 1);
+	UMETAbilitySystemUtils::ApplyEffectToActor(this, this, DefaultAttributes, 1);
 }
 
 void AMETCharacter::Move(const FInputActionValue& Value)
@@ -152,35 +143,7 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::FireActionStarted()
-{
-	if(!ensure(WeaponManager)) return;
-	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon || !CurrentWeapon->CanFire() || WeaponManager->IsChangingWeapons()) return;
-	
-	Fire(false);
-
-	if(!HasAuthority())
-	{
-		Server_Fire(false);
-	}
-}
-
-void AMETCharacter::FireActionHeld()
-{
-	if(!ensure(WeaponManager)) return;
-	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
-	if(!CurrentWeapon || !CurrentWeapon->CanFire() || WeaponManager->IsChangingWeapons()) return;
-	
-	Fire(true);
-	
-	if(!HasAuthority())
-	{
-		Server_Fire(true);
-	}
-}
-
-void AMETCharacter::Fire(bool bInHeld)
+void AMETCharacter::FireWeapon(bool bInHeld)
 {
 	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
@@ -189,21 +152,16 @@ void AMETCharacter::Fire(bool bInHeld)
 
 	if(HasAuthority())
 	{
-		Multicast_Fire(bInHeld);
+		Multicast_FireWeapon(bInHeld);
 	}
 }
 
-void AMETCharacter::Server_Fire_Implementation(bool bInHeld)
-{
-	Fire(bInHeld);
-}
-
-void AMETCharacter::Multicast_Fire_Implementation(bool bInHeld)
+void AMETCharacter::Multicast_FireWeapon_Implementation(bool bInHeld)
 {
 	const ENetRole LocalRole = GetLocalRole();
 	if (LocalRole == ROLE_SimulatedProxy)
 	{
-		Fire(bInHeld);
+		FireWeapon(bInHeld);
 	}
 }
 
@@ -215,6 +173,13 @@ void AMETCharacter::SetAiming(bool bInIsAiming)
 		CurrentWeapon->OnAimDownSights(bIsAiming);
 		AimDownSightsEvent.Broadcast(bIsAiming);
 	}
+}
+
+bool AMETCharacter::CanFireWeapon() const
+{
+	if(!ensure(WeaponManager)) return false;
+	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
+	return CurrentWeapon && CurrentWeapon->CanFire() && !WeaponManager->IsChangingWeapons();
 }
 
 void AMETCharacter::OnRep_IsAiming()

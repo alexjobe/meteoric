@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "GameFramework/Actor.h"
 #include "METWeaponTypes.h"
 #include "METWeapon.generated.h"
-
 
 UCLASS()
 class METEORIC_API AMETWeapon : public AActor
@@ -14,6 +14,10 @@ class METEORIC_API AMETWeapon : public AActor
 	GENERATED_BODY()
 	
 public:
+	/* Effect applied to owner on equip, and removed on unequip */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	FName ParentAttachmentSocket;
 
@@ -44,6 +48,8 @@ public:
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Drop();
+
+	void RemoveOwningCharacter();
 	
 public:
 	void SetWeaponDroppedState(bool bInDropped);
@@ -91,6 +97,8 @@ public:
 private:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
 	TObjectPtr<ACharacter> OwningCharacter;
+
+	TOptional<FActiveGameplayEffectHandle> EquippedEffectHandle;
 
 	float LastTimeFired;
 	float ElapsedTimeSinceDropped;

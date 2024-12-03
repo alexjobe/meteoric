@@ -64,10 +64,6 @@ void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMETPlayerCharacter::Look);
-
-		// Firing
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMETPlayerCharacter::FireActionStarted);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMETPlayerCharacter::FireActionHeld);
 	}
 
 	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);

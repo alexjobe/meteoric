@@ -24,6 +24,9 @@ public:
 	EMETAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 	FGameplayTag GetInputTag() const { return InputTag; }
 
+	UFUNCTION(BlueprintPure, Category = "Ability")
+	class AMETCharacter* GetMetCharacterFromActorInfo() const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Activation")
 	TEnumAsByte<EMETAbilityActivationPolicy> ActivationPolicy;

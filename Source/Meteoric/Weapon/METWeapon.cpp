@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Meteoric/Meteoric.h"
+#include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -35,11 +36,15 @@ AMETWeapon::AMETWeapon()
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
-	if(!InOwningCharacter) return;
+	if(!IsValid(InOwningCharacter)) return;
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 	OwningCharacter = InOwningCharacter;
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
+	if (GetLocalRole() == ROLE_Authority && !EquippedEffectHandle.IsSet())
+	{
+		EquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectToActor(OwningCharacter, this, EquippedEffectClass, 1);
+	}
 	SetActorTickEnabled(true);
 }
 
@@ -47,17 +52,7 @@ void AMETWeapon::OnUnequipped()
 {
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
 	SetActorTickEnabled(false);
-	OwningCharacter = nullptr;
-	RecoilComponent->Reset();
-	WeaponSwayComponent->Reset();
-}
-
-void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
-{
-	if(ensure(WeaponSwayComponent))
-	{
-		WeaponSwayComponent->OnAimDownSights(bInIsAiming);
-	}
+	RemoveOwningCharacter();
 }
 
 void AMETWeapon::Drop()
@@ -67,10 +62,7 @@ void AMETWeapon::Drop()
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetWeaponDroppedState(true);
 	ElapsedTimeSinceDropped = 0.f;
-
-	OwningCharacter = nullptr;
-	RecoilComponent->Reset();
-	WeaponSwayComponent->Reset();
+	RemoveOwningCharacter();
 
 	if(HasAuthority())
 	{
@@ -84,6 +76,18 @@ void AMETWeapon::Multicast_Drop_Implementation()
 	{
 		Drop();
 	}
+}
+
+inline void AMETWeapon::RemoveOwningCharacter()
+{
+	if (GetLocalRole() == ROLE_Authority && EquippedEffectHandle.IsSet())
+	{
+		UMETAbilitySystemUtils::RemoveEffectFromActor(OwningCharacter, EquippedEffectHandle.GetValue());
+		EquippedEffectHandle.Reset();
+	}
+	OwningCharacter = nullptr;
+	RecoilComponent->Reset();
+	WeaponSwayComponent->Reset();
 }
 
 void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
@@ -104,6 +108,14 @@ void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
 		SetWeaponPhysicsEnabled(false);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	}
+}
+
+void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
+{
+	if(ensure(WeaponSwayComponent))
+	{
+		WeaponSwayComponent->OnAimDownSights(bInIsAiming);
 	}
 }
 
