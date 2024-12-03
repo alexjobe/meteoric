@@ -76,9 +76,6 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Fire(bool bInHeld);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_SetAiming(bool bInIsAiming);
 
 	UFUNCTION()
 	void OnRep_IsAiming();

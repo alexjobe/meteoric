@@ -217,11 +217,6 @@ void AMETCharacter::SetAiming(bool bInIsAiming)
 	}
 }
 
-void AMETCharacter::Server_SetAiming_Implementation(bool bInIsAiming)
-{
-	SetAiming(bInIsAiming);
-}
-
 void AMETCharacter::OnRep_IsAiming()
 {
 	SetAiming(bIsAiming);
