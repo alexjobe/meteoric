@@ -18,6 +18,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
 	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	FName ParentAttachmentSocket;
 
@@ -59,6 +62,7 @@ public:
 
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
+	class UMETProjectileWeaponComponent* GetProjectileWeaponComponent() const {	return ProjectileWeaponComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 	UAnimMontage* GetCharacterEquipWeaponMontage() const { return CharacterEquipWeaponMontage; }
 
@@ -73,7 +77,7 @@ protected:
 	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<class UMETProjectileWeaponComponent> ProjectileWeaponComponent;
+	TObjectPtr<UMETProjectileWeaponComponent> ProjectileWeaponComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractableComponent> InteractableComponent;

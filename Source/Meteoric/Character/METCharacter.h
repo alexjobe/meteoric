@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
+#include "Meteoric/Weapon/METWeaponManager.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
@@ -24,7 +25,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	
-	class UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	AMETWeapon* GetWeapon() const { return WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;}
 
 	/* Aim down sights */
 	UFUNCTION(BlueprintCallable)
@@ -35,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool CanFireWeapon() const;
+
+	UFUNCTION(BlueprintCallable)
+	void FireWeapon(bool bInHeld);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
@@ -66,9 +71,6 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintCallable)
-	void FireWeapon(bool bInHeld);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(bool bInHeld);

@@ -4,14 +4,13 @@
 #include "METAbilitySystemUtils.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
+#include "AbilitySystemGlobals.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
 
-FActiveGameplayEffectHandle UMETAbilitySystemUtils::ApplyEffectToActor(const AActor* InTarget, const AActor* InSource, const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel)
+FActiveGameplayEffectHandle UMETAbilitySystemUtils::ApplyEffectClassToActor(const AActor* InTarget, const AActor* InSource, const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel)
 {
-	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(InTarget);
-	UAbilitySystemComponent* AbilitySystemComponent = AbilitySystemInterface ? AbilitySystemInterface->GetAbilitySystemComponent() : nullptr;
+	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InTarget);
 	
 	if (!ensure(AbilitySystemComponent) || !ensure(InEffectClass)) return FActiveGameplayEffectHandle();
 
@@ -23,11 +22,10 @@ FActiveGameplayEffectHandle UMETAbilitySystemUtils::ApplyEffectToActor(const AAc
 
 void UMETAbilitySystemUtils::RemoveEffectFromActor(const AActor* InTarget, const FActiveGameplayEffectHandle& InHandle, int32 StacksToRemove)
 {
-	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(InTarget);
-	UAbilitySystemComponent* AbilitySystemComponent = AbilitySystemInterface ? AbilitySystemInterface->GetAbilitySystemComponent() : nullptr;
+	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InTarget);
 
-	if (!ensure(AbilitySystemComponent)) return;
-
-	AbilitySystemComponent->RemoveActiveGameplayEffect(InHandle, StacksToRemove);
-	
+	if (ensure(AbilitySystemComponent))
+	{
+		AbilitySystemComponent->RemoveActiveGameplayEffect(InHandle, StacksToRemove);
+	}
 }

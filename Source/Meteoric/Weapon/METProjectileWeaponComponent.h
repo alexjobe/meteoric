@@ -7,6 +7,8 @@
 #include "METProjectileWeaponComponent.generated.h"
 
 
+struct FGameplayEffectSpecHandle;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
 {
@@ -18,5 +20,5 @@ class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
 public:	
 	UMETProjectileWeaponComponent();
 
-	void FireProjectile(const FTransform& InSpawnTransform, APawn* InOwner) const;
+	void FireProjectile(const FTransform& InSpawnTransform, AActor* InOwner, APawn* InInstigator, const FGameplayEffectSpecHandle& InDamageEffect) const;
 };

@@ -13,10 +13,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3b36d3dc-a51d-49ef-80ec-0acfc5458434" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meteoric/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/BP_Pistol.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Pistol/GE_Pistol.uasset" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/BP_Rifle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Rifle/GE_Rifle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Shotgun/BP_Shotgun.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Shotgun/BP_Shotgun.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/Blueprints/Weapons/Shotgun/GE_Shotgun.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/GAS/Abilities/GA_FireWeapon_Automatic.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/GAS/Abilities/GA_FireWeapon_Automatic.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/_Main/GAS/Abilities/GA_FireWeapon_SingleShot.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/_Main/GAS/Abilities/GA_FireWeapon_SingleShot.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Character/METCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemUtils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemUtils.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemUtils.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/GAS/METAbilitySystemUtils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectile.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectileWeaponComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectileWeaponComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectileWeaponComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METProjectileWeaponComponent.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Meteoric/Weapon/METWeapon.h" afterDir="false" />
     </list>
@@ -32,7 +47,13 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://1" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://2" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Plugins/Runtime/GeometryProcessing/Source/GeometryAlgorithms/Private/ThirdParty/GTEngine/Mathematics/GteIntpThinPlateSpline2.h" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AudioFormatOpus/Private/AudioFormatOpus.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Developer/AutomationWindow/Private/SAutomationTestItem.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -110,6 +131,7 @@
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Camera/CameraComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Camera/CameraTypes.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/ActorComponent.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/PrimitiveComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/SceneComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/ShapeComponent.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Epic Games/UE_5.4/Engine/Source/Runtime/Engine/Classes/Components/SkeletalMeshComponent.h" root0="FORCE_HIGHLIGHTING" />
@@ -803,7 +825,9 @@
       <workItem from="1733247094521" duration="6937000" />
       <workItem from="1733254504270" duration="6909000" />
       <workItem from="1733326234601" duration="5145000" />
-      <workItem from="1733331806415" duration="394000" />
+      <workItem from="1733331806415" duration="3249000" />
+      <workItem from="1733345719970" duration="1619000" />
+      <workItem from="1733347748724" duration="5314000" />
     </task>
     <servers />
   </component>

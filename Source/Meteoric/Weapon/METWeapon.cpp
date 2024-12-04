@@ -45,7 +45,7 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
 	if (GetLocalRole() == ROLE_Authority && !EquippedEffectHandle.IsSet())
 	{
-		EquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectToActor(OwningCharacter, this, EquippedEffectClass, 1);
+		EquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectClassToActor(OwningCharacter, this, EquippedEffectClass, 1);
 	}
 	SetActorTickEnabled(true);
 }
@@ -133,11 +133,6 @@ void AMETWeapon::Fire(bool bInHeld)
 	const float TimeSinceCreation = GetGameTimeSinceCreation();
 	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
 	LastTimeFired = TimeSinceCreation;
-
-	if (HasAuthority() && ensure(ProjectileWeaponComponent))
-	{
-		ProjectileWeaponComponent->FireProjectile(Mesh->GetSocketTransform(FName("S_Muzzle")), OwningCharacter);
-	}
 	
 	if(ensure(OwningCharacter) && WeaponFireAnim)
 	{

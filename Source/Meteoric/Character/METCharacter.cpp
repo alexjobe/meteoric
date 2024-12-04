@@ -118,7 +118,7 @@ void AMETCharacter::AddCharacterAbilities()
 
 void AMETCharacter::InitializeDefaultAttributes() const
 {
-	UMETAbilitySystemUtils::ApplyEffectToActor(this, this, DefaultAttributes, 1);
+	UMETAbilitySystemUtils::ApplyEffectClassToActor(this, this, DefaultAttributes, 1);
 }
 
 void AMETCharacter::Move(const FInputActionValue& Value)
