@@ -15,7 +15,7 @@ class METEORIC_API AMETWeapon : public AActor
 	
 public:
 	/* Effect applied to owner on equip, and removed on unequip */
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
@@ -71,6 +71,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETProjectileWeaponComponent> ProjectileWeaponComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractableComponent> InteractableComponent;

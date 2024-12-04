@@ -3,6 +3,7 @@
 
 #include "METWeapon.h"
 
+#include "METProjectileWeaponComponent.h"
 #include "METRecoilComponent.h"
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -32,6 +33,7 @@ AMETWeapon::AMETWeapon()
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
 	InteractableComponent = CreateDefaultSubobject<UMETInteractableComponent>("InteractableComponent");
+	ProjectileWeaponComponent = CreateDefaultSubobject<UMETProjectileWeaponComponent>("ProjectileWeaponComponent");
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
@@ -131,6 +133,11 @@ void AMETWeapon::Fire(bool bInHeld)
 	const float TimeSinceCreation = GetGameTimeSinceCreation();
 	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
 	LastTimeFired = TimeSinceCreation;
+
+	if (HasAuthority() && ensure(ProjectileWeaponComponent))
+	{
+		ProjectileWeaponComponent->FireProjectile(Mesh->GetSocketTransform(FName("S_Muzzle")), OwningCharacter);
+	}
 	
 	if(ensure(OwningCharacter) && WeaponFireAnim)
 	{
