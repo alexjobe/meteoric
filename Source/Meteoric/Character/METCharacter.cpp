@@ -118,6 +118,7 @@ void AMETCharacter::AddCharacterAbilities()
 
 void AMETCharacter::InitializeDefaultAttributes() const
 {
+	UMETAbilitySystemUtils::ApplyEffectClassToActor(this, this, DefaultMaxAttributes, 1);
 	UMETAbilitySystemUtils::ApplyEffectClassToActor(this, this, DefaultAttributes, 1);
 }
 

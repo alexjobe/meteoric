@@ -59,8 +59,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
 
+	/* Default attributes applied on initialization */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> DefaultAttributes;
+
+	/* Default max attributes - applied before other attributes for clamping */
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> DefaultMaxAttributes;
 
 	virtual void AddCharacterAbilities();
 	

@@ -1,7 +1,7 @@
 // Copyright Alex Jobe
 
 
-#include "../Abilities/METGameplayAbility.h"
+#include "METGameplayAbility.h"
 
 #include "Meteoric/Character/METCharacter.h"
 
