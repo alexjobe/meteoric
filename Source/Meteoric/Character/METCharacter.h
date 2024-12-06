@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
-#include "Meteoric/Weapon/METWeaponManager.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
@@ -28,8 +26,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	//~ End ACharacter interface
 	
-	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
-	AMETWeapon* GetWeapon() const { return WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;}
+	class UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	class AMETWeapon* GetWeapon() const;
 
 	/* Aim down sights */
 	UFUNCTION(BlueprintCallable)
@@ -60,11 +58,11 @@ protected:
 	bool bIsAiming;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
+	TArray<TSubclassOf<class UGameplayAbility>> CharacterAbilities;
 
 	/* Default attributes applied on initialization */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UGameplayEffect> DefaultAttributes;
+	TSubclassOf<class UGameplayEffect> DefaultAttributes;
 
 	/* Default max attributes - applied before other attributes for clamping */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))

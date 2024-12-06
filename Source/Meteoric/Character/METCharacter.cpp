@@ -177,6 +177,11 @@ void AMETCharacter::Multicast_FireWeapon_Implementation(bool bInHeld)
 	}
 }
 
+AMETWeapon* AMETCharacter::GetWeapon() const
+{
+	return WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
+}
+
 void AMETCharacter::SetAiming(bool bInIsAiming)
 {
 	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
