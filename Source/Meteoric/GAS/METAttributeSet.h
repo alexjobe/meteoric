@@ -57,8 +57,12 @@ public:
 	 * Meta Attributes
 	 */
 	UPROPERTY(BlueprintReadOnly, Category = "Damage")
-	FGameplayAttributeData IncomingDamage;
-	ATTRIBUTE_ACCESSORS(UMETAttributeSet, IncomingDamage)
+	FGameplayAttributeData IncomingHealthDamage;
+	ATTRIBUTE_ACCESSORS(UMETAttributeSet, IncomingHealthDamage)
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Damage")
+	FGameplayAttributeData IncomingArmorDamage;
+	ATTRIBUTE_ACCESSORS(UMETAttributeSet, IncomingArmorDamage)
 
 private:
 	UFUNCTION()

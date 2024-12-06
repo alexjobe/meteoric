@@ -46,6 +46,32 @@ void UMETAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	{
 		SetArmor(FMath::Clamp(GetArmor(), 0.f, GetMaxArmor()));
 	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingHealthDamageAttribute())
+	{
+		// Consume incoming damage
+		const float HealthDamageToApply = GetIncomingHealthDamage();
+		SetIncomingHealthDamage(0.f);
+		
+		if (HealthDamageToApply > 0.f)
+		{
+			const float NewHealth = GetHealth() - HealthDamageToApply;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingArmorDamageAttribute())
+	{
+		// Consume incoming damage
+		const float ArmorDamageToApply = GetIncomingArmorDamage();
+		SetIncomingArmorDamage(0.f);
+		
+		if (ArmorDamageToApply > 0.f)
+		{
+			const float NewArmor = GetArmor() - ArmorDamageToApply;
+			SetArmor(FMath::Clamp(NewArmor, 0.f, GetMaxArmor()));
+		}
+	}
 }
 
 void UMETAttributeSet::OnRep_Health(const FGameplayAttributeData& InOldData) const

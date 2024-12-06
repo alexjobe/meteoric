@@ -3,6 +3,7 @@
 
 #include "METAbility_FireWeapon.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/Character/METCharacter.h"
 #include "Meteoric/Weapon/METProjectileWeaponComponent.h"
@@ -40,6 +41,7 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		{
 			FTransform MuzzleLocation = Weapon->GetMesh()->GetSocketTransform(FName("S_Muzzle"));
 			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(Weapon->DamageEffectClass, GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->Damage);
 			ProjectileWeaponComponent->FireProjectile(MuzzleLocation, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
 		}
 	}

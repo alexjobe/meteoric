@@ -18,6 +18,7 @@ AMETWeapon::AMETWeapon()
 	, AimDownSightsSpeed(20.f)
 	, FiringMode(SingleShot)
 	, FiringRate(0.2f)
+	, Damage(25.f)
 	, LastTimeFired(0.f)
 	, ElapsedTimeSinceDropped(0.f)
 {

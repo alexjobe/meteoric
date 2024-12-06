@@ -40,6 +40,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	float FiringRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+	float Damage;
+
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
