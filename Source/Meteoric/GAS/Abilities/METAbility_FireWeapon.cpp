@@ -32,7 +32,7 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 	MetCharacter->FireWeapon(ActivationPolicy == OnInputHeld);
 
-	if (GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority)
+	if (GetAvatarActorFromActorInfo()->HasAuthority())
 	{
 		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
 		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon->GetProjectileWeaponComponent();

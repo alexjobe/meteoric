@@ -37,6 +37,17 @@ UAbilitySystemComponent* AMETCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AMETCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		// Make sure the mesh is updated on server so projectiles spawn in the correct location
+		GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	}
+}
+
 void AMETCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

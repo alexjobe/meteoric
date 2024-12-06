@@ -23,7 +23,10 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	//~ End IAbilitySystemInterface interface
 
+	//~ Begin ACharacter interface
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	//~ End ACharacter interface
 	
 	UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
 	AMETWeapon* GetWeapon() const { return WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;}
