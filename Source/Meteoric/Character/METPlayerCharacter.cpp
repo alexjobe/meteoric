@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Player/METPlayerState.h"
@@ -46,6 +47,7 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 	{
 		AbilitySystemComponent = ASC;
 		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
+		AbilitySystemComponent->SetTagMapCount(METGameplayTags::State_Dead, 0);
 	}
 
 	InitializeDefaultAttributes();

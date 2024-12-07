@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/GameMode/METGameModeBase.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Weapon/METWeapon.h"
@@ -216,6 +217,14 @@ void AMETCharacter::Die()
 	if (DeathMontage)
 	{
 		PlayAnimMontage(DeathMontage);
+	}
+
+	if (HasAuthority())
+	{
+		if (AMETGameModeBase* GameMode = Cast<AMETGameModeBase>(GetWorld()->GetAuthGameMode()))
+		{
+			GameMode->PlayerDied(GetController());
+		}
 	}
 }
 
