@@ -127,7 +127,29 @@ void AMETCharacter::AddCharacterAbilities()
 		return;
 	}
 
-	AbilitySystemComponent->AddAbilities(CharacterAbilities);
+	AbilitySystemComponent->AddAbilities(CharacterAbilities, this);
+	AbilitySystemComponent->bCharacterAbilitiesGiven = true;
+}
+
+void AMETCharacter::RemoveCharacterAbilities() const
+{
+	if (!HasAuthority() || !AbilitySystemComponent) return;
+
+	TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove;
+	for (const auto& Spec : AbilitySystemComponent->GetActivatableAbilities())
+	{
+		if (Spec.SourceObject == this && CharacterAbilities.Contains(Spec.Ability->GetClass()))
+		{
+			AbilitiesToRemove.Add(Spec.Handle);
+		}
+	}
+
+	for (int Index = 0; Index < AbilitiesToRemove.Num(); Index++)
+	{
+		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[Index]);
+	}
+
+	AbilitySystemComponent->bCharacterAbilitiesGiven = false;
 }
 
 void AMETCharacter::InitializeDefaultAttributes() const
@@ -173,11 +195,14 @@ void AMETCharacter::FireWeapon(bool bInHeld)
 
 void AMETCharacter::Die()
 {
+	RemoveCharacterAbilities();
+	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCharacterMovement()->GravityScale = 0.f;
 	GetCharacterMovement()->Velocity = FVector::ZeroVector;
 
 	RepControlRotation = FRotator::ZeroRotator;
+	ActorControlRotationDelta = FRotator::ZeroRotator;
 	bIsTurningInPlace = false;
 	
 	WeaponManager->DropAllWeapons();

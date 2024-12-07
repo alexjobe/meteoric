@@ -148,6 +148,7 @@ void UMETCharacterAnimInstance::UpdateRecoilOffset()
 
 void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* InWeapon)
 {
+	// Equipped weapon can be null
 	CurrentWeapon = InWeapon;
 	
 	RecoilOffset = FTransform::Identity;

@@ -16,11 +16,15 @@ class METEORIC_API UMETAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
-	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
+	UMETAbilitySystemComponent();
+	
+	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities, UObject* InSourceObject);
 	
 	void Input_AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void Input_AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void Input_AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	bool bCharacterAbilitiesGiven;
 
 protected:
 	//~ Begin UAbilitySystemComponent interface

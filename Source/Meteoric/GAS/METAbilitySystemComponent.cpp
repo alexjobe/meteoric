@@ -5,11 +5,16 @@
 
 #include "Abilities/METGameplayAbility.h"
 
-void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities)
+UMETAbilitySystemComponent::UMETAbilitySystemComponent()
+	: bCharacterAbilitiesGiven(false)
+{
+}
+
+void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities, UObject* InSourceObject)
 {
 	for(const auto& Ability : InAbilities)
 	{
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, 1);
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, 1, INDEX_NONE, InSourceObject);
 		if(const UMETGameplayAbility* MetAbility = Cast<UMETGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(MetAbility->GetInputTag());

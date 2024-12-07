@@ -61,6 +61,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
 
+	/* Abilities granted by this character. Added on possession, and removed on death */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbility>> CharacterAbilities;
 
@@ -76,6 +77,7 @@ protected:
 	TObjectPtr<UAnimMontage> DeathMontage;
 
 	virtual void AddCharacterAbilities();
+	void RemoveCharacterAbilities() const;
 	
 	void InitializeDefaultAttributes() const;
 
