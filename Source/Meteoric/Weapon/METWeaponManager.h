@@ -24,6 +24,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);
 
+	void DropAllWeapons();
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_EquipWeapon(AMETWeapon* InWeapon, int InSlot);
@@ -52,10 +54,10 @@ protected:
 
 	/** Called for cycle weapon input */
 	void CycleWeaponInput(const struct FInputActionValue& Value);
-	void CycleWeapon(bool bInNext);
+	void CycleWeapon(const bool bInForward);
 
 	UFUNCTION(Server, Reliable)
-	void Server_CycleWeapon(bool bInNext);
+	void Server_CycleWeapon(const bool bInForward);
 
 	int ChooseEquipSlot() const;
 
@@ -80,6 +82,6 @@ private:
 	bool bIsChangingWeapons;
 
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 };

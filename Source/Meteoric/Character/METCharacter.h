@@ -35,6 +35,8 @@ public:
 	
 	bool IsAiming() const { return bIsAiming; }
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
+	bool IsMoving() const;
+	bool IsDead() const;
 
 	UFUNCTION(BlueprintPure)
 	bool CanFireWeapon() const;
@@ -46,6 +48,8 @@ public:
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
+
+	void Die();
 
 protected:
 	UPROPERTY(Transient)
@@ -67,6 +71,9 @@ protected:
 	/* Default max attributes - applied before other attributes for clamping */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> DefaultMaxAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Death", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> DeathMontage;
 
 	virtual void AddCharacterAbilities();
 	
@@ -97,6 +104,8 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bIsTurningInPlace;
+
+	void UpdateCharacterAimRotation(float DeltaSeconds);
 
 	void UpdateActorControlRotationDelta();
 	bool IsActorControlRotationAligned() const;

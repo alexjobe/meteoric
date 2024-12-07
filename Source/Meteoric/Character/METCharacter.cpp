@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Weapon/METWeapon.h"
@@ -51,10 +52,14 @@ void AMETCharacter::BeginPlay()
 void AMETCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
+	UpdateCharacterAimRotation(DeltaSeconds);
+}
 
-	/*
-	 * TODO: Clean up Turn-In-Place
-	 */
+void AMETCharacter::UpdateCharacterAimRotation(float DeltaSeconds)
+{
+	if (IsDead()) return;
+	
 	const ENetRole LocalRole = GetLocalRole();
 	if (LocalRole == ROLE_Authority || LocalRole == ROLE_AutonomousProxy)
 	{
@@ -65,10 +70,8 @@ void AMETCharacter::Tick(float DeltaSeconds)
 	{
 		bIsTurningInPlace = true;
 	}
-
-	const FVector Velocity = GetCharacterMovement()->Velocity;
-	const float GroundSpeed = Velocity.Size2D();
-	const bool bIsMoving = GroundSpeed > 3.f && !GetCharacterMovement()->GetCurrentAcceleration().Equals(FVector::ZeroVector, 0.f);
+	
+	const bool bIsMoving = IsMoving();
 
 	if (bIsTurningInPlace || (bIsMoving && !IsActorControlRotationAligned()))
 	{
@@ -168,6 +171,29 @@ void AMETCharacter::FireWeapon(bool bInHeld)
 	}
 }
 
+void AMETCharacter::Die()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->GravityScale = 0.f;
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+
+	RepControlRotation = FRotator::ZeroRotator;
+	bIsTurningInPlace = false;
+	
+	WeaponManager->DropAllWeapons();
+	
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+		AbilitySystemComponent->AddLooseGameplayTag(METGameplayTags::State_Dead);
+	}
+
+	if (DeathMontage)
+	{
+		PlayAnimMontage(DeathMontage);
+	}
+}
+
 void AMETCharacter::Multicast_FireWeapon_Implementation(bool bInHeld)
 {
 	const ENetRole LocalRole = GetLocalRole();
@@ -190,6 +216,22 @@ void AMETCharacter::SetAiming(bool bInIsAiming)
 		CurrentWeapon->OnAimDownSights(bIsAiming);
 		AimDownSightsEvent.Broadcast(bIsAiming);
 	}
+}
+
+bool AMETCharacter::IsMoving() const
+{
+	const FVector Velocity = GetCharacterMovement()->Velocity;
+	const float GroundSpeed = Velocity.Size2D();
+	return GroundSpeed > 3.f && !GetCharacterMovement()->GetCurrentAcceleration().Equals(FVector::ZeroVector, 0.f);
+}
+
+bool AMETCharacter::IsDead() const
+{
+	if (AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->HasMatchingGameplayTag(METGameplayTags::State_Dead);
+	}
+	return false;
 }
 
 bool AMETCharacter::CanFireWeapon() const

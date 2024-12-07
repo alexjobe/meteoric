@@ -58,6 +58,22 @@ void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 	}
 }
 
+void UMETWeaponManager::DropAllWeapons()
+{
+	CurrentWeapon = nullptr;
+	PreviousWeapon = nullptr;
+	for (int Index = 0; Index < Weapons.Num(); Index++)
+	{
+		if(Weapons[Index] != nullptr)
+		{
+			Weapons[Index]->Drop();
+			Weapons[Index] = nullptr;
+		}
+	}
+
+	WeaponEquippedEvent.Broadcast(nullptr);
+}
+
 void UMETWeaponManager::Multicast_EquipWeapon_Implementation(AMETWeapon* InWeapon, int InSlot)
 {
 	if(!GetOwner()->HasAuthority())
@@ -131,12 +147,12 @@ void UMETWeaponManager::CycleWeaponInput(const FInputActionValue& Value)
 	}
 }
 
-void UMETWeaponManager::CycleWeapon(bool bInNext)
+void UMETWeaponManager::CycleWeapon(const bool bInForward)
 {
 	if(MaxWeapons <= 1) return;
 	if(bIsChangingWeapons) return;
 	
-	int NewSlot = SelectedWeaponSlot + (bInNext ? 1 : -1);
+	int NewSlot = SelectedWeaponSlot + (bInForward ? 1 : -1);
 	if(NewSlot < 0) NewSlot = MaxWeapons - 1;
 	if(NewSlot >= MaxWeapons) NewSlot = 0;
 
@@ -148,9 +164,9 @@ void UMETWeaponManager::CycleWeapon(bool bInNext)
 	}
 }
 
-void UMETWeaponManager::Server_CycleWeapon_Implementation(bool bInNext)
+void UMETWeaponManager::Server_CycleWeapon_Implementation(const bool bInForward)
 {
-	CycleWeapon(bInNext);
+	CycleWeapon(bInForward);
 }
 
 int UMETWeaponManager::ChooseEquipSlot() const

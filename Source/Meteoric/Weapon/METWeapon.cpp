@@ -66,6 +66,7 @@ void AMETWeapon::Drop()
 	SetWeaponDroppedState(true);
 	ElapsedTimeSinceDropped = 0.f;
 	RemoveOwningCharacter();
+	GetMesh()->SetVisibility(true, true);
 
 	if(HasAuthority())
 	{

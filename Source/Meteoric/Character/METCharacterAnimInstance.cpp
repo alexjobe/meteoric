@@ -72,11 +72,11 @@ void UMETCharacterAnimInstance::AnimNotify_EquipWeapon() const
 
 void UMETCharacterAnimInstance::UpdateMovementData()
 {
-	if(!ensure(MovementComponent)) return;
+	if(!ensure(Character) || !ensure(MovementComponent)) return;
 	
 	Velocity = MovementComponent->Velocity;
 	GroundSpeed = Velocity.Size2D();
-	bShouldMove = GroundSpeed > 3.f && !MovementComponent->GetCurrentAcceleration().Equals(FVector::ZeroVector, 0.f);
+	bShouldMove = Character->IsMoving();
 	bIsFalling = MovementComponent->IsFalling();
 }
 
@@ -148,19 +148,20 @@ void UMETCharacterAnimInstance::UpdateRecoilOffset()
 
 void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* InWeapon)
 {
+	CurrentWeapon = InWeapon;
+	
 	RecoilOffset = FTransform::Identity;
 	WeaponSwayRotation = FRotator::ZeroRotator;
 	RightHandToSight = FTransform::Identity;
 	SightToSpine = FTransform::Identity;
 	RightHandToSpine = FTransform::Identity;
 	
-	if(InWeapon)
+	if(CurrentWeapon)
 	{
-		CurrentWeapon = InWeapon;
-		IdleWeaponAnim = InWeapon->GetCharacterIdleWeaponAnim();
-		SightCameraOffset = InWeapon->SightCameraOffset;
-		AimDownSightsSpeed = InWeapon->AimDownSightsSpeed;
-		RightHandToSight = InWeapon->RightHandToSight;
+		IdleWeaponAnim = CurrentWeapon->GetCharacterIdleWeaponAnim();
+		SightCameraOffset = CurrentWeapon->SightCameraOffset;
+		AimDownSightsSpeed = CurrentWeapon->AimDownSightsSpeed;
+		RightHandToSight = CurrentWeapon->RightHandToSight;
 		SetHandRelativeToSight();
 	}
 }
