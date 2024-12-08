@@ -10,6 +10,7 @@
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Player/METPlayerState.h"
+#include "Meteoric/UI/HUD/METHUD.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 
 AMETPlayerCharacter::AMETPlayerCharacter()
@@ -29,6 +30,7 @@ void AMETPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 	InitAbilityActorInfo();
+	ResetControlRotation();
 }
 
 void AMETPlayerCharacter::PossessedBy(AController* NewController)
@@ -36,6 +38,7 @@ void AMETPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
+	ResetControlRotation();
 }
 
 void AMETPlayerCharacter::InitAbilityActorInfo()
@@ -51,6 +54,24 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 	}
 
 	InitializeDefaultAttributes();
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController && PlayerController->IsLocalController())
+	{
+		if (AMETHUD* MetHUD = Cast<AMETHUD>(PlayerController->GetHUD()))
+		{
+			MetHUD->SetAbilitySystemComponent(AbilitySystemComponent);
+		}
+	}
+}
+
+void AMETPlayerCharacter::ResetControlRotation() const
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController && PlayerController->IsLocalController())
+	{
+		PlayerController->SetControlRotation(FRotator(0.f, 180.f, 0.f));
+	}
 }
 
 void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
