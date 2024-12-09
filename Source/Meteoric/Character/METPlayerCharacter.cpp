@@ -60,7 +60,7 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 	{
 		if (AMETHUD* MetHUD = Cast<AMETHUD>(PlayerController->GetHUD()))
 		{
-			MetHUD->SetAbilitySystemComponent(AbilitySystemComponent);
+			MetHUD->Initialize(AbilitySystemComponent);
 		}
 	}
 }

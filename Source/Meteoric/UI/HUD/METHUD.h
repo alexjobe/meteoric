@@ -7,36 +7,35 @@
 #include "METHUD.generated.h"
 
 /**
- * 
+ * MET HUD
  */
 UCLASS()
 class METEORIC_API AMETHUD : public AHUD
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "Overlay", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UMETOverlayWidget> OverlayWidgetClass;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Overlay", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMETOverlayWidget> OverlayWidget;
+
 public:
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetHealth(float InNewValue);
+	void Initialize(class UMETAbilitySystemComponent* InASC);
+
+protected:
+	void SetHealth(const float InNewValue) const;
+	void SetMaxHealth(const float InNewValue) const;
+	void SetArmor(const float InNewValue) const;
+	void SetMaxArmor(const float InNewValue) const;
 	
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetMaxHealth(float InNewValue);
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetArmor(float InNewValue);
-	
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetMaxArmor(float InNewValue);
-
-	void SetAbilitySystemComponent(class UMETAbilitySystemComponent* InASC);
-
-private:
 	UPROPERTY(Transient)
 	TObjectPtr<UMETAbilitySystemComponent> AbilitySystemComponent;
 
 	// Attribute changed callbacks
-	void HealthChanged(const struct FOnAttributeChangeData& Data);
-	void MaxHealthChanged(const FOnAttributeChangeData& Data);
-	void ArmorChanged(const FOnAttributeChangeData& Data);
-	void MaxArmorChanged(const FOnAttributeChangeData& Data);
+	void HealthChanged(const struct FOnAttributeChangeData& Data) const;
+	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
+	void ArmorChanged(const FOnAttributeChangeData& Data) const;
+	void MaxArmorChanged(const FOnAttributeChangeData& Data) const;
 	
 };
