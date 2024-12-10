@@ -37,9 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
-	float FiringRate;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float Damage;
 
@@ -61,7 +58,9 @@ public:
 	void SetWeaponDroppedState(bool bInDropped);
 
 	void Fire(bool bInHeld);
-	bool CanFire() const;
+	bool CanFire() const { return bCanFire; };
+
+	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
 
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
@@ -96,6 +95,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> WeaponFireAnim;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Firing", meta = (AllowPrivateAccess = "true", ClampMin = "0.0"))
+	float FiringRate;
 	
 	virtual void BeginPlay() override;
 
@@ -104,14 +106,20 @@ public:
 
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
+	DECLARE_EVENT(AMETWeapon, FWeaponFireCooldownEvent)
+	FWeaponFireCooldownEvent& OnFireCooldown() { return FireCooldownEvent; }
+
 private:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
 	TObjectPtr<ACharacter> OwningCharacter;
 
 	TOptional<FActiveGameplayEffectHandle> EquippedEffectHandle;
 
-	float LastTimeFired;
+	bool bCanFire;
+	float ElapsedTimeSinceFired;
 	float ElapsedTimeSinceDropped;
+
+	FWeaponFireCooldownEvent FireCooldownEvent;
 
 	UFUNCTION()
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);

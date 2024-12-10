@@ -17,9 +17,10 @@ AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, FiringMode(SingleShot)
-	, FiringRate(0.2f)
 	, Damage(25.f)
-	, LastTimeFired(0.f)
+	, FiringRate(0.2f)
+	, bCanFire(true)
+	, ElapsedTimeSinceFired(0.f)
 	, ElapsedTimeSinceDropped(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -92,6 +93,7 @@ inline void AMETWeapon::RemoveOwningCharacter()
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
+	bCanFire = true;
 }
 
 void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
@@ -130,11 +132,11 @@ void AMETWeapon::BeginPlay()
 
 void AMETWeapon::Fire(bool bInHeld)
 {
+	if(!bCanFire) return;
 	if(bInHeld && FiringMode != Automatic) return;
-	
-	const float TimeSinceCreation = GetGameTimeSinceCreation();
-	if(TimeSinceCreation - LastTimeFired < FiringRate) return;
-	LastTimeFired = TimeSinceCreation;
+
+	bCanFire = false;
+	ElapsedTimeSinceFired = 0.f;
 	
 	if(ensure(OwningCharacter) && WeaponFireAnim)
 	{
@@ -156,16 +158,20 @@ void AMETWeapon::Fire(bool bInHeld)
 	}
 }
 
-bool AMETWeapon::CanFire() const
-{
-	const float TimeSinceCreation = GetGameTimeSinceCreation();
-	return TimeSinceCreation - LastTimeFired >= FiringRate;
-}
-
 void AMETWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if(!ensure(Mesh) || !ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+
+	if (!bCanFire)
+	{
+		ElapsedTimeSinceFired += DeltaTime;
+		if (ElapsedTimeSinceFired >= FiringRate)
+		{
+			bCanFire = true;
+			FireCooldownEvent.Broadcast();
+		}
+	}
 
 	// Note: If performance is a concern, we can just update recoil on the locally-controlled pawn
 	RecoilComponent->UpdateRecoil(DeltaTime);

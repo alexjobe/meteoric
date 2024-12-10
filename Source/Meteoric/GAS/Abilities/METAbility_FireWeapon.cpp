@@ -23,12 +23,14 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
 	}
 
 	AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
 	if (!ensure(MetCharacter) || !MetCharacter->CanFireWeapon())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return;
 	}
 
 	MetCharacter->FireWeapon(ActivationPolicy == OnInputHeld);
