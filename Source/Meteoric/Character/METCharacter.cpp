@@ -194,6 +194,11 @@ void AMETCharacter::FireWeapon(bool bInHeld)
 	}
 }
 
+FTransform AMETCharacter::GetEyesViewpoint() const
+{
+	return GetActorTransform();
+}
+
 void AMETCharacter::Die()
 {
 	RemoveCharacterAbilities();

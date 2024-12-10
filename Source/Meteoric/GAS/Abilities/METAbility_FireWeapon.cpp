@@ -4,6 +4,7 @@
 #include "METAbility_FireWeapon.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/Character/METCharacter.h"
 #include "Meteoric/Weapon/METProjectileWeaponComponent.h"
@@ -39,10 +40,18 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 		if (ensure(Weapon) && ensure(Weapon->DamageEffectClass) && ensure(ProjectileWeaponComponent))
 		{
-			FTransform MuzzleLocation = Weapon->GetMesh()->GetSocketTransform(FName("S_Muzzle"));
+			const FVector StartLocation = Weapon->GetMesh()->GetSocketLocation(FName("S_Muzzle"));
+			const FTransform EyesViewpoint = MetCharacter->GetEyesViewpoint();
+			const FVector EndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * 2000.f;
+			const FRotator StartRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, EndLocation);
+			const FTransform SpawnTransform(StartRotation, StartLocation);
+
+			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
+			
 			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(Weapon->DamageEffectClass, GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->Damage);
-			ProjectileWeaponComponent->FireProjectile(MuzzleLocation, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
+			
+			ProjectileWeaponComponent->FireProjectile(SpawnTransform, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
 		}
 	}
 

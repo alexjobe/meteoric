@@ -54,6 +54,8 @@ public:
 
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 
+	virtual FTransform GetEyesViewpoint() const override;
+
 private:
 	void InitAbilityActorInfo();
 	void ResetControlRotation() const;

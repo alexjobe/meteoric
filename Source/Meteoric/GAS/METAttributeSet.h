@@ -49,9 +49,9 @@ public:
 	FGameplayAttributeData MaxArmor;
 	ATTRIBUTE_ACCESSORS(UMETAttributeSet, MaxArmor)
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "Armor")
-	FGameplayAttributeData ArmorPenetration;
-	ATTRIBUTE_ACCESSORS(UMETAttributeSet, ArmorPenetration)
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPiercing, Category = "Armor")
+	FGameplayAttributeData ArmorPiercing;
+	ATTRIBUTE_ACCESSORS(UMETAttributeSet, ArmorPiercing)
 
 	/*
 	 * Meta Attributes
@@ -81,6 +81,6 @@ private:
 	void OnRep_MaxArmor(const FGameplayAttributeData& InOldData) const;
 
 	UFUNCTION()
-	void OnRep_ArmorPenetration(const FGameplayAttributeData& InOldData) const;
+	void OnRep_ArmorPiercing(const FGameplayAttributeData& InOldData) const;
 	
 };

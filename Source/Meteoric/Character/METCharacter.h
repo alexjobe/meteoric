@@ -48,6 +48,7 @@ public:
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
+	virtual FTransform GetEyesViewpoint() const;
 
 	void Die();
 

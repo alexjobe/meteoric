@@ -15,7 +15,7 @@ void UMETAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	DOREPLIFETIME_CONDITION_NOTIFY(UMETAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMETAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UMETAttributeSet, MaxArmor, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UMETAttributeSet, ArmorPenetration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UMETAttributeSet, ArmorPiercing, COND_None, REPNOTIFY_Always);
 }
 
 void UMETAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -31,6 +31,12 @@ void UMETAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribut
 	{
 		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxArmor());
 	}
+
+	if (Attribute == GetArmorPiercingAttribute())
+	{
+		// Armor piercing is a percentage of damage
+		NewValue = FMath::Clamp(NewValue, 0.0f, 100.f);
+	}
 }
 
 void UMETAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -45,6 +51,12 @@ void UMETAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	if (Data.EvaluatedData.Attribute == GetArmorAttribute())
 	{
 		SetArmor(FMath::Clamp(GetArmor(), 0.f, GetMaxArmor()));
+	}
+
+	if (Data.EvaluatedData.Attribute == GetArmorPiercingAttribute())
+	{
+		// Armor piercing is a percentage of damage
+		SetArmorPiercing(FMath::Clamp(GetArmorPiercing(), 0.f, 100.f));
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingHealthDamageAttribute())
@@ -99,7 +111,7 @@ void UMETAttributeSet::OnRep_MaxArmor(const FGameplayAttributeData& InOldData) c
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMETAttributeSet, MaxArmor, InOldData);
 }
 
-void UMETAttributeSet::OnRep_ArmorPenetration(const FGameplayAttributeData& InOldData) const
+void UMETAttributeSet::OnRep_ArmorPiercing(const FGameplayAttributeData& InOldData) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UMETAttributeSet, ArmorPenetration, InOldData);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMETAttributeSet, ArmorPiercing, InOldData);
 }

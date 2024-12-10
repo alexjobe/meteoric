@@ -41,6 +41,17 @@ void AMETPlayerCharacter::PossessedBy(AController* NewController)
 	ResetControlRotation();
 }
 
+FTransform AMETPlayerCharacter::GetEyesViewpoint() const
+{
+	if (ensure(MainCamera))
+	{
+		FMinimalViewInfo ViewInfo;
+		MainCamera->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);
+		return FTransform(ViewInfo.Rotation, ViewInfo.Location);
+	}
+	return GetActorTransform();
+}
+
 void AMETPlayerCharacter::InitAbilityActorInfo()
 {
 	AMETPlayerState* PS = GetPlayerState<AMETPlayerState>();

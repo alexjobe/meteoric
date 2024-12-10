@@ -25,7 +25,10 @@ void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplay
 
 void UMETAbilitySystemComponent::Input_AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
+	if(!InputTag.IsValid()) return;
+	
 	ActivateAbility(InputTag, OnInputPressed);
+	AddLooseGameplayTag(InputTag);
 }
 
 void UMETAbilitySystemComponent::Input_AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -69,6 +72,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTa
 			}
 		}
 	}
+	RemoveLooseGameplayTag(InputTag);
 }
 
 void UMETAbilitySystemComponent::AbilitySpecInputPressed(FGameplayAbilitySpec& Spec)
