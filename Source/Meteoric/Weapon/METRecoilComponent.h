@@ -22,7 +22,6 @@ public:
 	void UpdateRecoil(float InDeltaTime);
 
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter, const EWeaponFiringMode& InFiringMode);
-	void OnFireActionStarted();
 	void OnFireActionHeld();
 	void OnWeaponFired();
 
@@ -70,6 +69,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
+
+	TOptional<FDelegateHandle> GameplayTagEventHandle_FireWeapon;
 
 	/* Aim recoil */
 	float FireActionStartTime;

@@ -3,12 +3,16 @@
 
 #include "METWeapon.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "METProjectileWeaponComponent.h"
 #include "METRecoilComponent.h"
 #include "METWeaponSwayComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Meteoric/Meteoric.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -90,6 +94,7 @@ inline void AMETWeapon::RemoveOwningCharacter()
 		UMETAbilitySystemUtils::RemoveEffectFromActor(OwningCharacter, EquippedEffectHandle.GetValue());
 		EquippedEffectHandle.Reset();
 	}
+	
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
@@ -151,10 +156,6 @@ void AMETWeapon::Fire(bool bInHeld)
 		{
 			RecoilComponent->OnFireActionHeld();
 		}
-		else
-		{
-			RecoilComponent->OnFireActionStarted();
-		}
 	}
 }
 
@@ -169,7 +170,11 @@ void AMETWeapon::Tick(float DeltaTime)
 		if (ElapsedTimeSinceFired >= FiringRate)
 		{
 			bCanFire = true;
-			FireCooldownEvent.Broadcast();
+			FGameplayEventData EventData;
+			EventData.EventTag = METGameplayTags::EventTag_FireCooldown;
+			EventData.Instigator = this;
+			EventData.Target = OwningCharacter;
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwningCharacter, METGameplayTags::EventTag_FireCooldown, EventData);
 		}
 	}
 

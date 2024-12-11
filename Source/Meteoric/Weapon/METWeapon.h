@@ -106,9 +106,6 @@ public:
 
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
-	DECLARE_EVENT(AMETWeapon, FWeaponFireCooldownEvent)
-	FWeaponFireCooldownEvent& OnFireCooldown() { return FireCooldownEvent; }
-
 private:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
 	TObjectPtr<ACharacter> OwningCharacter;
@@ -118,8 +115,6 @@ private:
 	bool bCanFire;
 	float ElapsedTimeSinceFired;
 	float ElapsedTimeSinceDropped;
-
-	FWeaponFireCooldownEvent FireCooldownEvent;
 
 	UFUNCTION()
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);

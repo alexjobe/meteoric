@@ -3,8 +3,11 @@
 
 #include "METRecoilComponent.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/Character.h"
+#include "Meteoric/METGameplayTags.h"
 
 UMETRecoilComponent::UMETRecoilComponent()
 	: AimRecoilCurve(nullptr)
@@ -54,13 +57,21 @@ void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, 
 	Reset();
 	OwningCharacter = InOwningCharacter;
 	FiringMode = InFiringMode;
-}
 
-void UMETRecoilComponent::OnFireActionStarted()
-{
-	FireActionStartTime = GetWorld()->GetTimeSeconds();
-	LastRecoilCurvePos = FVector2d::ZeroVector;
-	CurrentRecoilCurvePos = FVector2d::ZeroVector;
+	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InOwningCharacter);
+	if (ensure(ASC))
+	{
+		GameplayTagEventHandle_FireWeapon = ASC->RegisterGameplayTagEvent(METGameplayTags::Ability_FireWeapon).AddLambda([&](FGameplayTag InTag, int32 InCount)
+		{
+			if (InCount > 0)
+			{
+				// Fire action started
+				FireActionStartTime = GetWorld()->GetTimeSeconds();
+				LastRecoilCurvePos = FVector2d::ZeroVector;
+				CurrentRecoilCurvePos = FVector2d::ZeroVector;
+			}
+		});
+	}
 }
 
 void UMETRecoilComponent::OnFireActionHeld()
@@ -100,6 +111,16 @@ void UMETRecoilComponent::OnWeaponFired()
 
 void UMETRecoilComponent::Reset()
 {
+	if (GameplayTagEventHandle_FireWeapon.IsSet())
+	{
+		UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningCharacter);
+		if (ensure(ASC))
+		{
+			ASC->UnregisterGameplayTagEvent(GameplayTagEventHandle_FireWeapon.GetValue(), METGameplayTags::Ability_FireWeapon);
+			GameplayTagEventHandle_FireWeapon.Reset();
+		}
+	}
+	
 	OwningCharacter = nullptr;
 	FiringMode = SingleShot;
 	FireActionStartTime = 0.f;

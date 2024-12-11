@@ -22,8 +22,14 @@ namespace METGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(FiringMode_SingleShot, "FiringMode.SingleShot", "Single shot weapon");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(FiringMode_Automatic, "FiringMode.Automatic", "Automatic weapon");
-
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(State_Dead, "State.Dead", "Dead state");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Damage", "Damage");
+
+	/* Ability tags */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_FireWeapon, "Ability.FireWeapon", "Fire weapon ability");
+
+	/* Event tags */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventTag_FireCooldown, "EventTag.FireCooldown", "Fire cooldown event");
 }

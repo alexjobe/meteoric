@@ -4,8 +4,11 @@
 #include "METAbility_FireWeapon.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/METLogChannels.h"
 #include "Meteoric/Character/METCharacter.h"
 #include "Meteoric/Weapon/METProjectileWeaponComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
@@ -14,6 +17,7 @@ UMETAbility_FireWeapon::UMETAbility_FireWeapon()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	InputTag = METGameplayTags::InputTag_FireWeapon;
+	ActivationOwnedTags.AddTag(METGameplayTags::Ability_FireWeapon);
 }
 
 void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -26,6 +30,23 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		return;
 	}
 
+	if (ActivationPolicy == SingleShot)
+	{
+		FireWeapon();
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
+
+	/* Automatic weapon */
+	if (BindWaitFireCooldownEventTask())
+	{
+		FireWeapon();
+		BindWaitInputReleaseTask();
+	}
+}
+
+void UMETAbility_FireWeapon::FireWeapon()
+{
 	AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
 	if (!ensure(MetCharacter) || !MetCharacter->CanFireWeapon())
 	{
@@ -56,6 +77,46 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			ProjectileWeaponComponent->FireProjectile(SpawnTransform, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
 		}
 	}
+}
 
+bool UMETAbility_FireWeapon::BindWaitFireCooldownEventTask()
+{
+	if (const auto WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, METGameplayTags::EventTag_FireCooldown))
+	{
+		WaitGameplayEventTask->EventReceived.AddUniqueDynamic(this, &ThisClass::OnFireCooldown);
+		WaitGameplayEventTask->ReadyForActivation();
+	}
+	else
+	{
+		UE_LOG(LogMetAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitGameplayEventTask"))
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return false;
+	}
+	return true;
+}
+
+bool UMETAbility_FireWeapon::BindWaitInputReleaseTask()
+{
+	if (const auto WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true))
+	{
+		WaitInputReleaseTask->OnRelease.AddUniqueDynamic(this, &ThisClass::OnInputReleased);
+		WaitInputReleaseTask->ReadyForActivation();
+	}
+	else
+	{
+		UE_LOG(LogMetAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitInputReleaseTask"))
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return false;
+	}
+	return true;
+}
+
+void UMETAbility_FireWeapon::OnFireCooldown(FGameplayEventData Payload)
+{
+	FireWeapon();
+}
+
+void UMETAbility_FireWeapon::OnInputReleased(float TimeHeld)
+{
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

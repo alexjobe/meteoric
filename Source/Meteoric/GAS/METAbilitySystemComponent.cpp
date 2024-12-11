@@ -25,15 +25,18 @@ void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplay
 
 void UMETAbilitySystemComponent::Input_AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
-	if(!InputTag.IsValid()) return;
-	
-	ActivateAbility(InputTag, OnInputPressed);
-	AddLooseGameplayTag(InputTag);
+	if(InputTag.IsValid())
+	{
+		ActivateAbility(InputTag, OnInputPressed);
+	}
 }
 
 void UMETAbilitySystemComponent::Input_AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
-	ActivateAbility(InputTag, OnInputHeld);
+	if(InputTag.IsValid())
+	{
+		ActivateAbility(InputTag, OnInputHeld);
+	}
 }
 
 void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy)
@@ -72,7 +75,6 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTa
 			}
 		}
 	}
-	RemoveLooseGameplayTag(InputTag);
 }
 
 void UMETAbilitySystemComponent::AbilitySpecInputPressed(FGameplayAbilitySpec& Spec)

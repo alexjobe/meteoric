@@ -19,4 +19,15 @@ public:
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	void FireWeapon();
+
+	bool BindWaitFireCooldownEventTask();
+	bool BindWaitInputReleaseTask();
+
+	UFUNCTION()
+	void OnFireCooldown(FGameplayEventData Payload);
+
+	UFUNCTION()
+	void OnInputReleased(float TimeHeld);
 };
