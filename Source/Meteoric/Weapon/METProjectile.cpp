@@ -23,8 +23,8 @@ AMETProjectile::AMETProjectile()
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
 	
 	ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
-	ProjectileMovementComponent->InitialSpeed = 30000.f;
-	ProjectileMovementComponent->MaxSpeed = 3000.f;
+	ProjectileMovementComponent->InitialSpeed = 20000.f;
+	ProjectileMovementComponent->MaxSpeed = 20000.f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.f;

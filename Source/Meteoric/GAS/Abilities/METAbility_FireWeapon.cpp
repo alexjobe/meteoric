@@ -65,7 +65,8 @@ void UMETAbility_FireWeapon::FireWeapon()
 		{
 			const FVector StartLocation = Weapon->GetMesh()->GetSocketLocation(FName("S_Muzzle"));
 			const FTransform EyesViewpoint = MetCharacter->GetEyesViewpoint();
-			const FVector EndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * 2000.f;
+			constexpr float Range = 3000.f;
+			const FVector EndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * Range;
 			const FRotator StartRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, EndLocation);
 			const FTransform SpawnTransform(StartRotation, StartLocation);
 
@@ -88,7 +89,7 @@ bool UMETAbility_FireWeapon::BindWaitFireCooldownEventTask()
 	}
 	else
 	{
-		UE_LOG(LogMetAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitGameplayEventTask"))
+		UE_LOG(LogMETAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitGameplayEventTask"))
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return false;
 	}
@@ -104,7 +105,7 @@ bool UMETAbility_FireWeapon::BindWaitInputReleaseTask()
 	}
 	else
 	{
-		UE_LOG(LogMetAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitInputReleaseTask"))
+		UE_LOG(LogMETAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitInputReleaseTask"))
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		return false;
 	}

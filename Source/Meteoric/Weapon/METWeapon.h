@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "METWeaponTypes.h"
 #include "METWeapon.generated.h"
@@ -14,6 +15,9 @@ class METEORIC_API AMETWeapon : public AActor
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FGameplayTag WeaponTag;
+	
 	/* Effect applied to owner on equip, and removed on unequip */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
@@ -58,28 +62,38 @@ public:
 	void SetWeaponDroppedState(bool bInDropped);
 
 	void Fire(bool bInHeld);
-	bool CanFire() const { return bCanFire; };
+	bool CanFire() const;
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
 
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	void Reload() const;
+
+	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
 	class UMETProjectileWeaponComponent* GetProjectileWeaponComponent() const {	return ProjectileWeaponComponent; }
+	class UMETWeaponAmmoComponent* GetAmmoComponent() const { return AmmoComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
 	UAnimMontage* GetCharacterEquipWeaponMontage() const { return CharacterEquipWeaponMontage; }
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recoil", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETRecoilComponent> RecoilComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETProjectileWeaponComponent> ProjectileWeaponComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UMETWeaponAmmoComponent> AmmoComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractableComponent> InteractableComponent;
@@ -100,11 +114,6 @@ protected:
 	float FiringRate;
 	
 	virtual void BeginPlay() override;
-
-public:	
-	virtual void Tick(float DeltaTime) override;
-
-	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 
 private:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);

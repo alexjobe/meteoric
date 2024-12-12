@@ -5,10 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "METProjectileWeaponComponent.h"
 #include "METRecoilComponent.h"
 #include "METWeaponSwayComponent.h"
+#include "Ammo/METWeaponAmmoComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 #include "Meteoric/Meteoric.h"
@@ -40,15 +40,17 @@ AMETWeapon::AMETWeapon()
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
 	InteractableComponent = CreateDefaultSubobject<UMETInteractableComponent>("InteractableComponent");
 	ProjectileWeaponComponent = CreateDefaultSubobject<UMETProjectileWeaponComponent>("ProjectileWeaponComponent");
+	AmmoComponent = CreateDefaultSubobject<UMETWeaponAmmoComponent>("AmmoComponent");
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
 	if(!IsValid(InOwningCharacter)) return;
-	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent) || !ensure(AmmoComponent)) return;
 	OwningCharacter = InOwningCharacter;
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
+	AmmoComponent->OnWeaponEquipped(OwningCharacter);
 	if (GetLocalRole() == ROLE_Authority && !EquippedEffectHandle.IsSet())
 	{
 		EquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectClassToActor(OwningCharacter, this, EquippedEffectClass, 1);
@@ -98,6 +100,7 @@ inline void AMETWeapon::RemoveOwningCharacter()
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
+	AmmoComponent->OnWeaponUnequipped();
 	bCanFire = true;
 }
 
@@ -140,6 +143,8 @@ void AMETWeapon::Fire(bool bInHeld)
 	if(!bCanFire) return;
 	if(bInHeld && FiringMode != Automatic) return;
 
+	if (!ensure(AmmoComponent) || !AmmoComponent->TryConsumeAmmo()) return;
+
 	bCanFire = false;
 	ElapsedTimeSinceFired = 0.f;
 	
@@ -156,6 +161,20 @@ void AMETWeapon::Fire(bool bInHeld)
 		{
 			RecoilComponent->OnFireActionHeld();
 		}
+	}
+}
+
+bool AMETWeapon::CanFire() const
+{
+	if(!ensure(AmmoComponent)) return false;
+	return AmmoComponent->GetAmmoCount() > 0 && bCanFire;
+}
+
+void AMETWeapon::Reload() const
+{
+	if (ensure(AmmoComponent))
+	{
+		AmmoComponent->Reload();
 	}
 }
 

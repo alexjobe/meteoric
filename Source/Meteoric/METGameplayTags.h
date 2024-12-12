@@ -9,6 +9,7 @@ namespace METGameplayTags
 	/* Input tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_FireWeapon);
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_AimDownSights);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_ReloadWeapon);
 
 	/* Attribute tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Attribute_Health);
@@ -34,4 +35,9 @@ namespace METGameplayTags
 
 	/* Event tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventTag_FireCooldown);
+
+	/* Weapon tags */
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Pistol);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Rifle);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Shotgun);
 }

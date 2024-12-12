@@ -27,6 +27,9 @@ public:
 	//~ End ACharacter interface
 	
 	class UMETWeaponManager* GetWeaponManager() const { return WeaponManager; }
+	class UMETAmmoManager* GetAmmoManager() const { return AmmoManager; }
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	class AMETWeapon* GetWeapon() const;
 
 	/* Aim down sights */
@@ -58,6 +61,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponManager> WeaponManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMETAmmoManager> AmmoManager;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;

@@ -12,6 +12,7 @@
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
+#include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 #include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY(LogMETCharacter);
@@ -32,6 +33,8 @@ AMETCharacter::AMETCharacter()
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
+
+	AmmoManager = CreateDefaultSubobject<UMETAmmoManager>(TEXT("AmmoManager"));
 }
 
 UAbilitySystemComponent* AMETCharacter::GetAbilitySystemComponent() const

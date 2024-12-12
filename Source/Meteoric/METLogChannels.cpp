@@ -2,5 +2,5 @@
 
 #include "METLogChannels.h"
 
-DEFINE_LOG_CATEGORY(LogMet)
-DEFINE_LOG_CATEGORY(LogMetAbilitySystem)
+DEFINE_LOG_CATEGORY(LogMET)
+DEFINE_LOG_CATEGORY(LogMETAbilitySystem)

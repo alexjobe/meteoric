@@ -59,7 +59,7 @@ void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, 
 	FiringMode = InFiringMode;
 
 	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InOwningCharacter);
-	if (ensure(ASC))
+	if (ensure(InOwningCharacter) && InOwningCharacter->IsLocallyControlled() && ensure(ASC))
 	{
 		GameplayTagEventHandle_FireWeapon = ASC->RegisterGameplayTagEvent(METGameplayTags::Ability_FireWeapon).AddLambda([&](FGameplayTag InTag, int32 InCount)
 		{

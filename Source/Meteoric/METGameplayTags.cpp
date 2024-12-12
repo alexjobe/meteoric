@@ -7,6 +7,7 @@ namespace METGameplayTags
 	/* Input tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_FireWeapon, "InputTag.FireWeapon", "Fire weapon input");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_AimDownSights, "InputTag.AimDownSights", "Aim down sights input");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_ReloadWeapon, "InputTag.ReloadWeapon", "Reload weapon input");
 
 	/* Attribute tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Health, "Attribute.Health", "Health attribute");
@@ -32,4 +33,9 @@ namespace METGameplayTags
 
 	/* Event tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventTag_FireCooldown, "EventTag.FireCooldown", "Fire cooldown event");
+
+	/* Weapon tags */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Pistol, "Weapon.Pistol", "Pistol weapon tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Rifle, "Weapon.Rifle", "Rifle weapon tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Shotgun, "Weapon.Shotgun", "Shotgun weapon tag");
 }
