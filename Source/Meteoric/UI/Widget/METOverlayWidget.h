@@ -7,6 +7,7 @@
 #include "METOverlayWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeValueChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChangedSignature, int32, AmmoCount, int32, MaxAmmo);
 
 /**
  * 
@@ -17,12 +18,14 @@ class METEORIC_API UMETOverlayWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UMETOverlayWidget(const FObjectInitializer& ObjectInitializer);
+	explicit UMETOverlayWidget(const FObjectInitializer& ObjectInitializer);
 	
-	void SetHealth(float InNewValue);
-	void SetMaxHealth(float InNewValue);
-	void SetArmor(float InNewValue);
-	void SetMaxArmor(float InNewValue);
+	void SetHealth(const float InNewValue);
+	void SetMaxHealth(const float InNewValue);
+	void SetArmor(const float InNewValue);
+	void SetMaxArmor(const float InNewValue);
+	void SetWeaponAmmo(const int32 InAmmoCount, const int32 InMaxAmmo);
+	void SetReserveAmmo(const int32 InAmmoCount, const int32 InMaxAmmo);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const { return Health; }
@@ -35,6 +38,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetMaxArmor() const { return MaxArmor; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetWeaponAmmo() const { return WeaponAmmo; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetWeaponMaxAmmo() const { return WeaponMaxAmmo; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetReserveAmmo() const { return ReserveAmmo; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int32 GetReserveMaxAmmo() const { return ReserveMaxAmmo; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealthPercentage() const { return (MaxHealth != 0.0f) ? (Health / MaxHealth) : 0.0f; }
@@ -54,9 +69,20 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")
 	FOnAttributeValueChangedSignature OnMaxArmorChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Ammo")
+	FOnAmmoChangedSignature OnWeaponAmmoChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Ammo")
+	FOnAmmoChangedSignature OnReserveAmmoChanged;
+
 protected:
 	float Health;
 	float MaxHealth;
 	float Armor;
 	float MaxArmor;
+	int32 WeaponAmmo;
+	int32 WeaponMaxAmmo;
+	int32 ReserveAmmo;
+	int32 ReserveMaxAmmo;
+	
 };

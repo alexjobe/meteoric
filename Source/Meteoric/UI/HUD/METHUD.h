@@ -37,5 +37,10 @@ protected:
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
 	void ArmorChanged(const FOnAttributeChangeData& Data) const;
 	void MaxArmorChanged(const FOnAttributeChangeData& Data) const;
-	
+
+	UFUNCTION()
+	void AmmoManager_WeaponAmmoChanged(int32 AmmoCount, int32 MaxAmmo);
+
+	UFUNCTION()
+	void AmmoManager_ReserveAmmoChanged(int32 AmmoCount, int32 MaxAmmo);
 };

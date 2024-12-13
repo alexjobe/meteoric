@@ -66,7 +66,7 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 
 	InitializeDefaultAttributes();
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	const APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController && PlayerController->IsLocalController())
 	{
 		if (AMETHUD* MetHUD = Cast<AMETHUD>(PlayerController->GetHUD()))

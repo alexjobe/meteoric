@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 
 UMETWeaponAmmoComponent::UMETWeaponAmmoComponent()
-	: MaxCount(20)
+	: MaxAmmo(20)
 	, AmmoCount(20)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -16,38 +16,53 @@ UMETWeaponAmmoComponent::UMETWeaponAmmoComponent()
 void UMETWeaponAmmoComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	AmmoCount = MaxCount;
+	AmmoCount = MaxAmmo;
 }
 
 int32 UMETWeaponAmmoComponent::Reload()
 {
-	UMETAmmoManager* AmmoManager = OwningCharacter ? OwningCharacter->FindComponentByClass<UMETAmmoManager>() : nullptr;
 	if (!ensure(AmmoManager)) return AmmoCount;
-
-	const int32 ReloadAmount = AmmoManager->TryConsumeAmmo(CurrentAmmoType, FMath::Max(0, MaxCount - AmmoCount));
+	
+	const int32 ReloadAmount = AmmoManager->TryConsumeReserveAmmo(CurrentAmmoType, FMath::Max(0, MaxAmmo - AmmoCount));
 	AmmoCount += ReloadAmount;
+	AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
 	return AmmoCount;
 }
 
 bool UMETWeaponAmmoComponent::TryConsumeAmmo(const int32 InConsumeCount)
 {
+	if (!ensure(AmmoManager)) return false;
 	if (InConsumeCount < 0) return false;
+	
 	bool bConsumed = false;
 	if (const int32 NewCount = AmmoCount - InConsumeCount; NewCount >= 0)
 	{
 		AmmoCount = NewCount;
 		bConsumed = true;
+		AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
 	}
-	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("Ammo Remaining: %i"), AmmoCount));
 	return bConsumed;
 }
 
 void UMETWeaponAmmoComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter)
 {
+	if (!ensure(InOwningCharacter)) return;
 	OwningCharacter = InOwningCharacter;
+	AmmoManager = OwningCharacter->FindComponentByClass<UMETAmmoManager>();
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
+		AmmoManager->WeaponAmmoTypeChanged(CurrentAmmoType);
+	}
 }
 
 void UMETWeaponAmmoComponent::OnWeaponUnequipped()
 {
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->WeaponAmmoChanged(0, 0);
+		AmmoManager->WeaponAmmoTypeChanged(nullptr);
+	}
 	OwningCharacter = nullptr;
+	AmmoManager = nullptr;
 }

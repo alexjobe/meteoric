@@ -14,7 +14,7 @@ class METEORIC_API UMETWeaponAmmoComponent : public UActorComponent
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
-	int32 MaxCount;
+	int32 MaxAmmo;
 	
 	UMETWeaponAmmoComponent();
 
@@ -22,7 +22,11 @@ public:
 	
 	int32 Reload();
 
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	int32 GetAmmoCount() const { return AmmoCount; }
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	int32 GetMaxAmmo() const { return MaxAmmo; }
 
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);
@@ -39,4 +43,7 @@ protected:
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class UMETAmmoManager> AmmoManager;
 };

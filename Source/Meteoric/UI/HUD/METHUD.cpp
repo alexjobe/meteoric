@@ -4,13 +4,23 @@
 #include "METHUD.h"
 
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/Character.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 #include "Meteoric/UI/Widget/METOverlayWidget.h"
+#include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
 void AMETHUD::Initialize(UMETAbilitySystemComponent* InASC)
 {
 	if (!ensure(InASC)) return;
+
+	ACharacter* OwningCharacter = Cast<ACharacter>(InASC->GetAvatarActor());
+	UMETAmmoManager* AmmoManager = OwningCharacter ? OwningCharacter->FindComponentByClass<UMETAmmoManager>() : nullptr;
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->OnWeaponAmmoChanged().AddUniqueDynamic(this, &ThisClass::AMETHUD::AmmoManager_WeaponAmmoChanged);
+		AmmoManager->OnReserveAmmoChanged().AddUniqueDynamic(this, &ThisClass::AMETHUD::AmmoManager_ReserveAmmoChanged);
+	}
 
 	OverlayWidget = CreateWidget<UMETOverlayWidget>(GetOwningPlayerController(), OverlayWidgetClass, FName("OverlayWidget"));
 	
@@ -85,4 +95,20 @@ void AMETHUD::ArmorChanged(const FOnAttributeChangeData& Data) const
 void AMETHUD::MaxArmorChanged(const FOnAttributeChangeData& Data) const
 {
 	SetMaxArmor(Data.NewValue);
+}
+
+void AMETHUD::AmmoManager_WeaponAmmoChanged(int32 AmmoCount, int32 MaxAmmo)
+{
+	if (OverlayWidget)
+	{
+		OverlayWidget->SetWeaponAmmo(AmmoCount, MaxAmmo);
+	}
+}
+
+void AMETHUD::AmmoManager_ReserveAmmoChanged(int32 AmmoCount, int32 MaxAmmo)
+{
+	if (OverlayWidget)
+	{
+		OverlayWidget->SetReserveAmmo(AmmoCount, MaxAmmo);
+	}
 }
