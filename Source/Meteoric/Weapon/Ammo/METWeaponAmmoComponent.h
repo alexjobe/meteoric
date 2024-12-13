@@ -35,15 +35,22 @@ public:
 	void OnWeaponUnequipped();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETAmmoDataAsset> CurrentAmmoType;
-	
+
+	UPROPERTY(Replicated)
 	int32 AmmoCount;
 
 private:
-	UPROPERTY(Transient)
+	UPROPERTY(ReplicatedUsing = OnRep_OwningCharacter)
 	TObjectPtr<ACharacter> OwningCharacter;
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UMETAmmoManager> AmmoManager;
+
+	UFUNCTION()
+	void OnRep_OwningCharacter(ACharacter* InOldOwner);
+
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 };

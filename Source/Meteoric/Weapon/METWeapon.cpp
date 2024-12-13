@@ -41,6 +41,7 @@ AMETWeapon::AMETWeapon()
 	InteractableComponent = CreateDefaultSubobject<UMETInteractableComponent>("InteractableComponent");
 	ProjectileWeaponComponent = CreateDefaultSubobject<UMETProjectileWeaponComponent>("ProjectileWeaponComponent");
 	AmmoComponent = CreateDefaultSubobject<UMETWeaponAmmoComponent>("AmmoComponent");
+	AmmoComponent->SetIsReplicated(true);
 }
 
 void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)

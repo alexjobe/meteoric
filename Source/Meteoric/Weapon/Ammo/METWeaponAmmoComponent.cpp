@@ -5,6 +5,7 @@
 
 #include "METAmmoManager.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 
 UMETWeaponAmmoComponent::UMETWeaponAmmoComponent()
 	: MaxAmmo(20)
@@ -22,7 +23,7 @@ void UMETWeaponAmmoComponent::BeginPlay()
 int32 UMETWeaponAmmoComponent::Reload()
 {
 	if (!ensure(AmmoManager)) return AmmoCount;
-	
+
 	const int32 ReloadAmount = AmmoManager->TryConsumeReserveAmmo(CurrentAmmoType, FMath::Max(0, MaxAmmo - AmmoCount));
 	AmmoCount += ReloadAmount;
 	AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
@@ -47,6 +48,7 @@ bool UMETWeaponAmmoComponent::TryConsumeAmmo(const int32 InConsumeCount)
 void UMETWeaponAmmoComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter)
 {
 	if (!ensure(InOwningCharacter)) return;
+
 	OwningCharacter = InOwningCharacter;
 	AmmoManager = OwningCharacter->FindComponentByClass<UMETAmmoManager>();
 	if (ensure(AmmoManager))
@@ -58,11 +60,31 @@ void UMETWeaponAmmoComponent::OnWeaponEquipped(ACharacter* const InOwningCharact
 
 void UMETWeaponAmmoComponent::OnWeaponUnequipped()
 {
-	if (ensure(AmmoManager))
+	if (AmmoManager)
 	{
 		AmmoManager->WeaponAmmoChanged(0, 0);
 		AmmoManager->WeaponAmmoTypeChanged(nullptr);
 	}
 	OwningCharacter = nullptr;
 	AmmoManager = nullptr;
+}
+
+void UMETWeaponAmmoComponent::OnRep_OwningCharacter(ACharacter* InOldOwner)
+{
+	if (OwningCharacter)
+	{
+		AmmoManager = OwningCharacter->FindComponentByClass<UMETAmmoManager>();
+	}
+	else
+	{
+		AmmoManager = nullptr;
+	}
+}
+
+void UMETWeaponAmmoComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UMETWeaponAmmoComponent, CurrentAmmoType);
+	DOREPLIFETIME(UMETWeaponAmmoComponent, AmmoCount);
+	DOREPLIFETIME(UMETWeaponAmmoComponent, OwningCharacter);
 }

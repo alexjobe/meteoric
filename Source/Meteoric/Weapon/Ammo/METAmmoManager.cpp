@@ -17,26 +17,28 @@ int32 UMETAmmoManager::GetReserveAmmoCount(UMETAmmoDataAsset* const InType)
 
 int32 UMETAmmoManager::AddReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InAmmoCount)
 {
-	if (!ensure(InType)) return 0;
-	int32& Count = ReserveAmmoTypeToCount.FindOrAdd(InType);
+	if (!ensure(InType) || !GetOwner()->HasAuthority()) return 0;
+	int32& AmmoCount = ReserveAmmoTypeToCount.FindOrAdd(InType);
 	if (InAmmoCount > 0)
 	{
-		Count = FMath::Min(Count + InAmmoCount, ReserveMaxAmmo);
-		ReserveAmmoChangedEvent.Broadcast(Count, ReserveMaxAmmo);
+		AmmoCount = FMath::Min(AmmoCount + InAmmoCount, ReserveMaxAmmo);
+		ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+		Client_SetReserveAmmo(InType, AmmoCount, ReserveMaxAmmo);
 	}
-	return Count;
+	return AmmoCount;
 }
 
 int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InConsumeCount)
 {
-	if (!ensure(InType)) return 0;
-	int32& Count = ReserveAmmoTypeToCount.FindOrAdd(InType);
+	if (!ensure(InType) || !GetOwner()->HasAuthority()) return 0;
+	int32& AmmoCount = ReserveAmmoTypeToCount.FindOrAdd(InType);
 	
-	const int32 OriginalCount = Count;
+	const int32 OriginalCount = AmmoCount;
 	const int32 ConsumeCount = InConsumeCount > 0 ? InConsumeCount : 0;
-	Count = FMath::Max(0, OriginalCount - ConsumeCount);
+	AmmoCount = FMath::Max(0, OriginalCount - ConsumeCount);
 
-	ReserveAmmoChangedEvent.Broadcast(Count, ReserveMaxAmmo);
+	ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+	Client_SetReserveAmmo(InType, AmmoCount, ReserveMaxAmmo);
 
 	return FMath::Min(OriginalCount, ConsumeCount);
 }
@@ -44,10 +46,46 @@ int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, co
 void UMETAmmoManager::WeaponAmmoChanged(const int32 InAmmoCount, const int32 InMaxAmmo) const
 {
 	WeaponAmmoChangedEvent.Broadcast(InAmmoCount, InMaxAmmo);
+	if (GetOwner()->HasAuthority())
+	{
+		Client_WeaponAmmoChanged(InAmmoCount, InMaxAmmo);
+	}
 }
 
 void UMETAmmoManager::WeaponAmmoTypeChanged(UMETAmmoDataAsset* const InType)
 {
 	const int32 AmmoCount = GetReserveAmmoCount(InType);
 	ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+	if (GetOwner()->HasAuthority())
+	{
+		Client_WeaponAmmoTypeChanged(InType);
+	}
+}
+
+void UMETAmmoManager::Client_WeaponAmmoTypeChanged_Implementation(UMETAmmoDataAsset* InType)
+{
+	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		WeaponAmmoTypeChanged(InType);
+	}
+}
+
+void UMETAmmoManager::Client_WeaponAmmoChanged_Implementation(const int32 InAmmoCount, const int32 InMaxAmmo) const
+{
+	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		WeaponAmmoChanged(InAmmoCount, InMaxAmmo);
+	}
+}
+
+void UMETAmmoManager::Client_SetReserveAmmo_Implementation(UMETAmmoDataAsset* InType, const int32 InAmmoCount, const int32 InMaxAmmo)
+{
+	if (!ensure(InType)) return;
+	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		int32& Count = ReserveAmmoTypeToCount.FindOrAdd(InType);
+		Count = InAmmoCount;
+		ReserveMaxAmmo = InMaxAmmo;
+		ReserveAmmoChangedEvent.Broadcast(Count, ReserveMaxAmmo);
+	}
 }
