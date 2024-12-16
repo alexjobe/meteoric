@@ -32,6 +32,8 @@ namespace METGameplayTags
 
 	/* Ability tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_FireWeapon);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_AimDownSights);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_ReloadWeapon);
 
 	/* Event tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventTag_FireCooldown);

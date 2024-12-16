@@ -108,6 +108,9 @@ protected:
 	TObjectPtr<UAnimMontage> CharacterEquipWeaponMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> CharacterReloadMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> WeaponFireAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Firing", meta = (AllowPrivateAccess = "true", ClampMin = "0.0"))

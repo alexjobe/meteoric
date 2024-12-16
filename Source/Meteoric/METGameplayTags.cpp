@@ -30,6 +30,8 @@ namespace METGameplayTags
 
 	/* Ability tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_FireWeapon, "Ability.FireWeapon", "Fire weapon ability");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_AimDownSights, "Ability.AimDownSights", "Aim down sights ability");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_ReloadWeapon, "Ability.ReloadWeapon", "Reload weapon ability");
 
 	/* Event tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventTag_FireCooldown, "EventTag.FireCooldown", "Fire cooldown event");

@@ -18,6 +18,8 @@ UMETAbility_FireWeapon::UMETAbility_FireWeapon()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	InputTag = METGameplayTags::InputTag_FireWeapon;
 	ActivationOwnedTags.AddTag(METGameplayTags::Ability_FireWeapon);
+	AbilityTags.AddTag(METGameplayTags::Ability_FireWeapon);
+	CancelAbilitiesWithTag.AddTag(METGameplayTags::Ability_ReloadWeapon);
 }
 
 void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
