@@ -13,6 +13,7 @@
 #include "GameFramework/Character.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/Animation/METAnimationUtils.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -149,10 +150,10 @@ void AMETWeapon::Fire(bool bInHeld)
 	bCanFire = false;
 	ElapsedTimeSinceFired = 0.f;
 	
-	if(ensure(OwningCharacter) && WeaponFireAnim)
+	if(ensure(OwningCharacter) && WeaponFireMontage)
 	{
 		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
-		Mesh->PlayAnimation(WeaponFireAnim, false);
+		UMETAnimationUtils::PlayAnimMontage(Mesh, WeaponFireMontage);
 	}
 
 	if(ensure(RecoilComponent))
@@ -171,12 +172,23 @@ bool AMETWeapon::CanFire() const
 	return AmmoComponent->GetAmmoCount() > 0 && bCanFire;
 }
 
-void AMETWeapon::Reload() const
+void AMETWeapon::StartReload() const
 {
-	if (ensure(AmmoComponent))
+	OnReloadEvent.Broadcast(true);
+	if (WeaponReloadMontage)
+	{
+		UMETAnimationUtils::PlayAnimMontage(Mesh, WeaponReloadMontage);
+	}
+}
+
+void AMETWeapon::FinishReload(const bool bSuccess) const
+{
+	if (bSuccess && ensure(AmmoComponent))
 	{
 		AmmoComponent->Reload();
 	}
+
+	OnReloadEvent.Broadcast(false);
 }
 
 void AMETWeapon::Tick(float DeltaTime)

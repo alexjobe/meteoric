@@ -66,9 +66,16 @@ public:
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
 
-	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	void Reload() const;
+	UFUNCTION(BlueprintCallable, Category = "Reload")
+	void StartReload() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Reload")
+	void FinishReload(const bool bSuccess) const;
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReloadSignature, bool, bIsReloading);
+	FOnReloadSignature& OnReload() { return OnReloadEvent; }
+
+	ACharacter* GetOwningCharacter() { return OwningCharacter; }
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
@@ -98,20 +105,23 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractableComponent> InteractableComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterFireMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimSequence> CharacterIdleWeaponAnim;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterEquipWeaponMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> CharacterReloadMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimSequence> WeaponFireAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Weapon", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> WeaponFireMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Weapon", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> WeaponReloadMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Firing", meta = (AllowPrivateAccess = "true", ClampMin = "0.0"))
 	float FiringRate;
@@ -127,6 +137,9 @@ private:
 	bool bCanFire;
 	float ElapsedTimeSinceFired;
 	float ElapsedTimeSinceDropped;
+
+	UPROPERTY(BlueprintAssignable, Category = "Reload", meta = (AllowPrivateAccess = "true"))
+	FOnReloadSignature OnReloadEvent;
 
 	UFUNCTION()
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);

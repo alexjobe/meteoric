@@ -15,9 +15,9 @@ class METEORIC_API UMETAbilitySystemUtils : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "GAS")
+	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
 	static FActiveGameplayEffectHandle ApplyEffectClassToActor(const AActor* InTarget, const AActor* InSource, const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel);
 
-	UFUNCTION(BlueprintCallable, Category = "GAS")
+	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
 	static void RemoveEffectFromActor(const AActor* InTarget, const FActiveGameplayEffectHandle& InHandle, int32 StacksToRemove=-1);
 };

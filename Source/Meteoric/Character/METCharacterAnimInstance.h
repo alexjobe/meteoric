@@ -16,10 +16,11 @@ class METEORIC_API UMETCharacterAnimInstance : public UAnimInstance
 
 public:
 	UMETCharacterAnimInstance();
-	
-	virtual void NativeInitializeAnimation() override;
 
+	//~ Begin UAnimInstance interface
+	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	//~ End UAnimInstance interface
 
 	UFUNCTION(BlueprintGetter)
 	UAnimSequence* GetIdleWeaponAnim() const { return IdleWeaponAnim; }
