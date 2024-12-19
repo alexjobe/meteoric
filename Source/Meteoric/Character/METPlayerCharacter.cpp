@@ -16,7 +16,7 @@
 AMETPlayerCharacter::AMETPlayerCharacter()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetMesh(), FName("CameraSocket"));
+	CameraBoom->SetupAttachment(GetMesh(), FName("S_Camera"));
 	CameraBoom->TargetArmLength = 0.f;
 
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
