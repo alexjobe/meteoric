@@ -179,6 +179,11 @@ void AMETWeapon::StartReload() const
 	{
 		UMETAnimationUtils::PlayAnimMontage(Mesh, WeaponReloadMontage);
 	}
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		Multicast_OnReload(true);
+	}
 }
 
 void AMETWeapon::FinishReload(const bool bSuccess) const
@@ -189,6 +194,11 @@ void AMETWeapon::FinishReload(const bool bSuccess) const
 	}
 
 	OnReloadEvent.Broadcast(false);
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		Multicast_OnReload(false);
+	}
 }
 
 void AMETWeapon::Tick(float DeltaTime)
@@ -224,6 +234,15 @@ void AMETWeapon::Tick(float DeltaTime)
 			SetWeaponPhysicsEnabled(false);
 			SetActorTickEnabled(false);
 		}
+	}
+}
+
+void AMETWeapon::Multicast_OnReload_Implementation(const bool bIsReloading) const
+{
+	if (!ensure(OwningCharacter)) return;
+	if (OwningCharacter->GetLocalRole() == ROLE_SimulatedProxy)
+	{
+		OnReloadEvent.Broadcast(bIsReloading);
 	}
 }
 

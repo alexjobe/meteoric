@@ -140,6 +140,9 @@ private:
 
 	UPROPERTY(BlueprintAssignable, Category = "Reload", meta = (AllowPrivateAccess = "true"))
 	FOnReloadSignature OnReloadEvent;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnReload(const bool bIsReloading) const;
 
 	UFUNCTION()
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);
