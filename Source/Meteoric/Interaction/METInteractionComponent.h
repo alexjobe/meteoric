@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "METInteractionComponent.generated.h"
 
 
@@ -18,11 +19,17 @@ class METEORIC_API UMETInteractionComponent : public UActorComponent
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
-	float LineTraceDistance;
+	float TraceDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+	float SphereTraceRadius;
 
 	/* How long the player has to wait between triggering interactions */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float InteractionCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTrace;
 	
 	UMETInteractionComponent();
 

@@ -17,7 +17,7 @@ public:
 
 	void Interact(AActor* const InSourceActor) const;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractEvent, AActor*, SourceActor);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractEvent, AActor* const, SourceActor);
 	FInteractEvent& OnInteractEvent() { return InteractEvent; }
 
 private:

@@ -11,8 +11,10 @@
 #include "Meteoric/Meteoric.h"
 
 UMETInteractionComponent::UMETInteractionComponent()
-	: LineTraceDistance(200.f)
+	: TraceDistance(200.f)
+	, SphereTraceRadius(20.f)
 	, InteractionCooldown(1.f)
+	, DrawDebugTrace(EDrawDebugTrace::None)
 	, LastTimeInteracted(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -42,13 +44,14 @@ void UMETInteractionComponent::Server_Interact_Implementation(const FMinimalView
 UMETInteractableComponent* UMETInteractionComponent::FindInteractableComponent(const FMinimalViewInfo& InViewInfo) const
 {
 	const FVector TraceStart = InViewInfo.Location;
-	const FVector TraceEnd = TraceStart + InViewInfo.Rotation.Vector() * LineTraceDistance;
+	const FVector TraceEnd = TraceStart + InViewInfo.Rotation.Vector() * TraceDistance;
 
 	FHitResult HitResult;
 
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(OwningCharacter);
-	UKismetSystemLibrary::SphereTraceSingle(this, TraceStart, TraceEnd, 20.f, UEngineTypes::ConvertToTraceType(ECC_Interaction), false, ActorsToIgnore, EDrawDebugTrace::None, HitResult, true);
+	
+	UKismetSystemLibrary::SphereTraceSingle(this, TraceStart, TraceEnd, SphereTraceRadius, UEngineTypes::ConvertToTraceType(ECC_Interaction), false, ActorsToIgnore, DrawDebugTrace, HitResult, true);
 	
 	if(const AActor* HitActor = HitResult.GetActor())
 	{
