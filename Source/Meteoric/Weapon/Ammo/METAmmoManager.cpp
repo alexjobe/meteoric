@@ -22,7 +22,7 @@ int32 UMETAmmoManager::AddReserveAmmo(UMETAmmoDataAsset* const InType, const int
 	if (InAmmoCount > 0)
 	{
 		AmmoCount = FMath::Min(AmmoCount + InAmmoCount, ReserveMaxAmmo);
-		ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+		ReserveAmmoChangedEvent.Broadcast(InType, AmmoCount, ReserveMaxAmmo);
 		Client_SetReserveAmmo(InType, AmmoCount, ReserveMaxAmmo);
 	}
 	return AmmoCount;
@@ -37,7 +37,7 @@ int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, co
 	const int32 ConsumeCount = InConsumeCount > 0 ? InConsumeCount : 0;
 	AmmoCount = FMath::Max(0, OriginalCount - ConsumeCount);
 
-	ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+	ReserveAmmoChangedEvent.Broadcast(InType, AmmoCount, ReserveMaxAmmo);
 	Client_SetReserveAmmo(InType, AmmoCount, ReserveMaxAmmo);
 
 	return FMath::Min(OriginalCount, ConsumeCount);
@@ -45,7 +45,7 @@ int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, co
 
 void UMETAmmoManager::WeaponAmmoChanged(const int32 InAmmoCount, const int32 InMaxAmmo) const
 {
-	WeaponAmmoChangedEvent.Broadcast(InAmmoCount, InMaxAmmo);
+	WeaponAmmoChangedEvent.Broadcast(EquippedWeaponAmmoType, InAmmoCount, InMaxAmmo);
 	if (GetOwner()->HasAuthority())
 	{
 		Client_WeaponAmmoChanged(InAmmoCount, InMaxAmmo);
@@ -54,8 +54,10 @@ void UMETAmmoManager::WeaponAmmoChanged(const int32 InAmmoCount, const int32 InM
 
 void UMETAmmoManager::WeaponAmmoTypeChanged(UMETAmmoDataAsset* const InType)
 {
+	if (EquippedWeaponAmmoType == InType) return;
+	EquippedWeaponAmmoType = InType;
 	const int32 AmmoCount = GetReserveAmmoCount(InType);
-	ReserveAmmoChangedEvent.Broadcast(AmmoCount, ReserveMaxAmmo);
+	WeaponAmmoTypeChangedEvent.Broadcast(InType, AmmoCount, ReserveMaxAmmo);
 	if (GetOwner()->HasAuthority())
 	{
 		Client_WeaponAmmoTypeChanged(InType);
@@ -86,6 +88,6 @@ void UMETAmmoManager::Client_SetReserveAmmo_Implementation(UMETAmmoDataAsset* In
 		int32& Count = ReserveAmmoTypeToCount.FindOrAdd(InType);
 		Count = InAmmoCount;
 		ReserveMaxAmmo = InMaxAmmo;
-		ReserveAmmoChangedEvent.Broadcast(Count, ReserveMaxAmmo);
+		ReserveAmmoChangedEvent.Broadcast(InType, Count, ReserveMaxAmmo);
 	}
 }

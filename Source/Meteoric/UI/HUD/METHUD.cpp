@@ -20,6 +20,7 @@ void AMETHUD::Initialize(UMETAbilitySystemComponent* InASC)
 	{
 		AmmoManager->OnWeaponAmmoChanged().AddUniqueDynamic(this, &ThisClass::AMETHUD::AmmoManager_WeaponAmmoChanged);
 		AmmoManager->OnReserveAmmoChanged().AddUniqueDynamic(this, &ThisClass::AMETHUD::AmmoManager_ReserveAmmoChanged);
+		AmmoManager->OnWeaponAmmoTypeChanged().AddUniqueDynamic(this, &ThisClass::AMETHUD::AmmoManager_WeaponAmmoTypeChanged);
 	}
 
 	OverlayWidget = CreateWidget<UMETOverlayWidget>(GetOwningPlayerController(), OverlayWidgetClass, FName("OverlayWidget"));
@@ -97,7 +98,7 @@ void AMETHUD::MaxArmorChanged(const FOnAttributeChangeData& Data) const
 	SetMaxArmor(Data.NewValue);
 }
 
-void AMETHUD::AmmoManager_WeaponAmmoChanged(int32 AmmoCount, int32 MaxAmmo)
+void AMETHUD::AmmoManager_WeaponAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
 {
 	if (OverlayWidget)
 	{
@@ -105,8 +106,17 @@ void AMETHUD::AmmoManager_WeaponAmmoChanged(int32 AmmoCount, int32 MaxAmmo)
 	}
 }
 
-void AMETHUD::AmmoManager_ReserveAmmoChanged(int32 AmmoCount, int32 MaxAmmo)
+void AMETHUD::AmmoManager_ReserveAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
 {
+	if (OverlayWidget && AmmoType == EquippedWeaponAmmoType)
+	{
+		OverlayWidget->SetReserveAmmo(AmmoCount, MaxAmmo);
+	}
+}
+
+void AMETHUD::AmmoManager_WeaponAmmoTypeChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
+{
+	EquippedWeaponAmmoType = AmmoType;
 	if (OverlayWidget)
 	{
 		OverlayWidget->SetReserveAmmo(AmmoCount, MaxAmmo);

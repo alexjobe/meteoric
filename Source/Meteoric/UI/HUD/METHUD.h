@@ -38,9 +38,15 @@ protected:
 	void ArmorChanged(const FOnAttributeChangeData& Data) const;
 	void MaxArmorChanged(const FOnAttributeChangeData& Data) const;
 
-	UFUNCTION()
-	void AmmoManager_WeaponAmmoChanged(int32 AmmoCount, int32 MaxAmmo);
+	UPROPERTY(Transient)
+	TObjectPtr<class UMETAmmoDataAsset> EquippedWeaponAmmoType;
 
 	UFUNCTION()
-	void AmmoManager_ReserveAmmoChanged(int32 AmmoCount, int32 MaxAmmo);
+	void AmmoManager_WeaponAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo);
+
+	UFUNCTION()
+	void AmmoManager_ReserveAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo);
+	
+	UFUNCTION()
+	void AmmoManager_WeaponAmmoTypeChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo);
 };

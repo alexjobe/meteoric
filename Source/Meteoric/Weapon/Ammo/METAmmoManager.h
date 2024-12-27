@@ -31,11 +31,15 @@ public:
 	void WeaponAmmoChanged(const int32 InAmmoCount, const int32 InMaxAmmo) const;
 	void WeaponAmmoTypeChanged(UMETAmmoDataAsset* const InType);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAmmoChangedSignature, int32, AmmoCount, int32, MaxAmmo);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAmmoChangedSignature, UMETAmmoDataAsset* const, AmmoType, int32, AmmoCount, int32, MaxAmmo);
 	FAmmoChangedSignature& OnWeaponAmmoChanged() { return WeaponAmmoChangedEvent; }
 	FAmmoChangedSignature& OnReserveAmmoChanged() { return ReserveAmmoChangedEvent; }
+	FAmmoChangedSignature& OnWeaponAmmoTypeChanged() { return WeaponAmmoTypeChangedEvent; }
 
 protected:
+	UPROPERTY(Transient)
+	TObjectPtr<UMETAmmoDataAsset> EquippedWeaponAmmoType;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
 	TMap<TObjectPtr<UMETAmmoDataAsset>, int32> ReserveAmmoTypeToCount;
 
@@ -51,4 +55,5 @@ protected:
 private:
 	FAmmoChangedSignature WeaponAmmoChangedEvent;
 	FAmmoChangedSignature ReserveAmmoChangedEvent;
+	FAmmoChangedSignature WeaponAmmoTypeChangedEvent;
 };

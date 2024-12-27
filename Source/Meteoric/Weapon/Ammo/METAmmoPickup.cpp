@@ -13,6 +13,7 @@ AMETAmmoPickup::AMETAmmoPickup()
 	: AmmoCount(100.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	check(Mesh)
