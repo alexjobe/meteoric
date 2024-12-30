@@ -3,9 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "METAmmoManager.generated.h"
 
+USTRUCT()
+struct FReserveAmmoData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TMap<TObjectPtr<class UMETAmmoDataAsset>, int32> AmmoTypeToCount;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class METEORIC_API UMETAmmoManager : public UActorComponent
@@ -19,7 +28,7 @@ public:
 	int32 ReserveMaxAmmo;
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	int32 GetReserveAmmoCount(class UMETAmmoDataAsset* const InType);
+	int32 GetReserveAmmoCount(UMETAmmoDataAsset* const InType);
 
 	// Adds ammo and returns new count
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
@@ -39,9 +48,9 @@ public:
 protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UMETAmmoDataAsset> EquippedWeaponAmmoType;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
-	TMap<TObjectPtr<UMETAmmoDataAsset>, int32> ReserveAmmoTypeToCount;
+
+	UPROPERTY(Transient)
+	TMap<FGameplayTag, FReserveAmmoData> WeaponToReserveAmmo;
 
 	UFUNCTION(Client, Reliable)
 	void Client_SetReserveAmmo(UMETAmmoDataAsset* InType, const int32 InAmmoCount, const int32 InMaxAmmo);

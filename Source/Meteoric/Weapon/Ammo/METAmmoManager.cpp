@@ -3,6 +3,8 @@
 
 #include "METAmmoManager.h"
 
+#include "METAmmoDataAsset.h"
+
 UMETAmmoManager::UMETAmmoManager()
 	: ReserveMaxAmmo(1000)
 {
@@ -11,14 +13,17 @@ UMETAmmoManager::UMETAmmoManager()
 
 int32 UMETAmmoManager::GetReserveAmmoCount(UMETAmmoDataAsset* const InType)
 {
-	if (!InType) return 0;
-	return ReserveAmmoTypeToCount.FindOrAdd(InType);
+	if (!InType || !ensure(InType->WeaponTag.IsValid())) return 0;
+	auto& [AmmoTypeToCount] = WeaponToReserveAmmo.FindOrAdd(InType->WeaponTag);
+	return AmmoTypeToCount.FindOrAdd(InType);
 }
 
 int32 UMETAmmoManager::AddReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InAmmoCount)
 {
-	if (!ensure(InType) || !GetOwner()->HasAuthority()) return 0;
-	int32& AmmoCount = ReserveAmmoTypeToCount.FindOrAdd(InType);
+	if (!ensure(InType) || !ensure(InType->WeaponTag.IsValid()) || !GetOwner()->HasAuthority()) return 0;
+	auto& [AmmoTypeToCount] = WeaponToReserveAmmo.FindOrAdd(InType->WeaponTag);
+	int32& AmmoCount = AmmoTypeToCount.FindOrAdd(InType);
+	
 	if (InAmmoCount > 0)
 	{
 		AmmoCount = FMath::Min(AmmoCount + InAmmoCount, ReserveMaxAmmo);
@@ -30,8 +35,9 @@ int32 UMETAmmoManager::AddReserveAmmo(UMETAmmoDataAsset* const InType, const int
 
 int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InConsumeCount)
 {
-	if (!ensure(InType) || !GetOwner()->HasAuthority()) return 0;
-	int32& AmmoCount = ReserveAmmoTypeToCount.FindOrAdd(InType);
+	if (!ensure(InType) || !ensure(InType->WeaponTag.IsValid()) || !GetOwner()->HasAuthority()) return 0;
+	auto& [AmmoTypeToCount] = WeaponToReserveAmmo.FindOrAdd(InType->WeaponTag);
+	int32& AmmoCount = AmmoTypeToCount.FindOrAdd(InType);
 	
 	const int32 OriginalCount = AmmoCount;
 	const int32 ConsumeCount = InConsumeCount > 0 ? InConsumeCount : 0;
@@ -82,12 +88,13 @@ void UMETAmmoManager::Client_WeaponAmmoChanged_Implementation(const int32 InAmmo
 
 void UMETAmmoManager::Client_SetReserveAmmo_Implementation(UMETAmmoDataAsset* InType, const int32 InAmmoCount, const int32 InMaxAmmo)
 {
-	if (!ensure(InType)) return;
+	if (!ensure(InType) || !ensure(InType->WeaponTag.IsValid())) return;
 	if (GetOwner()->GetLocalRole() == ROLE_AutonomousProxy)
 	{
-		int32& Count = ReserveAmmoTypeToCount.FindOrAdd(InType);
-		Count = InAmmoCount;
+		auto& [AmmoTypeToCount] = WeaponToReserveAmmo.FindOrAdd(InType->WeaponTag);
+		int32& AmmoCount = AmmoTypeToCount.FindOrAdd(InType);
+		AmmoCount = InAmmoCount;
 		ReserveMaxAmmo = InMaxAmmo;
-		ReserveAmmoChangedEvent.Broadcast(InType, Count, ReserveMaxAmmo);
+		ReserveAmmoChangedEvent.Broadcast(InType, AmmoCount, ReserveMaxAmmo);
 	}
 }
