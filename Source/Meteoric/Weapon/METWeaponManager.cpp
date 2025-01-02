@@ -22,6 +22,7 @@ UMETWeaponManager::UMETWeaponManager()
 
 void UMETWeaponManager::InitializeComponent()
 {
+	Super::InitializeComponent();
 	OwningCharacter = Cast<ACharacter>(GetOwner());
 	if(UMETInteractionComponent* InteractionComponent = OwningCharacter->FindComponentByClass<UMETInteractionComponent>())
 	{

@@ -3,6 +3,7 @@
 
 #include "METWeaponAmmoComponent.h"
 
+#include "METAmmoDataAsset.h"
 #include "METAmmoManager.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
@@ -30,6 +31,15 @@ int32 UMETWeaponAmmoComponent::Reload()
 	return AmmoCount;
 }
 
+float UMETWeaponAmmoComponent::GetAmmoDamage() const
+{
+	if (CurrentAmmoType)
+	{
+		return CurrentAmmoType->Damage;
+	}
+	return 0.f;
+}
+
 bool UMETWeaponAmmoComponent::TryConsumeAmmo(const int32 InConsumeCount)
 {
 	if (!ensure(AmmoManager)) return false;
@@ -54,7 +64,7 @@ void UMETWeaponAmmoComponent::OnWeaponEquipped(ACharacter* const InOwningCharact
 	if (ensure(AmmoManager))
 	{
 		AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
-		AmmoManager->WeaponAmmoTypeChanged(CurrentAmmoType);
+		AmmoManager->WeaponAmmoTypeChanged(GetOwner(),CurrentAmmoType);
 	}
 }
 
@@ -63,7 +73,7 @@ void UMETWeaponAmmoComponent::OnWeaponUnequipped()
 	if (AmmoManager)
 	{
 		AmmoManager->WeaponAmmoChanged(0, 0);
-		AmmoManager->WeaponAmmoTypeChanged(nullptr);
+		AmmoManager->WeaponAmmoTypeChanged(nullptr, nullptr);
 	}
 	OwningCharacter = nullptr;
 	AmmoManager = nullptr;

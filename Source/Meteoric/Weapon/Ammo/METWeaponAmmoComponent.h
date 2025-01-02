@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	int32 GetMaxAmmo() const { return MaxAmmo; }
 
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	float GetAmmoDamage() const;
+
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);
 

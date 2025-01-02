@@ -19,7 +19,9 @@ class METEORIC_API UMETWeaponManager : public UActorComponent
 public:	
 	UMETWeaponManager();
 
+	//~ Begin UActorComponent interface
 	virtual void InitializeComponent() override;
+	//~ End UActorComponent interface
 
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(class AMETWeapon* const InWeapon, int InSlot);

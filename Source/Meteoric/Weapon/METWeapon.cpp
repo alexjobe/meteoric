@@ -22,7 +22,6 @@ AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, FiringMode(SingleShot)
-	, Damage(25.f)
 	, FiringRate(0.2f)
 	, bCanFire(true)
 	, ElapsedTimeSinceFired(0.f)
@@ -53,9 +52,9 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
 	AmmoComponent->OnWeaponEquipped(OwningCharacter);
-	if (GetLocalRole() == ROLE_Authority && !EquippedEffectHandle.IsSet())
+	if (GetLocalRole() == ROLE_Authority && !ActiveEquippedEffectHandle.IsSet())
 	{
-		EquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectClassToActor(OwningCharacter, this, EquippedEffectClass, 1);
+		ActiveEquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectClassToActor(OwningCharacter, this, EquippedEffectClass, 1);
 	}
 	SetActorTickEnabled(true);
 }
@@ -93,10 +92,10 @@ void AMETWeapon::Multicast_Drop_Implementation()
 
 inline void AMETWeapon::RemoveOwningCharacter()
 {
-	if (GetLocalRole() == ROLE_Authority && EquippedEffectHandle.IsSet())
+	if (GetLocalRole() == ROLE_Authority && ActiveEquippedEffectHandle.IsSet())
 	{
-		UMETAbilitySystemUtils::RemoveEffectFromActor(OwningCharacter, EquippedEffectHandle.GetValue());
-		EquippedEffectHandle.Reset();
+		UMETAbilitySystemUtils::RemoveEffectFromActor(OwningCharacter, ActiveEquippedEffectHandle.GetValue());
+		ActiveEquippedEffectHandle.Reset();
 	}
 	
 	OwningCharacter = nullptr;
@@ -170,6 +169,12 @@ bool AMETWeapon::CanFire() const
 {
 	if(!ensure(AmmoComponent)) return false;
 	return AmmoComponent->GetAmmoCount() > 0 && bCanFire;
+}
+
+float AMETWeapon::GetDamage() const
+{
+	if (!ensure(AmmoComponent)) return 0.f;
+	return AmmoComponent->GetAmmoDamage();
 }
 
 void AMETWeapon::StartReload() const

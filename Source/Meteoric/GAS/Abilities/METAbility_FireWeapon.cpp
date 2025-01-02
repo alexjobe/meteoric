@@ -75,7 +75,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
 			
 			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(Weapon->DamageEffectClass, GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->Damage);
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->GetDamage());
 			
 			ProjectileWeaponComponent->FireProjectile(SpawnTransform, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
 		}

@@ -41,9 +41,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	float Damage;
-
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
@@ -65,6 +62,7 @@ public:
 	bool CanFire() const;
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
+	float GetDamage() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Reload")
 	void StartReload() const;
@@ -132,7 +130,7 @@ private:
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
 	TObjectPtr<ACharacter> OwningCharacter;
 
-	TOptional<FActiveGameplayEffectHandle> EquippedEffectHandle;
+	TOptional<FActiveGameplayEffectHandle> ActiveEquippedEffectHandle;
 
 	bool bCanFire;
 	float ElapsedTimeSinceFired;

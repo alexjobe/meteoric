@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "METAmmoManager.generated.h"
@@ -38,7 +39,7 @@ public:
 	int32 TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InConsumeCount = 1);
 
 	void WeaponAmmoChanged(const int32 InAmmoCount, const int32 InMaxAmmo) const;
-	void WeaponAmmoTypeChanged(UMETAmmoDataAsset* const InType);
+	void WeaponAmmoTypeChanged(const AActor* const InWeapon, UMETAmmoDataAsset* const InType);
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAmmoChangedSignature, UMETAmmoDataAsset* const, AmmoType, int32, AmmoCount, int32, MaxAmmo);
 	FAmmoChangedSignature& OnWeaponAmmoChanged() { return WeaponAmmoChangedEvent; }
@@ -59,10 +60,15 @@ protected:
 	void Client_WeaponAmmoChanged(const int32 InAmmoCount, const int32 InMaxAmmo) const;
 
 	UFUNCTION(Client, Reliable)
-	void Client_WeaponAmmoTypeChanged(UMETAmmoDataAsset* InType);
+	void Client_WeaponAmmoTypeChanged(const AActor* const InWeapon, UMETAmmoDataAsset* InType);
 
 private:
 	FAmmoChangedSignature WeaponAmmoChangedEvent;
 	FAmmoChangedSignature ReserveAmmoChangedEvent;
 	FAmmoChangedSignature WeaponAmmoTypeChangedEvent;
+
+	TOptional<FActiveGameplayEffectHandle> ActiveAmmoEffectHandle;
+	
+	void ApplyAmmoEffectToOwner(const AActor* const InSource);
+	void RemoveActiveAmmoEffectFromOwner();
 };
