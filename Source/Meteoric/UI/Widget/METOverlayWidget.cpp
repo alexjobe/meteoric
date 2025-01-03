@@ -9,10 +9,10 @@ UMETOverlayWidget::UMETOverlayWidget(const FObjectInitializer& ObjectInitializer
 	, MaxHealth(0.f)
 	, Armor(0.f)
 	, MaxArmor(0.f)
-	, WeaponAmmo(0)
-	, WeaponMaxAmmo(0)
-	, ReserveAmmo(0)
-	, ReserveMaxAmmo(0)
+	, WeaponAmmoCount(0)
+	, WeaponMaxAmmoCount(0)
+	, ReserveAmmoCount(0)
+	, ReserveMaxAmmoCount(0)
 {
 }
 
@@ -40,16 +40,21 @@ void UMETOverlayWidget::SetMaxArmor(const float InNewValue)
 	OnMaxArmorChanged.Broadcast(InNewValue);
 }
 
-void UMETOverlayWidget::SetWeaponAmmo(const int32 InAmmoCount, const int32 InMaxAmmo)
+void UMETOverlayWidget::SetWeaponAmmoCount(const int32 InAmmoCount, const int32 InMaxAmmo)
 {
-	WeaponAmmo = InAmmoCount;
-	WeaponMaxAmmo = InMaxAmmo;
-	OnWeaponAmmoChanged.Broadcast(WeaponAmmo, WeaponMaxAmmo);
+	WeaponAmmoCount = InAmmoCount;
+	WeaponMaxAmmoCount = InMaxAmmo;
+	OnWeaponAmmoCountChanged.Broadcast(WeaponAmmoCount, WeaponMaxAmmoCount);
 }
 
-void UMETOverlayWidget::SetReserveAmmo(const int32 InAmmoCount, const int32 InMaxAmmo)
+void UMETOverlayWidget::SetReserveAmmoCount(const int32 InAmmoCount, const int32 InMaxAmmo)
 {
-	ReserveAmmo = InAmmoCount;
-	ReserveMaxAmmo = InMaxAmmo;
-	OnReserveAmmoChanged.Broadcast(ReserveAmmo, ReserveMaxAmmo);
+	ReserveAmmoCount = InAmmoCount;
+	ReserveMaxAmmoCount = InMaxAmmo;
+	OnReserveAmmoCountChanged.Broadcast(ReserveAmmoCount, ReserveMaxAmmoCount);
+}
+
+void UMETOverlayWidget::SetEquippedAmmoType(const UMETAmmoDataAsset* const InAmmoType) const
+{
+	OnEquippedAmmoTypeChanged.Broadcast(InAmmoType);
 }

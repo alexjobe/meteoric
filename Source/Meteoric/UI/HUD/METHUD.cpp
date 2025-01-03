@@ -8,13 +8,14 @@
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 #include "Meteoric/UI/Widget/METOverlayWidget.h"
+#include "Meteoric/Weapon/Ammo/METAmmoDataAsset.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
 void AMETHUD::Initialize(UMETAbilitySystemComponent* InASC)
 {
 	if (!ensure(InASC)) return;
 
-	ACharacter* OwningCharacter = Cast<ACharacter>(InASC->GetAvatarActor());
+	const ACharacter* OwningCharacter = Cast<ACharacter>(InASC->GetAvatarActor());
 	UMETAmmoManager* AmmoManager = OwningCharacter ? OwningCharacter->FindComponentByClass<UMETAmmoManager>() : nullptr;
 	if (ensure(AmmoManager))
 	{
@@ -24,7 +25,6 @@ void AMETHUD::Initialize(UMETAbilitySystemComponent* InASC)
 	}
 
 	OverlayWidget = CreateWidget<UMETOverlayWidget>(GetOwningPlayerController(), OverlayWidgetClass, FName("OverlayWidget"));
-	
 	AbilitySystemComponent = InASC;
 	const UMETAttributeSet* AttributeSet = Cast<UMETAttributeSet>(AbilitySystemComponent->GetAttributeSet(UMETAttributeSet::StaticClass()));
 	
@@ -102,7 +102,7 @@ void AMETHUD::AmmoManager_WeaponAmmoChanged(UMETAmmoDataAsset* const AmmoType, i
 {
 	if (OverlayWidget)
 	{
-		OverlayWidget->SetWeaponAmmo(AmmoCount, MaxAmmo);
+		OverlayWidget->SetWeaponAmmoCount(AmmoCount, MaxAmmo);
 	}
 }
 
@@ -110,15 +110,18 @@ void AMETHUD::AmmoManager_ReserveAmmoChanged(UMETAmmoDataAsset* const AmmoType, 
 {
 	if (OverlayWidget && AmmoType == EquippedWeaponAmmoType)
 	{
-		OverlayWidget->SetReserveAmmo(AmmoCount, MaxAmmo);
+		OverlayWidget->SetReserveAmmoCount(AmmoCount, MaxAmmo);
 	}
 }
 
 void AMETHUD::AmmoManager_WeaponAmmoTypeChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
 {
+	if (!ensure(OverlayWidget)) return;
+	
 	EquippedWeaponAmmoType = AmmoType;
-	if (OverlayWidget)
+	OverlayWidget->SetEquippedAmmoType(EquippedWeaponAmmoType);
+	if (EquippedWeaponAmmoType)
 	{
-		OverlayWidget->SetReserveAmmo(AmmoCount, MaxAmmo);
+		OverlayWidget->SetReserveAmmoCount(AmmoCount, MaxAmmo);
 	}
 }

@@ -25,6 +25,8 @@ class METEORIC_API UMETAmmoManager : public UActorComponent
 public:
 	UMETAmmoManager();
 
+	void OnPossessed() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int32 ReserveMaxAmmo;
 

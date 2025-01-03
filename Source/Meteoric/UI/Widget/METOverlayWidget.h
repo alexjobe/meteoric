@@ -7,7 +7,8 @@
 #include "METOverlayWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeValueChangedSignature, float, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChangedSignature, int32, AmmoCount, int32, MaxAmmo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoCountChangedSignature, int32, AmmoCount, int32, MaxAmmo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedAmmoTypeChangedSignature, const class UMETAmmoDataAsset* const, AmmoType);
 
 /**
  * 
@@ -24,8 +25,9 @@ public:
 	void SetMaxHealth(const float InNewValue);
 	void SetArmor(const float InNewValue);
 	void SetMaxArmor(const float InNewValue);
-	void SetWeaponAmmo(const int32 InAmmoCount, const int32 InMaxAmmo);
-	void SetReserveAmmo(const int32 InAmmoCount, const int32 InMaxAmmo);
+	void SetWeaponAmmoCount(const int32 InAmmoCount, const int32 InMaxAmmo);
+	void SetReserveAmmoCount(const int32 InAmmoCount, const int32 InMaxAmmo);
+	void SetEquippedAmmoType(const UMETAmmoDataAsset* const InAmmoType) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const { return Health; }
@@ -40,16 +42,16 @@ public:
 	float GetMaxArmor() const { return MaxArmor; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetWeaponAmmo() const { return WeaponAmmo; }
+	int32 GetWeaponAmmoCount() const { return WeaponAmmoCount; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetWeaponMaxAmmo() const { return WeaponMaxAmmo; }
+	int32 GetWeaponMaxAmmoCount() const { return WeaponMaxAmmoCount; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetReserveAmmo() const { return ReserveAmmo; }
+	int32 GetReserveAmmoCount() const { return ReserveAmmoCount; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	int32 GetReserveMaxAmmo() const { return ReserveMaxAmmo; }
+	int32 GetReserveMaxAmmoCount() const { return ReserveMaxAmmoCount; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealthPercentage() const { return (MaxHealth != 0.0f) ? (Health / MaxHealth) : 0.0f; }
@@ -70,19 +72,21 @@ public:
 	FOnAttributeValueChangedSignature OnMaxArmorChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "Ammo")
-	FOnAmmoChangedSignature OnWeaponAmmoChanged;
+	FOnAmmoCountChangedSignature OnWeaponAmmoCountChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "Ammo")
-	FOnAmmoChangedSignature OnReserveAmmoChanged;
+	FOnAmmoCountChangedSignature OnReserveAmmoCountChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Ammo")
+	FOnEquippedAmmoTypeChangedSignature OnEquippedAmmoTypeChanged;
 
 protected:
 	float Health;
 	float MaxHealth;
 	float Armor;
 	float MaxArmor;
-	int32 WeaponAmmo;
-	int32 WeaponMaxAmmo;
-	int32 ReserveAmmo;
-	int32 ReserveMaxAmmo;
-	
+	int32 WeaponAmmoCount;
+	int32 WeaponMaxAmmoCount;
+	int32 ReserveAmmoCount;
+	int32 ReserveMaxAmmoCount;
 };

@@ -12,6 +12,7 @@
 #include "Meteoric/Player/METPlayerState.h"
 #include "Meteoric/UI/HUD/METHUD.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
+#include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
 AMETPlayerCharacter::AMETPlayerCharacter()
 {
@@ -31,6 +32,10 @@ void AMETPlayerCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 	InitAbilityActorInfo();
 	ResetControlRotation();
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->OnPossessed();
+	}
 }
 
 void AMETPlayerCharacter::PossessedBy(AController* NewController)
@@ -39,6 +44,10 @@ void AMETPlayerCharacter::PossessedBy(AController* NewController)
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
 	ResetControlRotation();
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->OnPossessed();
+	}
 }
 
 FTransform AMETPlayerCharacter::GetEyesViewpoint() const

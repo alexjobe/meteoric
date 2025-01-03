@@ -14,6 +14,11 @@ UMETAmmoManager::UMETAmmoManager()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UMETAmmoManager::OnPossessed() const
+{
+	WeaponAmmoTypeChangedEvent.Broadcast(EquippedWeaponAmmoType, 0, 0);
+}
+
 int32 UMETAmmoManager::GetReserveAmmoCount(UMETAmmoDataAsset* const InType)
 {
 	if (!InType || !ensure(InType->WeaponTag.IsValid())) return 0;
