@@ -17,6 +17,9 @@ class METEORIC_API UMETAmmoDataAsset : public UDataAsset
 
 public:
 	UMETAmmoDataAsset();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo")
+	FName Name;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	FGameplayTag WeaponTag;

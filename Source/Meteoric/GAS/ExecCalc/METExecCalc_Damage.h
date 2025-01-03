@@ -17,6 +17,9 @@ class METEORIC_API UMETExecCalc_Damage : public UGameplayEffectExecutionCalculat
 public:
 	UMETExecCalc_Damage();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	float HealthDamageMultiplier;
+
 	//~ Begin UGameplayEffectExecutionCalculation interface
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 	//~ End UGameplayEffectExecutionCalculation interface

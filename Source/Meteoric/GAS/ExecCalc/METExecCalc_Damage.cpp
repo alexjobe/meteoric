@@ -7,30 +7,31 @@
 #include "Meteoric/GAS/METAttributeSet.h"
 
 // Declare the attributes to capture and define how we want to capture them from the Source and Target.
-struct METDamageStatics
+struct FMetDamageStatics
 {
 	// Prevent direct construction of AuraDamageStatics, so it's mandatory to use DamageStatics() method
 	// DamageStatics() is friend so it can call constructor
-	friend static METDamageStatics& DamageStatics();
+	friend static FMetDamageStatics& DamageStatics();
 	
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ArmorPiercing);
 
 private:
-	METDamageStatics()
+	FMetDamageStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMETAttributeSet, Armor, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMETAttributeSet, ArmorPiercing, Source, true);
 	}
 };
 
-static METDamageStatics& DamageStatics()
+static FMetDamageStatics& DamageStatics()
 {
-	static METDamageStatics DamageStatics;
+	static FMetDamageStatics DamageStatics;
 	return DamageStatics;
 }
 
 UMETExecCalc_Damage::UMETExecCalc_Damage()
+	: HealthDamageMultiplier(2.f)
 {
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorPiercingDef);
@@ -62,8 +63,13 @@ void UMETExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExec
 	float HealthDamage = PiercingDamage;
 	float BlockableDamage =  FMath::Max(0.f, TotalDamage - PiercingDamage);
 
-	HealthDamage += FMath::Max<float>(0.f, BlockableDamage - Armor);
-	const float ArmorDamage = FMath::Max<float>(0.f, TotalDamage - HealthDamage);
+	const float UnblockedDamage = FMath::Max<float>(0.f, BlockableDamage - Armor);
+	const float BlockedDamage = BlockableDamage - UnblockedDamage;
+	
+	HealthDamage += UnblockedDamage;
+	HealthDamage *= HealthDamageMultiplier;
+	
+	const float ArmorDamage = FMath::Max<float>(0.f, BlockedDamage);
 	
 	const FGameplayModifierEvaluatedData EvaluatedHealthDamage(UMETAttributeSet::GetIncomingHealthDamageAttribute(), EGameplayModOp::Additive, HealthDamage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedHealthDamage);
