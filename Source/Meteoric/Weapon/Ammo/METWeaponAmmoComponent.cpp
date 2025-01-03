@@ -11,6 +11,7 @@
 UMETWeaponAmmoComponent::UMETWeaponAmmoComponent()
 	: MaxAmmo(20)
 	, AmmoCount(20)
+	, SelectedAmmoSlot(0)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -29,6 +30,25 @@ int32 UMETWeaponAmmoComponent::Reload()
 	AmmoCount += ReloadAmount;
 	AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
 	return AmmoCount;
+}
+
+void UMETWeaponAmmoComponent::CycleAmmo(const bool bInForward)
+{
+	if (!ensure(AmmoManager)) return;
+	if (AmmoTypes.Num() <= 1) return;
+
+	AmmoManager->AddReserveAmmo(CurrentAmmoType, AmmoCount);
+	AmmoCount = 0;
+	AmmoManager->WeaponAmmoChanged(AmmoCount, MaxAmmo);
+
+	int NewSlot = SelectedAmmoSlot + (bInForward ? 1 : -1);
+	if(NewSlot < 0) NewSlot = AmmoTypes.Num() - 1;
+	if(NewSlot >= AmmoTypes.Num()) NewSlot = 0;
+
+	SelectedAmmoSlot = NewSlot;
+	CurrentAmmoType = AmmoTypes[SelectedAmmoSlot];
+	
+	AmmoManager->WeaponAmmoTypeChanged(GetOwner(),CurrentAmmoType);
 }
 
 float UMETWeaponAmmoComponent::GetAmmoDamage() const

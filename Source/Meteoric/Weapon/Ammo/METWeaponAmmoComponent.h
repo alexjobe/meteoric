@@ -23,6 +23,9 @@ public:
 	int32 Reload();
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	void CycleAmmo(const bool bInForward = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	int32 GetAmmoCount() const { return AmmoCount; }
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
@@ -44,6 +47,11 @@ protected:
 	UPROPERTY(Replicated)
 	int32 AmmoCount;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<UMETAmmoDataAsset>> AmmoTypes;
+
+	int SelectedAmmoSlot;
+
 private:
 	UPROPERTY(ReplicatedUsing = OnRep_OwningCharacter)
 	TObjectPtr<ACharacter> OwningCharacter;
@@ -55,5 +63,5 @@ private:
 	void OnRep_OwningCharacter(ACharacter* InOldOwner);
 
 public:
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

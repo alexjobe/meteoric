@@ -8,7 +8,7 @@
 UMETGameplayAbility::UMETGameplayAbility()
 	: ActivationPolicy(OnInputPressed)
 {
-	
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
 AMETCharacter* UMETGameplayAbility::GetMetCharacterFromActorInfo() const
