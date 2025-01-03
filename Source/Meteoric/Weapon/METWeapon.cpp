@@ -177,6 +177,12 @@ float AMETWeapon::GetDamage() const
 	return AmmoComponent->GetAmmoDamage();
 }
 
+TSubclassOf<UGameplayEffect> AMETWeapon::GetDamageEffectClass() const
+{
+	if (!ensure(AmmoComponent)) return nullptr;
+	return AmmoComponent->GetDamageEffectClass();
+}
+
 void AMETWeapon::StartReload() const
 {
 	OnReloadEvent.Broadcast(true);

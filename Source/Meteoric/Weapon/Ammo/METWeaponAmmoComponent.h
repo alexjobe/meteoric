@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	float GetAmmoDamage() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	TSubclassOf<class UGameplayEffect> GetDamageEffectClass() const;
+
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);
 

@@ -61,9 +61,10 @@ void UMETAbility_FireWeapon::FireWeapon()
 	if (GetAvatarActorFromActorInfo()->HasAuthority())
 	{
 		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
-		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon->GetProjectileWeaponComponent();
+		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
+		const TSubclassOf<UGameplayEffect> DamageEffectClass = Weapon ? Weapon->GetDamageEffectClass() : nullptr;
 
-		if (ensure(Weapon) && ensure(Weapon->DamageEffectClass) && ensure(ProjectileWeaponComponent))
+		if (ensure(DamageEffectClass) && ensure(ProjectileWeaponComponent))
 		{
 			const FVector StartLocation = Weapon->GetMesh()->GetSocketLocation(FName("S_Muzzle"));
 			const FTransform EyesViewpoint = MetCharacter->GetEyesViewpoint();
@@ -74,7 +75,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 
 			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
 			
-			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(Weapon->DamageEffectClass, GetAbilityLevel());
+			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->GetDamage());
 			
 			ProjectileWeaponComponent->FireProjectile(SpawnTransform, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);

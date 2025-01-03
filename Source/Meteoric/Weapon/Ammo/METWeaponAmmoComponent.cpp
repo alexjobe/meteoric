@@ -60,6 +60,15 @@ float UMETWeaponAmmoComponent::GetAmmoDamage() const
 	return 0.f;
 }
 
+TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetDamageEffectClass() const
+{
+	if (CurrentAmmoType)
+	{
+		return CurrentAmmoType->DamageEffectClass;
+	}
+	return nullptr;
+}
+
 bool UMETWeaponAmmoComponent::TryConsumeAmmo(const int32 InConsumeCount)
 {
 	if (!ensure(AmmoManager)) return false;

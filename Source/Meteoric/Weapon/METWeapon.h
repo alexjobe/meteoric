@@ -22,9 +22,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
 	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
 	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	FName ParentAttachmentSocket;
 
@@ -63,6 +60,7 @@ public:
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
 	float GetDamage() const;
+	TSubclassOf<UGameplayEffect> GetDamageEffectClass() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Reload")
 	void StartReload() const;
