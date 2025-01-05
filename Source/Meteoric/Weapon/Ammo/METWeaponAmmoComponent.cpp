@@ -51,20 +51,38 @@ void UMETWeaponAmmoComponent::CycleAmmo(const bool bInForward)
 	AmmoManager->WeaponAmmoTypeChanged(GetOwner(),CurrentAmmoType);
 }
 
-float UMETWeaponAmmoComponent::GetAmmoDamage() const
+float UMETWeaponAmmoComponent::GetImpactDamage() const
 {
 	if (CurrentAmmoType)
 	{
-		return CurrentAmmoType->Damage;
+		return CurrentAmmoType->ImpactDamage;
 	}
 	return 0.f;
 }
 
-TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetDamageEffectClass() const
+float UMETWeaponAmmoComponent::GetDelayedDamage() const
 {
 	if (CurrentAmmoType)
 	{
-		return CurrentAmmoType->DamageEffectClass;
+		return CurrentAmmoType->DelayedDamage;
+	}
+	return 0.f;
+}
+
+TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetImpactDamageEffectClass() const
+{
+	if (CurrentAmmoType)
+	{
+		return CurrentAmmoType->ImpactDamageEffectClass;
+	}
+	return nullptr;
+}
+
+TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetDelayedDamageEffectClass() const
+{
+	if (CurrentAmmoType)
+	{
+		return CurrentAmmoType->DelayedDamageEffectClass;
 	}
 	return nullptr;
 }

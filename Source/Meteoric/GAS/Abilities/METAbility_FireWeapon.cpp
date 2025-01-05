@@ -12,6 +12,7 @@
 #include "Meteoric/Character/METCharacter.h"
 #include "Meteoric/Weapon/METProjectileWeaponComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
+#include "Meteoric/Weapon/Ammo/METWeaponAmmoComponent.h"
 
 UMETAbility_FireWeapon::UMETAbility_FireWeapon()
 {
@@ -62,9 +63,11 @@ void UMETAbility_FireWeapon::FireWeapon()
 	{
 		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
 		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
-		const TSubclassOf<UGameplayEffect> DamageEffectClass = Weapon ? Weapon->GetDamageEffectClass() : nullptr;
+		const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
+		const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
+		const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
 
-		if (ensure(DamageEffectClass) && ensure(ProjectileWeaponComponent))
+		if (ensure(AmmoComponent) && ensure(ProjectileWeaponComponent))
 		{
 			const FVector StartLocation = Weapon->GetMesh()->GetSocketLocation(FName("S_Muzzle"));
 			const FTransform EyesViewpoint = MetCharacter->GetEyesViewpoint();
@@ -75,10 +78,20 @@ void UMETAbility_FireWeapon::FireWeapon()
 
 			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
 			
-			FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, Weapon->GetDamage());
+			FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ImpactDamageEffectClass, GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ImpactDamageEffectSpecHandle, METGameplayTags::Damage, AmmoComponent->GetImpactDamage());
+
+			FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DelayedDamageEffectClass, GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DelayedDamageEffectSpecHandle, METGameplayTags::Damage, AmmoComponent->GetDelayedDamage());
+
+			FMETSpawnProjectileParams SpawnParams;
+			SpawnParams.SpawnTransform = SpawnTransform;
+			SpawnParams.Owner = GetOwningActorFromActorInfo();
+			SpawnParams.Instigator = MetCharacter;
+			SpawnParams.ImpactDamageEffectHandle = ImpactDamageEffectSpecHandle;
+			SpawnParams.DelayedDamageEffectHandle = DelayedDamageEffectSpecHandle;
 			
-			ProjectileWeaponComponent->FireProjectile(SpawnTransform, GetOwningActorFromActorInfo(), MetCharacter, DamageEffectSpecHandle);
+			ProjectileWeaponComponent->FireProjectile(SpawnParams);
 		}
 	}
 }

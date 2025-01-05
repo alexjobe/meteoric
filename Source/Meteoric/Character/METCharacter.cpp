@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/GameMode/METGameModeBase.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
@@ -30,6 +31,9 @@ AMETCharacter::AMETCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	GetMesh()->AddTickPrerequisiteActor(this);
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 
 	WeaponManager = CreateDefaultSubobject<UMETWeaponManager>(TEXT("WeaponManager"));
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);

@@ -62,6 +62,7 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 void AMETWeapon::OnUnequipped()
 {
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	FinishReload(false);
 	SetActorTickEnabled(false);
 	RemoveOwningCharacter();
 }
@@ -69,7 +70,7 @@ void AMETWeapon::OnUnequipped()
 void AMETWeapon::Drop()
 {
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
-	
+	FinishReload(false);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetWeaponDroppedState(true);
 	ElapsedTimeSinceDropped = 0.f;
@@ -169,18 +170,6 @@ bool AMETWeapon::CanFire() const
 {
 	if(!ensure(AmmoComponent)) return false;
 	return AmmoComponent->GetAmmoCount() > 0 && bCanFire;
-}
-
-float AMETWeapon::GetDamage() const
-{
-	if (!ensure(AmmoComponent)) return 0.f;
-	return AmmoComponent->GetAmmoDamage();
-}
-
-TSubclassOf<UGameplayEffect> AMETWeapon::GetDamageEffectClass() const
-{
-	if (!ensure(AmmoComponent)) return nullptr;
-	return AmmoComponent->GetDamageEffectClass();
 }
 
 void AMETWeapon::StartReload() const

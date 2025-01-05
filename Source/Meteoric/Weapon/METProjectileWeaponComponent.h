@@ -3,11 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "Components/ActorComponent.h"
 #include "METProjectileWeaponComponent.generated.h"
 
+USTRUCT()
+struct FMETSpawnProjectileParams
+{
+	GENERATED_BODY()
+	
+	FTransform SpawnTransform;
 
-struct FGameplayEffectSpecHandle;
+	UPROPERTY(Transient)
+	AActor* Owner;
+
+	UPROPERTY(Transient)
+	APawn* Instigator;
+
+	FGameplayEffectSpecHandle ImpactDamageEffectHandle;
+	FGameplayEffectSpecHandle DelayedDamageEffectHandle;
+
+	FMETSpawnProjectileParams()
+		: Owner(nullptr)
+		, Instigator(nullptr)
+	{}
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
@@ -20,5 +40,5 @@ class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
 public:	
 	UMETProjectileWeaponComponent();
 
-	void FireProjectile(const FTransform& InSpawnTransform, AActor* InOwner, APawn* InInstigator, const FGameplayEffectSpecHandle& InDamageEffect) const;
+	void FireProjectile(const FMETSpawnProjectileParams& Params) const;
 };

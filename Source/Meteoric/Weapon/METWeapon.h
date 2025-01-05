@@ -59,8 +59,6 @@ public:
 	bool CanFire() const;
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
-	float GetDamage() const;
-	TSubclassOf<UGameplayEffect> GetDamageEffectClass() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Reload")
 	void StartReload() const;

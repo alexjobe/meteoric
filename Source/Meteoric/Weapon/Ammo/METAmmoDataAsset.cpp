@@ -4,6 +4,7 @@
 #include "METAmmoDataAsset.h"
 
 UMETAmmoDataAsset::UMETAmmoDataAsset()
-	: Damage(0.f)
+	: ImpactDamage(0.f)
+	, DelayedDamage(0.f)
 {
 }

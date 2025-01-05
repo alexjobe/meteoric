@@ -28,8 +28,14 @@ public:
 	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
+	TSubclassOf<UGameplayEffect> ImpactDamageEffectClass;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> DelayedDamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
-	float Damage;
+	float ImpactDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	float DelayedDamage;
 };

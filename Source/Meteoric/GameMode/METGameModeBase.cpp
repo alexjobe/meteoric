@@ -14,7 +14,7 @@ AMETGameModeBase::AMETGameModeBase()
 void AMETGameModeBase::PlayerDied(AController* InController)
 {
 	FTimerHandle RespawnTimerHandle;
-	FTimerDelegate RespawnTimerDelegate = FTimerDelegate::CreateUObject(this, &ThisClass::RespawnPlayer, InController);
+	const FTimerDelegate RespawnTimerDelegate = FTimerDelegate::CreateUObject(this, &ThisClass::RespawnPlayer, InController);
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, RespawnDelay, false);
 }
 

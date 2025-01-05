@@ -32,10 +32,16 @@ public:
 	int32 GetMaxAmmo() const { return MaxAmmo; }
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	float GetAmmoDamage() const;
+	float GetImpactDamage() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	TSubclassOf<class UGameplayEffect> GetDamageEffectClass() const;
+	float GetDelayedDamage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	TSubclassOf<class UGameplayEffect> GetImpactDamageEffectClass() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	TSubclassOf<UGameplayEffect> GetDelayedDamageEffectClass() const;
 
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);
