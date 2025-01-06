@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
 	static void RemoveEffectFromActor(const AActor* InTarget, const FActiveGameplayEffectHandle& InHandle, int32 StacksToRemove=-1);
+
+	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
+	static void AddHitResultToEffectSpec(const FGameplayEffectSpecHandle& InEffectSpecHandle, const FHitResult& InHitResult);
 };

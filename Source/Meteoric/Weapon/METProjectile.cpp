@@ -8,6 +8,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Meteoric/Meteoric.h"
+#include "Meteoric/GAS/METAbilitySystemUtils.h"
 
 AMETProjectile::AMETProjectile()
 	: LifeSpan(10.f)
@@ -61,12 +62,14 @@ void AMETProjectile::CollisionComponent_OnComponentBeginOverlap(UPrimitiveCompon
 	{
 		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor))
 		{
+			UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactDamageEffectHandle, SweepResult);
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*ImpactDamageEffectHandle.Data.Get());
 		}
 	}
 
 	if (DelayedDamageEffectHandle.IsValid())
 	{
+		UMETAbilitySystemUtils::AddHitResultToEffectSpec(DelayedDamageEffectHandle, SweepResult);
 		StartDelayedDamageTimer(OtherActor, OtherComp, SweepResult);
 	}
 	else

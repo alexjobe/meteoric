@@ -29,3 +29,12 @@ void UMETAbilitySystemUtils::RemoveEffectFromActor(const AActor* InTarget, const
 		AbilitySystemComponent->RemoveActiveGameplayEffect(InHandle, StacksToRemove);
 	}
 }
+
+void UMETAbilitySystemUtils::AddHitResultToEffectSpec(const FGameplayEffectSpecHandle& InEffectSpecHandle, const FHitResult& InHitResult)
+{
+	if (const FGameplayEffectSpec* EffectHandle = InEffectSpecHandle.Data.Get())
+	{
+		FGameplayEffectContextHandle ContextHandle = EffectHandle->GetEffectContext();
+		ContextHandle.AddHitResult(InHitResult);
+	}
+}
