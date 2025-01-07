@@ -14,7 +14,10 @@ AMETPlayerState::AMETPlayerState()
 	if (ensure(AbilitySystemComponent))
 	{
 		AbilitySystemComponent->SetIsReplicated(true);
-		AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+		// TODO: Currently set to Full because of an engine bug where duration gameplay cues don't replicate correctly
+		// https://forums.unrealengine.com/t/gameplay-cue-and-periodic-effect-issue/723075
+		AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
 	}
 
 	AttributeSet = CreateDefaultSubobject<UMETAttributeSet>("AttributeSet");

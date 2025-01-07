@@ -90,7 +90,7 @@ void AMETPlayerCharacter::ResetControlRotation() const
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController && PlayerController->IsLocalController())
 	{
-		PlayerController->SetControlRotation(FRotator(0.f, 180.f, 0.f));
+		PlayerController->SetControlRotation(GetActorRotation());
 	}
 }
 
