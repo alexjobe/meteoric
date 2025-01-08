@@ -8,7 +8,6 @@
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 
-
 AMETAmmoPickup::AMETAmmoPickup()
 	: AmmoCount(100.f)
 {
@@ -41,9 +40,12 @@ void AMETAmmoPickup::InteractableComponent_OnInteractEvent(AActor* const InSourc
 {
 	if (!ensure(InSourceActor)) return;
 
-	UMETAmmoManager* AmmoManager = InSourceActor->FindComponentByClass<UMETAmmoManager>();
-	if (!ensure(AmmoManager)) return;
+	if (HasAuthority())
+	{
+		UMETAmmoManager* AmmoManager = InSourceActor->FindComponentByClass<UMETAmmoManager>();
+		if (!ensure(AmmoManager)) return;
 
-	AmmoManager->AddReserveAmmo(AmmoType, AmmoCount);
-	Destroy();
+		AmmoManager->AddReserveAmmo(AmmoType, AmmoCount);
+		Destroy();
+	}
 }

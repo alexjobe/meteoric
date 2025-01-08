@@ -12,8 +12,8 @@
 
 UMETInteractionComponent::UMETInteractionComponent()
 	: TraceDistance(200.f)
-	, SphereTraceRadius(20.f)
-	, InteractionCooldown(1.f)
+	, SphereTraceRadius(30.f)
+	, InteractionCooldown(.5f)
 	, DrawDebugTrace(EDrawDebugTrace::None)
 	, LastTimeInteracted(0.f)
 {
@@ -29,7 +29,7 @@ void UMETInteractionComponent::InitializeComponent()
 
 void UMETInteractionComponent::Interact(const FMinimalViewInfo& InViewInfo) const
 {
-	if(UMETInteractableComponent* InteractableComponent = FindInteractableComponent(InViewInfo))
+	if(const UMETInteractableComponent* InteractableComponent = FindInteractableComponent(InViewInfo))
 	{
 		InteractableComponent->Interact(OwningCharacter);
 		InteractEvent.Broadcast(InteractableComponent->GetOwner());
@@ -78,6 +78,7 @@ void UMETInteractionComponent::InteractInput()
 	}
 	else
 	{
+		Interact(ViewInfo);
 		Server_Interact(ViewInfo);
 	}
 }

@@ -12,7 +12,10 @@ class METEORIC_API UMETInteractableComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
+	TObjectPtr<USoundCue> InteractSound;
+	
 	UMETInteractableComponent();
 
 	void Interact(AActor* const InSourceActor) const;

@@ -76,7 +76,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 			const FRotator StartRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, EndLocation);
 			const FTransform SpawnTransform(StartRotation, StartLocation);
 
-			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
+			//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
 			
 			FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ImpactDamageEffectClass, GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ImpactDamageEffectSpecHandle, METGameplayTags::Damage, AmmoComponent->GetImpactDamage());

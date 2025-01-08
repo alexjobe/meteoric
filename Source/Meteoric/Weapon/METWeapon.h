@@ -38,6 +38,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	TEnumAsByte<EWeaponFiringMode> FiringMode;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	FMETWeaponAnimationSettings AnimationSettings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FX")
+	FMETWeaponFXSettings FXSettings;
+
 	AMETWeapon();
 
 	void OnEquipped(ACharacter* InOwningCharacter);
@@ -75,8 +81,8 @@ public:
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
 	class UMETProjectileWeaponComponent* GetProjectileWeaponComponent() const {	return ProjectileWeaponComponent; }
 	class UMETWeaponAmmoComponent* GetAmmoComponent() const { return AmmoComponent; }
-	UAnimSequence* GetCharacterIdleWeaponAnim() const { return CharacterIdleWeaponAnim; }
-	UAnimMontage* GetCharacterEquipWeaponMontage() const { return CharacterEquipWeaponMontage; }
+	UAnimSequence* GetCharacterIdleWeaponAnim() const { return AnimationSettings.CharacterIdleWeaponAnim; }
+	UAnimMontage* GetCharacterEquipWeaponMontage() const { return AnimationSettings.CharacterEquipWeaponMontage; }
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -98,24 +104,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractableComponent> InteractableComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> CharacterFireMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimSequence> CharacterIdleWeaponAnim;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> CharacterEquipWeaponMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Character", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> CharacterReloadMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Weapon", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> WeaponFireMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation|Weapon", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> WeaponReloadMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Firing", meta = (AllowPrivateAccess = "true", ClampMin = "0.0"))
 	float FiringRate;

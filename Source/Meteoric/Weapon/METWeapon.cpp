@@ -48,20 +48,24 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 {
 	if(!IsValid(InOwningCharacter)) return;
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent) || !ensure(AmmoComponent)) return;
+	
 	OwningCharacter = InOwningCharacter;
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
 	AmmoComponent->OnWeaponEquipped(OwningCharacter);
+	
 	if (GetLocalRole() == ROLE_Authority && !ActiveEquippedEffectHandle.IsSet())
 	{
 		ActiveEquippedEffectHandle = UMETAbilitySystemUtils::ApplyEffectClassToActor(OwningCharacter, this, EquippedEffectClass, 1);
 	}
+	
 	SetActorTickEnabled(true);
 }
 
 void AMETWeapon::OnUnequipped()
 {
 	if(!ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	
 	FinishReload(false);
 	SetActorTickEnabled(false);
 	RemoveOwningCharacter();
@@ -150,10 +154,10 @@ void AMETWeapon::Fire(bool bInHeld)
 	bCanFire = false;
 	ElapsedTimeSinceFired = 0.f;
 	
-	if(ensure(OwningCharacter) && WeaponFireMontage)
+	if(ensure(OwningCharacter) && AnimationSettings.WeaponFireMontage)
 	{
-		OwningCharacter->PlayAnimMontage(CharacterFireMontage);
-		UMETAnimationUtils::PlayAnimMontage(Mesh, WeaponFireMontage);
+		OwningCharacter->PlayAnimMontage(AnimationSettings.CharacterFireMontage);
+		UMETAnimationUtils::PlayAnimMontage(Mesh, AnimationSettings.WeaponFireMontage);
 	}
 
 	if(ensure(RecoilComponent))
@@ -175,9 +179,9 @@ bool AMETWeapon::CanFire() const
 void AMETWeapon::StartReload() const
 {
 	OnReloadEvent.Broadcast(true);
-	if (WeaponReloadMontage)
+	if (AnimationSettings.WeaponReloadMontage)
 	{
-		UMETAnimationUtils::PlayAnimMontage(Mesh, WeaponReloadMontage);
+		UMETAnimationUtils::PlayAnimMontage(Mesh, AnimationSettings.WeaponReloadMontage);
 	}
 
 	if (GetLocalRole() == ROLE_Authority)
@@ -239,7 +243,7 @@ void AMETWeapon::Tick(float DeltaTime)
 
 void AMETWeapon::Multicast_OnReload_Implementation(const bool bIsReloading) const
 {
-	if (!ensure(OwningCharacter)) return;
+	if (!OwningCharacter) return;
 	if (OwningCharacter->GetLocalRole() == ROLE_SimulatedProxy)
 	{
 		OnReloadEvent.Broadcast(bIsReloading);

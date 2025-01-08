@@ -6,8 +6,10 @@
 #include "EnhancedInputComponent.h"
 #include "METWeapon.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Sound/SoundCue.h"
 
 UMETWeaponManager::UMETWeaponManager()
 	: MaxWeapons(2)
@@ -48,6 +50,11 @@ void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 	}
 	
 	PreviousWeapon = CurrentWeapon;
+	if (PreviousWeapon)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, PreviousWeapon->FXSettings.UnequipSound, PreviousWeapon->GetActorLocation());
+	}
+	
 	StartEquipWeapon(InWeapon);
 
 	Weapons[InSlot] = CurrentWeapon;
@@ -117,6 +124,7 @@ void UMETWeaponManager::OnEquipWeaponNotify()
 	CurrentWeapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, CurrentWeapon->ParentAttachmentSocket);
 	CurrentWeapon->GetMesh()->SetVisibility(true, true);
 	CurrentWeapon->OnEquipped(OwningCharacter);
+	UGameplayStatics::PlaySoundAtLocation(this, CurrentWeapon->FXSettings.EquipSound, CurrentWeapon->GetActorLocation());
 	WeaponEquippedEvent.Broadcast(CurrentWeapon);
 }
 
@@ -186,12 +194,15 @@ int UMETWeaponManager::ChooseEquipSlot() const
 void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
 {
 	if(bIsChangingWeapons) return;
-	
-	AMETWeapon* NewWeapon = Cast<AMETWeapon>(InInteractable);
-	if(!NewWeapon) return;
 
-	const int EquipSlot = ChooseEquipSlot();
-	EquipWeapon(NewWeapon, EquipSlot);
+	if (GetOwner()->HasAuthority())
+	{
+		AMETWeapon* NewWeapon = Cast<AMETWeapon>(InInteractable);
+		if(!NewWeapon) return;
+
+		const int EquipSlot = ChooseEquipSlot();
+		EquipWeapon(NewWeapon, EquipSlot);
+	}
 }
 
 void UMETWeaponManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
