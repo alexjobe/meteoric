@@ -46,8 +46,8 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	ActorControlRotationDelta = Character->GetActorControlRotationDelta();
 	bIsTurningInPlace = Character->IsTurningInPlace();
 	
-	SetSightRelativeToSpine();
-	SetHandRelativeToSpine();
+	SetSightRelativeToCameraRoot();
+	SetHandRelativeToCameraRoot();
 	UpdateRecoilOffset();
 
 	if(Character->IsAiming())
@@ -114,7 +114,7 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 	}
 }
 
-void UMETCharacterAnimInstance::SetSightRelativeToSpine()
+void UMETCharacterAnimInstance::SetSightRelativeToCameraRoot()
 {
 	if(!ensure(Character)) return;
 
@@ -125,17 +125,17 @@ void UMETCharacterAnimInstance::SetSightRelativeToSpine()
 	if (CharacterMesh && MainCamera)
 	{
 		const FTransform CameraTransform = MainCamera->GetComponentToWorld();
-		const FTransform SpineTransform = CharacterMesh->GetBoneTransform(FName("spine_05"));
+		const FTransform CameraRootBoneTransform = CharacterMesh->GetBoneTransform(CameraRootBone);
 
-		SightToSpine = CameraTransform.GetRelativeTransform(SpineTransform);
-		SightToSpine.SetLocation(SightToSpine.GetLocation() + SightToSpine.GetRotation().GetForwardVector() * SightCameraOffset);
+		SightToCameraRoot = CameraTransform.GetRelativeTransform(CameraRootBoneTransform);
+		SightToCameraRoot.SetLocation(SightToCameraRoot.GetLocation() + SightToCameraRoot.GetRotation().GetForwardVector() * SightCameraOffset);
 	}
 	
 }
 
-void UMETCharacterAnimInstance::SetHandRelativeToSpine()
+void UMETCharacterAnimInstance::SetHandRelativeToCameraRoot()
 {
-	RightHandToSpine = RightHandToSight * SightToSpine;
+	RightHandToCameraRoot = RightHandToSight * SightToCameraRoot;
 }
 
 void UMETCharacterAnimInstance::UpdateRecoilOffset()
@@ -154,8 +154,8 @@ void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* 
 	RecoilOffset = FTransform::Identity;
 	WeaponSwayRotation = FRotator::ZeroRotator;
 	RightHandToSight = FTransform::Identity;
-	SightToSpine = FTransform::Identity;
-	RightHandToSpine = FTransform::Identity;
+	SightToCameraRoot = FTransform::Identity;
+	RightHandToCameraRoot = FTransform::Identity;
 	
 	if(CurrentWeapon)
 	{

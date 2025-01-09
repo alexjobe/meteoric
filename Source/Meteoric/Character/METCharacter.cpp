@@ -118,9 +118,7 @@ void AMETCharacter::UpdateActorControlRotationDelta()
 
 	ActorControlRotationDelta.Roll = 0.f;
 	ActorControlRotationDelta.Yaw = -Delta.Yaw;
-
-	// Divide by four spine bones (first spine bone used for yaw)
-	ActorControlRotationDelta.Pitch = Delta.Pitch / 4.f;
+	ActorControlRotationDelta.Pitch = Delta.Pitch;
 }
 
 bool AMETCharacter::IsActorControlRotationAligned() const

@@ -65,18 +65,21 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon Sway")
 	FRotator WeaponSwayRotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
+	FName CameraRootBone;
+
 	/* Right Hand Relative to Sight */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
 	FTransform RightHandToSight;
 
-	/* Sight Relative to Spine */
+	/* Sight Relative to Camera Root */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform SightToSpine;
+	FTransform SightToCameraRoot;
 
-	/* Right Hand Relative to Spine */
+	/* Right Hand Relative to Camera Root */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
-	FTransform RightHandToSpine;
-
+	FTransform RightHandToCameraRoot;
+	
 	/* Right Hand Offset from Recoil */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RecoilOffset;
@@ -92,8 +95,8 @@ private:
 	void UpdateWeaponSway();
 	
 	void SetHandRelativeToSight();
-	void SetSightRelativeToSpine();
-	void SetHandRelativeToSpine();
+	void SetSightRelativeToCameraRoot();
+	void SetHandRelativeToCameraRoot();
 	void UpdateRecoilOffset();
 
 	UFUNCTION()
