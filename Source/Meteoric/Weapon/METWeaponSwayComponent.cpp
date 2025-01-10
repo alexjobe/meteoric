@@ -35,16 +35,16 @@ void UMETWeaponSwayComponent::UpdateWeaponSway(float InDeltaTime)
 
 		if(FMath::Abs(Delta.Yaw) > FMath::Abs(Delta.Pitch))
 		{
-			TargetWeaponSway.Roll -= Delta.Yaw;
-			TargetWeaponSway.Roll = FMath::Clamp(TargetWeaponSway.Roll, -SwayRateRoll, SwayRateRoll);
+			TargetWeaponSway.Pitch -= Delta.Yaw;
+			TargetWeaponSway.Pitch = FMath::Clamp(TargetWeaponSway.Pitch, -SwayRateRoll, SwayRateRoll);
 
 			TargetWeaponSway.Yaw += Delta.Yaw;
 			TargetWeaponSway.Yaw = FMath::Clamp(TargetWeaponSway.Yaw , -SwayRateYaw, SwayRateYaw);
 		}
 		else
 		{
-			TargetWeaponSway.Pitch -= Delta.Pitch;
-			TargetWeaponSway.Pitch = FMath::Clamp(TargetWeaponSway.Pitch , -SwayRatePitch, SwayRatePitch);
+			TargetWeaponSway.Roll -= Delta.Pitch;
+			TargetWeaponSway.Roll = FMath::Clamp(TargetWeaponSway.Roll , -SwayRatePitch, SwayRatePitch);
 		}
 
 		if(CurrentWeaponSway != TargetWeaponSway)
