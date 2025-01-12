@@ -30,4 +30,6 @@ protected:
 
 	UFUNCTION()
 	void OnInputReleased(float TimeHeld);
+
+	FGameplayEffectSpecHandle MakeDamageEffectSpecHandle(const TSubclassOf<UGameplayEffect>& InDamageEffectClass, const float InMagnitude) const;
 };

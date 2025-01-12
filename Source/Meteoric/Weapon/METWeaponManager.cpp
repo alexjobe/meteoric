@@ -94,21 +94,67 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 {
 	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
 	CurrentWeapon = InWeapon;
-	OwningCharacter->PlayAnimMontage(CurrentWeapon->GetCharacterEquipWeaponMontage());
+	
+	CurrentWeapon->GetMesh()->SetVisibility(false, true);
 
-	if(UAnimMontage* EquipMontage = CurrentWeapon->GetCharacterEquipWeaponMontage())
+	if (PreviousWeapon || UnarmedCharacterEquipMontage)
+	{
+		PlayUnequipMontage();
+	}
+	else
+	{
+		PlayEquipMontage();
+	}
+}
+
+void UMETWeaponManager::PlayUnequipMontage()
+{
+	UAnimMontage* UnequipMontage = PreviousWeapon ? PreviousWeapon->GetCharacterEquipWeaponMontage() : UnarmedCharacterEquipMontage.Get();
+	if (!ensure(UnequipMontage)) return;
+	
+	OwningCharacter->PlayAnimMontage(UnequipMontage, 1, FName("Unequip"));
+
+	const UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
+	if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(UnequipMontage) : nullptr)
+	{
+		MontageInstance->OnMontageBlendingOutStarted.BindLambda([this, MontageInstance](UAnimMontage*, bool)
+		{
+			MontageInstance->OnMontageBlendingOutStarted.Unbind();
+			MontageInstance->OnMontageEnded.Unbind();
+			PlayEquipMontage();
+		});
+
+		MontageInstance->OnMontageEnded.BindLambda([this, MontageInstance](UAnimMontage*, bool)
+		{
+			MontageInstance->OnMontageBlendingOutStarted.Unbind();
+			MontageInstance->OnMontageEnded.Unbind();
+			PlayEquipMontage();
+		});
+	}
+}
+
+void UMETWeaponManager::PlayEquipMontage()
+{
+	if (!ensure(CurrentWeapon)) return;
+	
+	OwningCharacter->PlayAnimMontage(CurrentWeapon->GetCharacterEquipWeaponMontage(), 1, FName("Equip"));
+
+	if(const UAnimMontage* EquipMontage = CurrentWeapon->GetCharacterEquipWeaponMontage())
 	{
 		const UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
 		if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(EquipMontage) : nullptr)
 		{
-			MontageInstance->OnMontageBlendingOutStarted.BindLambda([this](UAnimMontage*, bool)
+			MontageInstance->OnMontageBlendingOutStarted.BindLambda([this, MontageInstance](UAnimMontage*, bool)
 			{
+				MontageInstance->OnMontageBlendingOutStarted.Unbind();
+				MontageInstance->OnMontageEnded.Unbind();
 				FinishEquipWeapon();
 			});
 
-			MontageInstance->OnMontageEnded.BindLambda([this](UAnimMontage*, bool)
+			MontageInstance->OnMontageEnded.BindLambda([this, MontageInstance](UAnimMontage*, bool)
 			{
-				//TODO: Sometimes the blend out delegate doesn't fire
+				MontageInstance->OnMontageBlendingOutStarted.Unbind();
+				MontageInstance->OnMontageEnded.Unbind();
 				FinishEquipWeapon();
 			});
 		}
@@ -118,6 +164,7 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 void UMETWeaponManager::OnEquipWeaponNotify()
 {
 	if(!ensure(OwningCharacter) || !ensure(CurrentWeapon)) return;
+
 	UnequipWeapon(PreviousWeapon);
 	PreviousWeapon = nullptr;
 	CurrentWeapon->SetWeaponDroppedState(false);

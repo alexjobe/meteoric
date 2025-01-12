@@ -16,7 +16,10 @@ class METEORIC_API UMETWeaponManager : public UActorComponent
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> CycleWeaponAction;
 
-public:	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> UnarmedCharacterEquipMontage;
+
+public:
 	UMETWeaponManager();
 
 	//~ Begin UActorComponent interface
@@ -82,6 +85,9 @@ private:
 	FChangingWeaponsEvent ChangingWeaponsEvent;
 	
 	bool bIsChangingWeapons;
+
+	void PlayUnequipMontage();
+	void PlayEquipMontage();
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

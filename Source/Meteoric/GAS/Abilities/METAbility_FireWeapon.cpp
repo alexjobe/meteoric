@@ -77,12 +77,9 @@ void UMETAbility_FireWeapon::FireWeapon()
 			const FTransform SpawnTransform(StartRotation, StartLocation);
 
 			//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
-			
-			FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(ImpactDamageEffectClass, GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(ImpactDamageEffectSpecHandle, METGameplayTags::Damage, AmmoComponent->GetImpactDamage());
 
-			FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(DelayedDamageEffectClass, GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DelayedDamageEffectSpecHandle, METGameplayTags::Damage, AmmoComponent->GetDelayedDamage());
+			FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
+			FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
 
 			FMETSpawnProjectileParams SpawnParams;
 			SpawnParams.SpawnTransform = SpawnTransform;
@@ -136,4 +133,17 @@ void UMETAbility_FireWeapon::OnFireCooldown(FGameplayEventData Payload)
 void UMETAbility_FireWeapon::OnInputReleased(float TimeHeld)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+FGameplayEffectSpecHandle UMETAbility_FireWeapon::MakeDamageEffectSpecHandle(const TSubclassOf<UGameplayEffect>& InDamageEffectClass, const float InMagnitude) const
+{
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+
+	if (InDamageEffectClass)
+	{
+		DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(InDamageEffectClass, GetAbilityLevel());
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(DamageEffectSpecHandle, METGameplayTags::Damage, InMagnitude);
+	}
+
+	return DamageEffectSpecHandle;
 }
