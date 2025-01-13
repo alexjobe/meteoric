@@ -7,10 +7,10 @@
 #include "METPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Meteoric/Weapon/METRecoilComponent.h"
+#include "Meteoric/Weapon/Handling/METRecoilComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
-#include "Meteoric/Weapon/METWeaponSwayComponent.h"
+#include "Meteoric/Weapon/Handling/METWeaponSwayComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	: GroundSpeed(0.f)

@@ -5,12 +5,13 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "METProjectileWeaponComponent.h"
-#include "METRecoilComponent.h"
-#include "METWeaponSwayComponent.h"
+#include "Projectile/METProjectileWeaponComponent.h"
+#include "Handling/METRecoilComponent.h"
+#include "Handling/METWeaponSwayComponent.h"
 #include "Ammo/METWeaponAmmoComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Handling/METWeaponSpreadComponent.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/Animation/METAnimationUtils.h"
@@ -38,6 +39,7 @@ AMETWeapon::AMETWeapon()
 
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
+	WeaponSpreadComponent = CreateDefaultSubobject<UMETWeaponSpreadComponent>("WeaponSpreadComponent");
 	InteractableComponent = CreateDefaultSubobject<UMETInteractableComponent>("InteractableComponent");
 	ProjectileWeaponComponent = CreateDefaultSubobject<UMETProjectileWeaponComponent>("ProjectileWeaponComponent");
 	AmmoComponent = CreateDefaultSubobject<UMETWeaponAmmoComponent>("AmmoComponent");
@@ -52,6 +54,7 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	OwningCharacter = InOwningCharacter;
 	RecoilComponent->OnWeaponEquipped(OwningCharacter, FiringMode);
 	WeaponSwayComponent->OnWeaponEquipped(OwningCharacter);
+	WeaponSpreadComponent->OnWeaponEquipped(OwningCharacter);
 	AmmoComponent->OnWeaponEquipped(OwningCharacter);
 	
 	if (GetLocalRole() == ROLE_Authority && !ActiveEquippedEffectHandle.IsSet())
@@ -106,6 +109,7 @@ inline void AMETWeapon::RemoveOwningCharacter()
 	OwningCharacter = nullptr;
 	RecoilComponent->Reset();
 	WeaponSwayComponent->Reset();
+	WeaponSpreadComponent->OnWeaponUnequipped();
 	AmmoComponent->OnWeaponUnequipped();
 	bCanFire = true;
 }

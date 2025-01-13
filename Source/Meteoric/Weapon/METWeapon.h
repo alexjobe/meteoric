@@ -79,6 +79,7 @@ public:
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
+	class UMETWeaponSpreadComponent* GetWeaponSpreadComponent() const { return WeaponSpreadComponent; }
 	class UMETProjectileWeaponComponent* GetProjectileWeaponComponent() const {	return ProjectileWeaponComponent; }
 	class UMETWeaponAmmoComponent* GetAmmoComponent() const { return AmmoComponent; }
 	UAnimSequence* GetCharacterIdleWeaponAnim() const { return AnimationSettings.CharacterIdleWeaponAnim; }
@@ -90,11 +91,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Recoil", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Handling", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETRecoilComponent> RecoilComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Handling", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponSwayComponent> WeaponSwayComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Handling", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UMETWeaponSpreadComponent> WeaponSpreadComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMETProjectileWeaponComponent> ProjectileWeaponComponent;

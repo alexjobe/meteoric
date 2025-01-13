@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "METWeaponTypes.h"
 #include "Meteoric/Math/METSpring.h"
+#include "Meteoric/Weapon/METWeaponTypes.h"
 #include "METRecoilComponent.generated.h"
 
 

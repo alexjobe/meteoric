@@ -6,13 +6,13 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/METLogChannels.h"
 #include "Meteoric/Character/METCharacter.h"
-#include "Meteoric/Weapon/METProjectileWeaponComponent.h"
+#include "Meteoric/Weapon/Projectile/METProjectileWeaponComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/Ammo/METWeaponAmmoComponent.h"
+#include "Meteoric/Weapon/Handling/METWeaponSpreadComponent.h"
 
 UMETAbility_FireWeapon::UMETAbility_FireWeapon()
 {
@@ -63,26 +63,18 @@ void UMETAbility_FireWeapon::FireWeapon()
 	{
 		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
 		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
+		const UMETWeaponSpreadComponent* WeaponSpreadComponent = Weapon ? Weapon->GetWeaponSpreadComponent() : nullptr;
 		const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
 		const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
 		const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
 
-		if (ensure(AmmoComponent) && ensure(ProjectileWeaponComponent))
+		if (ensure(AmmoComponent) && ensure(ProjectileWeaponComponent) && ensure(WeaponSpreadComponent))
 		{
-			const FVector StartLocation = Weapon->GetMesh()->GetSocketLocation(FName("S_Muzzle"));
-			const FTransform EyesViewpoint = MetCharacter->GetEyesViewpoint();
-			constexpr float Range = 3000.f;
-			const FVector EndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * Range;
-			const FRotator StartRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, EndLocation);
-			const FTransform SpawnTransform(StartRotation, StartLocation);
-
-			//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
-
-			FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
-			FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
+			const FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
+			const FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
 
 			FMETSpawnProjectileParams SpawnParams;
-			SpawnParams.SpawnTransform = SpawnTransform;
+			SpawnParams.SpawnTransform = WeaponSpreadComponent->GetProjectileSpawnTransform();
 			SpawnParams.Owner = GetOwningActorFromActorInfo();
 			SpawnParams.Instigator = MetCharacter;
 			SpawnParams.ImpactDamageEffectHandle = ImpactDamageEffectSpecHandle;
