@@ -19,6 +19,7 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
+	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
 {
 }
@@ -46,8 +47,9 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	ActorControlRotationDelta = Character->GetActorControlRotationDelta();
 	bIsTurningInPlace = Character->IsTurningInPlace();
 	
-	SetSightRelativeToCameraRoot();
-	SetHandRelativeToCameraRoot();
+	SetSightToCameraRoot();
+	SetRightHandToCameraRoot();
+	SetLeftHandToRightHand();
 	UpdateRecoilOffset();
 
 	if(Character->IsAiming())
@@ -57,6 +59,15 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	else
 	{
 		AimAlpha = FMath::InterpSinInOut(AimAlpha, 0.f, AimDownSightsSpeed * DeltaSeconds);
+	}
+
+	if (Character->ShouldEnableLeftHandIK())
+	{
+		LeftHandAttachAlpha = FMath::InterpSinInOut(LeftHandAttachAlpha, 1.f, AimDownSightsSpeed * DeltaSeconds);
+	}
+	else
+	{
+		LeftHandAttachAlpha = FMath::InterpSinInOut(LeftHandAttachAlpha, 0.f, AimDownSightsSpeed * DeltaSeconds);
 	}
 
 	UpdateWeaponSway();
@@ -92,7 +103,7 @@ void UMETCharacterAnimInstance::UpdateWeaponSway()
 	}
 }
 
-void UMETCharacterAnimInstance::SetHandRelativeToSight()
+void UMETCharacterAnimInstance::SetRightHandToSight()
 {
 	if(!ensure(Character)) return;
 	
@@ -100,9 +111,7 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 	if(!RightHandToSight.Equals(FTransform::Identity)) return;
 	
 	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
-	const UMETWeaponManager* WeaponManager = Character->GetWeaponManager();
-	AMETWeapon* Weapon = WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
-	const USkeletalMeshComponent* WeaponMesh = Weapon ? Weapon->GetMesh() : nullptr;
+	const USkeletalMeshComponent* WeaponMesh = CurrentWeapon ? CurrentWeapon->GetMesh() : nullptr;
 
 	if(CharacterMesh && WeaponMesh)
 	{
@@ -110,11 +119,11 @@ void UMETCharacterAnimInstance::SetHandRelativeToSight()
 		const FTransform SightTransform = WeaponMesh->GetSocketTransform(FName("S_Sight"));
 
 		RightHandToSight = RightHandTransform.GetRelativeTransform(SightTransform);
-		Weapon->RightHandToSight = RightHandToSight;
+		CurrentWeapon->RightHandToSight = RightHandToSight;
 	}
 }
 
-void UMETCharacterAnimInstance::SetSightRelativeToCameraRoot()
+void UMETCharacterAnimInstance::SetSightToCameraRoot()
 {
 	if(!ensure(Character)) return;
 
@@ -133,9 +142,24 @@ void UMETCharacterAnimInstance::SetSightRelativeToCameraRoot()
 	
 }
 
-void UMETCharacterAnimInstance::SetHandRelativeToCameraRoot()
+void UMETCharacterAnimInstance::SetRightHandToCameraRoot()
 {
 	RightHandToCameraRoot = RightHandToSight * SightToCameraRoot;
+}
+
+void UMETCharacterAnimInstance::SetLeftHandToRightHand()
+{
+	if(!ensure(Character)) return;
+	
+	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
+	const USkeletalMeshComponent* WeaponMesh = CurrentWeapon ? CurrentWeapon->GetMesh() : nullptr;
+
+	if(CharacterMesh && WeaponMesh)
+	{
+		const FTransform RightHandTransform = CharacterMesh->GetBoneTransform(FName("hand_r"));
+		const FTransform LeftHandAttachTransform = WeaponMesh->GetSocketTransform(FName("S_LeftHandAttach"));
+		LeftHandToRightHand = LeftHandAttachTransform.GetRelativeTransform(RightHandTransform);
+	}
 }
 
 void UMETCharacterAnimInstance::UpdateRecoilOffset()
@@ -156,6 +180,7 @@ void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* 
 	RightHandToSight = FTransform::Identity;
 	SightToCameraRoot = FTransform::Identity;
 	RightHandToCameraRoot = FTransform::Identity;
+	LeftHandToRightHand = FTransform::Identity;
 	
 	if(CurrentWeapon)
 	{
@@ -163,6 +188,6 @@ void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* 
 		SightCameraOffset = CurrentWeapon->SightCameraOffset;
 		AimDownSightsSpeed = CurrentWeapon->AimDownSightsSpeed;
 		RightHandToSight = CurrentWeapon->RightHandToSight;
-		SetHandRelativeToSight();
+		SetRightHandToSight();
 	}
 }

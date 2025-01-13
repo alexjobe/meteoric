@@ -79,9 +79,15 @@ protected:
 	/* Right Hand Relative to Camera Root */
 	UPROPERTY(BlueprintReadOnly, Category = "ADS")
 	FTransform RightHandToCameraRoot;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	float LeftHandAttachAlpha;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	FTransform LeftHandToRightHand;
 	
 	/* Right Hand Offset from Recoil */
-	UPROPERTY(BlueprintReadOnly, Category = "ADS")
+	UPROPERTY(BlueprintReadOnly, Category = "Recoil")
 	FTransform RecoilOffset;
 
 	UFUNCTION()
@@ -94,9 +100,10 @@ private:
 	void UpdateMovementData();
 	void UpdateWeaponSway();
 	
-	void SetHandRelativeToSight();
-	void SetSightRelativeToCameraRoot();
-	void SetHandRelativeToCameraRoot();
+	void SetRightHandToSight();
+	void SetSightToCameraRoot();
+	void SetRightHandToCameraRoot();
+	void SetLeftHandToRightHand();
 	void UpdateRecoilOffset();
 
 	UFUNCTION()

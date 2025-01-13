@@ -278,6 +278,17 @@ bool AMETCharacter::IsDead() const
 	return false;
 }
 
+bool AMETCharacter::ShouldEnableLeftHandIK() const
+{
+	if (!AbilitySystemComponent) return false;
+
+	FGameplayTagContainer DisableTags;
+	DisableTags.AddTag(METGameplayTags::Ability_ReloadWeapon);
+	DisableTags.AddTag(METGameplayTags::Ability_CycleAmmo);
+
+	return GetWeapon() && !AbilitySystemComponent->HasAnyMatchingGameplayTags(DisableTags);
+}
+
 bool AMETCharacter::CanFireWeapon() const
 {
 	if(!ensure(WeaponManager)) return false;

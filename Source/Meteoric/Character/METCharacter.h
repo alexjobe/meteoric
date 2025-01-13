@@ -40,6 +40,7 @@ public:
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
 	bool IsMoving() const;
 	bool IsDead() const;
+	bool ShouldEnableLeftHandIK() const;
 
 	UFUNCTION(BlueprintPure)
 	bool CanFireWeapon() const;
