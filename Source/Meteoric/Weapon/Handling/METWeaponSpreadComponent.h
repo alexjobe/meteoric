@@ -6,22 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "METWeaponSpreadComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class METEORIC_API UMETWeaponSpreadComponent : public UActorComponent
+USTRUCT(BlueprintType)
+struct FSpreadConeSettings
 {
 	GENERATED_BODY()
-
-public:	
-	UMETWeaponSpreadComponent();
-
-	/* How far to trace from the camera when determining shot direction */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
-	float AimTraceRange;
-
-	/* How much time must elapse since last shot before spread cone starts lerping back to minimum */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
-	float SpreadCooldown;
 
 	/* Minimum yaw angle of the spread cone */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread", meta=(ClampMin="0", ClampMax="180"))
@@ -47,9 +35,42 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
 	float PitchIncreasePerShot;
 
+	FSpreadConeSettings()
+		: MinYawInDegrees(2.f)
+		, MinPitchInDegrees(2.f)
+		, MaxYawInDegrees(5.f)
+		, MaxPitchInDegrees(5.f)
+		, YawIncreasePerShot(0.5f)
+		, PitchIncreasePerShot(0.5f)
+	{}
+};
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class METEORIC_API UMETWeaponSpreadComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	UMETWeaponSpreadComponent();
+
+	/* How far to trace from the camera when determining shot direction */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
+	float AimTraceRange;
+
+	/* How much time must elapse since last shot before spread cone starts lerping back to minimum */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Spread")
+	float SpreadCooldown;
+
 	/* How fast spread cone lerps back to minimum */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Spread")
 	float SpreadResetLerpSpeed;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Spread|Default")
+	FSpreadConeSettings DefaultConeSettings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Spread|ADS")
+	FSpreadConeSettings AimConeSettings;
 
 	//~ Begin UActorComponent interface
 	virtual void InitializeComponent() override;
@@ -63,10 +84,13 @@ public:
 	void OnWeaponUnequipped();
 
 	void OnWeaponFired();
+	void OnAimDownSights(const bool bInIsAiming);
 
 protected:
 	FVector GetShotDirection(const FVector& InStartLocation) const;
+	void ResetCurrentCone() { CurrentYawInDegrees = CurrentConeSettings.MinYawInDegrees; CurrentPitchInDegrees = CurrentConeSettings.MinPitchInDegrees; }
 
+	FSpreadConeSettings CurrentConeSettings;
 	float CurrentYawInDegrees;
 	float CurrentPitchInDegrees;
 	

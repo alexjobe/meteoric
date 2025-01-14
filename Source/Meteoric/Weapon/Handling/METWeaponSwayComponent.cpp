@@ -66,7 +66,7 @@ void UMETWeaponSwayComponent::OnWeaponEquipped(ACharacter* const InOwningCharact
 	OwningCharacter = InOwningCharacter;
 }
 
-void UMETWeaponSwayComponent::OnAimDownSights(bool bInIsAiming)
+void UMETWeaponSwayComponent::OnAimDownSights(const bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;
 	CurrentWeaponSway = FRotator::ZeroRotator;

@@ -36,7 +36,7 @@ public:
 	void UpdateWeaponSway(const float InDeltaTime);
 
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter);
-	void OnAimDownSights(bool bInIsAiming);
+	void OnAimDownSights(const bool bInIsAiming);
 
 	void Reset();
 

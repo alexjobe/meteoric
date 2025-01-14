@@ -135,11 +135,12 @@ void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
 	}
 }
 
-void AMETWeapon::OnAimDownSights(bool bInIsAiming) const
+void AMETWeapon::OnAimDownSights(const bool bInIsAiming) const
 {
-	if(ensure(WeaponSwayComponent))
+	if(ensure(WeaponSwayComponent) && ensure(WeaponSpreadComponent))
 	{
 		WeaponSwayComponent->OnAimDownSights(bInIsAiming);
+		WeaponSpreadComponent->OnAimDownSights(bInIsAiming);
 	}
 }
 

@@ -15,12 +15,6 @@ static TAutoConsoleVariable<int32> CVarDrawWeaponSpreadDebug(
 UMETWeaponSpreadComponent::UMETWeaponSpreadComponent()
 	: AimTraceRange(3000.f)
 	, SpreadCooldown(.2f)
-	, MinYawInDegrees(2.f)
-	, MinPitchInDegrees(2.f)
-	, MaxYawInDegrees(5.f)
-	, MaxPitchInDegrees(5.f)
-	, YawIncreasePerShot(0.5f)
-	, PitchIncreasePerShot(0.5f)
 	, SpreadResetLerpSpeed(2.f)
 	, CurrentYawInDegrees(0.f)
 	, CurrentPitchInDegrees(0.f)
@@ -35,13 +29,13 @@ void UMETWeaponSpreadComponent::InitializeComponent()
 	Super::InitializeComponent();
 	WeaponMesh = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 
-	CurrentYawInDegrees = MinYawInDegrees;
-	CurrentPitchInDegrees = MinPitchInDegrees;
+	CurrentConeSettings = DefaultConeSettings;
+	ResetCurrentCone();
 }
 
 void UMETWeaponSpreadComponent::UpdateWeaponSpread(const float InDeltaTime)
 {
-	if (CurrentYawInDegrees == MinYawInDegrees && CurrentPitchInDegrees == MinPitchInDegrees) return;
+	if (CurrentYawInDegrees == CurrentConeSettings.MinYawInDegrees && CurrentPitchInDegrees == CurrentConeSettings.MinPitchInDegrees) return;
 
 #if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
 	if (CVarDrawWeaponSpreadDebug.GetValueOnAnyThread() == 1)
@@ -53,8 +47,19 @@ void UMETWeaponSpreadComponent::UpdateWeaponSpread(const float InDeltaTime)
 	ElapsedTimeSinceFired += InDeltaTime;
 	if (ElapsedTimeSinceFired > SpreadCooldown)
 	{
-		CurrentYawInDegrees = FMath::Max(MinYawInDegrees, FMath::Lerp(CurrentYawInDegrees, MinYawInDegrees, InDeltaTime * SpreadResetLerpSpeed));
-		CurrentPitchInDegrees = FMath::Max(MinPitchInDegrees, FMath::Lerp(CurrentPitchInDegrees, MinPitchInDegrees, InDeltaTime * SpreadResetLerpSpeed));
+		CurrentYawInDegrees = FMath::Clamp(FMath::Lerp(CurrentYawInDegrees, CurrentConeSettings.MinYawInDegrees, InDeltaTime * SpreadResetLerpSpeed), CurrentConeSettings.MinYawInDegrees, CurrentConeSettings.MaxYawInDegrees);
+		CurrentPitchInDegrees = FMath::Clamp(FMath::Lerp(CurrentPitchInDegrees, CurrentConeSettings.MinPitchInDegrees, InDeltaTime * SpreadResetLerpSpeed), CurrentConeSettings.MinPitchInDegrees, CurrentConeSettings.MaxPitchInDegrees);
+
+		constexpr float ErrorTolerance = 0.1f;
+		if (FMath::IsNearlyEqual(CurrentYawInDegrees, CurrentConeSettings.MinYawInDegrees, ErrorTolerance))
+		{
+			CurrentYawInDegrees = CurrentConeSettings.MinYawInDegrees;
+		}
+
+		if (FMath::IsNearlyEqual(CurrentPitchInDegrees, CurrentConeSettings.MinPitchInDegrees, ErrorTolerance))
+		{
+			CurrentPitchInDegrees = CurrentConeSettings.MinPitchInDegrees;
+		}
 	}
 }
 
@@ -96,22 +101,34 @@ FVector UMETWeaponSpreadComponent::GetShotDirection(const FVector& InStartLocati
 void UMETWeaponSpreadComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter)
 {
 	OwningCharacter = Cast<AMETCharacter>(InOwningCharacter);
-	CurrentYawInDegrees = MinYawInDegrees;
-	CurrentPitchInDegrees = MinPitchInDegrees;
+	CurrentConeSettings = DefaultConeSettings;
+	ResetCurrentCone();
 }
 
 void UMETWeaponSpreadComponent::OnWeaponUnequipped()
 {
 	OwningCharacter = nullptr;
-	CurrentYawInDegrees = MinYawInDegrees;
-	CurrentPitchInDegrees = MinPitchInDegrees;
+	CurrentConeSettings = DefaultConeSettings;
+	ResetCurrentCone();
 }
 
 void UMETWeaponSpreadComponent::OnWeaponFired()
 {
 	ElapsedTimeSinceFired = 0.f;
-	CurrentYawInDegrees = FMath::Min(MaxYawInDegrees, CurrentYawInDegrees + YawIncreasePerShot);
-	CurrentPitchInDegrees = FMath::Min(MaxPitchInDegrees, CurrentPitchInDegrees + PitchIncreasePerShot);
+	CurrentYawInDegrees = FMath::Min(CurrentConeSettings.MaxYawInDegrees, CurrentYawInDegrees + CurrentConeSettings.YawIncreasePerShot);
+	CurrentPitchInDegrees = FMath::Min(CurrentConeSettings.MaxPitchInDegrees, CurrentPitchInDegrees + CurrentConeSettings.PitchIncreasePerShot);
+}
+
+void UMETWeaponSpreadComponent::OnAimDownSights(const bool bInIsAiming)
+{
+	if (bInIsAiming)
+	{
+		CurrentConeSettings = AimConeSettings;
+	}
+	else
+	{
+		CurrentConeSettings = DefaultConeSettings;
+	}
 }
 
 #if !UE_BUILD_TEST && !UE_BUILD_SHIPPING

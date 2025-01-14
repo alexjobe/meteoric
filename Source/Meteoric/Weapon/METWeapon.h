@@ -48,7 +48,7 @@ public:
 
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void OnUnequipped();
-	void OnAimDownSights(bool bInIsAiming) const;
+	void OnAimDownSights(const bool bInIsAiming) const;
 	
 	void Drop();
 
