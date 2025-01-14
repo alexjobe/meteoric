@@ -212,7 +212,7 @@ void AMETWeapon::FinishReload(const bool bSuccess) const
 void AMETWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(!ensure(Mesh) || !ensure(RecoilComponent) || !ensure(WeaponSwayComponent)) return;
+	if(!ensure(Mesh) || !ensure(RecoilComponent) || !ensure(WeaponSwayComponent) || !ensure(WeaponSpreadComponent)) return;
 
 	if (!bCanFire)
 	{
@@ -231,6 +231,7 @@ void AMETWeapon::Tick(float DeltaTime)
 	// Note: If performance is a concern, we can just update recoil on the locally-controlled pawn
 	RecoilComponent->UpdateRecoil(DeltaTime);
 	WeaponSwayComponent->UpdateWeaponSway(DeltaTime);
+	WeaponSpreadComponent->UpdateWeaponSpread(DeltaTime);
 
 	if(Mesh->IsSimulatingPhysics())
 	{

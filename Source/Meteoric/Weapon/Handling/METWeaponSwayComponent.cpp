@@ -17,7 +17,7 @@ UMETWeaponSwayComponent::UMETWeaponSwayComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UMETWeaponSwayComponent::UpdateWeaponSway(float InDeltaTime)
+void UMETWeaponSwayComponent::UpdateWeaponSway(const float InDeltaTime)
 {
 	if(!OwningCharacter) return;
 	

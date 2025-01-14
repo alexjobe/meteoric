@@ -33,7 +33,7 @@ public:
 	
 	UMETWeaponSwayComponent();
 	
-	void UpdateWeaponSway(float InDeltaTime);
+	void UpdateWeaponSway(const float InDeltaTime);
 
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter);
 	void OnAimDownSights(bool bInIsAiming);

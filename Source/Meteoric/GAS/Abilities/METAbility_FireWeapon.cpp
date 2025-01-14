@@ -63,7 +63,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 	{
 		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
 		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
-		const UMETWeaponSpreadComponent* WeaponSpreadComponent = Weapon ? Weapon->GetWeaponSpreadComponent() : nullptr;
+		UMETWeaponSpreadComponent* WeaponSpreadComponent = Weapon ? Weapon->GetWeaponSpreadComponent() : nullptr;
 		const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
 		const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
 		const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
@@ -81,6 +81,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 			SpawnParams.DelayedDamageEffectHandle = DelayedDamageEffectSpecHandle;
 			
 			ProjectileWeaponComponent->FireProjectile(SpawnParams);
+			WeaponSpreadComponent->OnWeaponFired();
 		}
 	}
 }
