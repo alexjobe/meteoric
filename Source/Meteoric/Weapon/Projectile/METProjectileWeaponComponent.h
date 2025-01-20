@@ -11,8 +11,6 @@ USTRUCT()
 struct FMETSpawnProjectileParams
 {
 	GENERATED_BODY()
-	
-	FTransform SpawnTransform;
 
 	UPROPERTY(Transient)
 	AActor* Owner;
@@ -34,11 +32,28 @@ class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"), Category = "Projectile")
 	TSubclassOf<class AMETProjectile> ProjectileClass;
+
+	/* Number of projectiles fired per shot */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"), Category = "Projectile", meta = (ClampMin = 0))
+	int32 NumProjectiles;
 
 public:	
 	UMETProjectileWeaponComponent();
 
-	void FireProjectile(const FMETSpawnProjectileParams& Params) const;
+	//~ Begin UActorComponent interface
+	virtual void InitializeComponent() override;
+	//~ End UActorComponent interface
+
+	void FireProjectiles(const TArray<FMETSpawnProjectileParams>& Params) const;
+
+	/* Number of projectiles fired per shot */
+	int32 GetNumProjectiles() const { return NumProjectiles; }
+
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<class UMETWeaponSpreadComponent> WeaponSpreadComponent;
+	
+	void SpawnProjectile(const FMETSpawnProjectileParams& Params) const;
 };

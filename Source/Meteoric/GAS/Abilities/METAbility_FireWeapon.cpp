@@ -12,7 +12,6 @@
 #include "Meteoric/Weapon/Projectile/METProjectileWeaponComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/Ammo/METWeaponAmmoComponent.h"
-#include "Meteoric/Weapon/Handling/METWeaponSpreadComponent.h"
 
 UMETAbility_FireWeapon::UMETAbility_FireWeapon()
 {
@@ -61,29 +60,49 @@ void UMETAbility_FireWeapon::FireWeapon()
 
 	if (GetAvatarActorFromActorInfo()->HasAuthority())
 	{
-		const AMETWeapon* Weapon = MetCharacter->GetWeapon();
-		const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
-		UMETWeaponSpreadComponent* WeaponSpreadComponent = Weapon ? Weapon->GetWeaponSpreadComponent() : nullptr;
-		const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
-		const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
-		const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
-
-		if (ensure(AmmoComponent) && ensure(ProjectileWeaponComponent) && ensure(WeaponSpreadComponent))
-		{
-			const FGameplayEffectSpecHandle ImpactDamageEffectSpecHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
-			const FGameplayEffectSpecHandle DelayedDamageEffectSpecHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
-
-			FMETSpawnProjectileParams SpawnParams;
-			SpawnParams.SpawnTransform = WeaponSpreadComponent->GetProjectileSpawnTransform();
-			SpawnParams.Owner = GetOwningActorFromActorInfo();
-			SpawnParams.Instigator = MetCharacter;
-			SpawnParams.ImpactDamageEffectHandle = ImpactDamageEffectSpecHandle;
-			SpawnParams.DelayedDamageEffectHandle = DelayedDamageEffectSpecHandle;
-			
-			ProjectileWeaponComponent->FireProjectile(SpawnParams);
-			WeaponSpreadComponent->OnWeaponFired();
-		}
+		SpawnProjectiles();
 	}
+}
+
+void UMETAbility_FireWeapon::SpawnProjectiles() const
+{
+	const AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
+	const AMETWeapon* Weapon = MetCharacter ? MetCharacter->GetWeapon() : nullptr;
+	const UMETProjectileWeaponComponent* ProjectileWeaponComponent = Weapon ? Weapon->GetProjectileWeaponComponent() : nullptr;
+	
+	if (ensure(ProjectileWeaponComponent))
+	{
+		TArray<FMETSpawnProjectileParams> ProjectileParams;
+		for (int Projectile = 0; Projectile < ProjectileWeaponComponent->GetNumProjectiles(); ++Projectile)
+		{
+			// Create params for each projectile (Some weapons fire multiple projectiles per shot, ex. shotgun)
+			ProjectileParams.Push(CreateProjectileSpawnParams());
+		}
+		
+		ProjectileWeaponComponent->FireProjectiles(ProjectileParams);
+	}
+}
+
+FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() const
+{
+	FMETSpawnProjectileParams SpawnParams;
+	
+	AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
+	const AMETWeapon* Weapon = MetCharacter ? MetCharacter->GetWeapon() : nullptr;
+	const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
+	
+	const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
+	const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
+
+	if (ensure(ImpactDamageEffectClass))
+	{
+		SpawnParams.Owner = GetOwningActorFromActorInfo();
+		SpawnParams.Instigator = MetCharacter;
+		SpawnParams.ImpactDamageEffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
+		SpawnParams.DelayedDamageEffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
+	}
+
+	return SpawnParams;
 }
 
 bool UMETAbility_FireWeapon::BindWaitFireCooldownEventTask()
