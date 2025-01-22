@@ -54,9 +54,14 @@ public:
 
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 
+	//~ Begin AMETCharacter interface
 	virtual FTransform GetEyesViewpoint() const override;
+	//~ End AMETCharacter interface
 
-private:
-	void InitAbilityActorInfo();
+protected:
+	//~ Begin AMETCharacter interface
+	virtual void InitAbilityActorInfo() override;
+	//~ End AMETCharacter interface
+	
 	void ResetControlRotation() const;
 };

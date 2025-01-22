@@ -158,6 +158,10 @@ void AMETCharacter::RemoveCharacterAbilities() const
 	AbilitySystemComponent->bCharacterAbilitiesGiven = false;
 }
 
+void AMETCharacter::InitAbilityActorInfo()
+{
+}
+
 void AMETCharacter::InitializeDefaultAttributes() const
 {
 	UMETAbilitySystemUtils::ApplyEffectClassToActor(this, this, DefaultMaxAttributes, 1);

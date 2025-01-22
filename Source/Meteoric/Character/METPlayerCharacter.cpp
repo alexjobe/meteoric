@@ -71,6 +71,7 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 		AbilitySystemComponent = ASC;
 		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 		AbilitySystemComponent->SetTagMapCount(METGameplayTags::State_Dead, 0);
+		AttributeSet = PS->GetAttributeSet();
 	}
 
 	InitializeDefaultAttributes();

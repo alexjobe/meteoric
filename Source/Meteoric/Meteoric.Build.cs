@@ -17,7 +17,8 @@ public class Meteoric : ModuleRules
 			"EnhancedInput", 
 			"GameplayAbilities",
 			"GameplayTags",
-			"GameplayTasks"
+			"GameplayTasks",
+			"AIModule"
 		});
 
 		// Uncomment if you are using Slate UI

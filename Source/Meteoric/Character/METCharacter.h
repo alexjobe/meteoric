@@ -57,8 +57,11 @@ public:
 	void Die();
 
 protected:
-	UPROPERTY(Transient)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<class UMETAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
+	TObjectPtr<class UMETAttributeSet> AttributeSet;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMETWeaponManager> WeaponManager;
@@ -86,7 +89,8 @@ protected:
 
 	virtual void AddCharacterAbilities();
 	void RemoveCharacterAbilities() const;
-	
+
+	virtual void InitAbilityActorInfo();
 	void InitializeDefaultAttributes() const;
 
 	/** Called for movement input */
