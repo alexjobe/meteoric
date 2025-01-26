@@ -7,13 +7,15 @@
 #include "METWeapon.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Loadout/METWeaponLoadout.h"
+#include "Meteoric/METLogChannels.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 UMETWeaponManager::UMETWeaponManager()
 	: MaxWeapons(2)
-	, SelectedWeaponSlot(0)
+	, CurrentWeaponSlot(0)
 	, bIsChangingWeapons(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -32,24 +34,38 @@ void UMETWeaponManager::InitializeComponent()
 	}
 }
 
+void UMETWeaponManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (DefaultWeaponLoadout)
+	{
+		GrantLoadout(*DefaultWeaponLoadout);
+	}
+}
+
 void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 {
 	if(!ensure(InSlot >= 0 && InSlot < MaxWeapons)) return;
-	if(!ensure(OwningCharacter) || !ensure(InWeapon) || InWeapon == CurrentWeapon) return;
+	if(!ensure(OwningCharacter) || !ensure(InWeapon)) return;
 	if(bIsChangingWeapons) return;
 
 	bIsChangingWeapons = true;
 	ChangingWeaponsEvent.Broadcast(bIsChangingWeapons);
 
-	if(Weapons[InSlot] == CurrentWeapon && CurrentWeapon != nullptr)
+	if(Weapons[InSlot] == CurrentWeapon && CurrentWeapon != nullptr && InWeapon != CurrentWeapon)
 	{
 		CurrentWeapon->Drop();
 		Weapons[InSlot] = nullptr;
 		CurrentWeapon = nullptr;
 		PreviousWeapon = nullptr;
 	}
+
+	if (InWeapon != CurrentWeapon)
+	{
+		PreviousWeapon = CurrentWeapon;
+	}
 	
-	PreviousWeapon = CurrentWeapon;
 	if (PreviousWeapon)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, PreviousWeapon->FXSettings.UnequipSound, PreviousWeapon->GetActorLocation());
@@ -58,7 +74,7 @@ void UMETWeaponManager::EquipWeapon(AMETWeapon* const InWeapon, int InSlot)
 	StartEquipWeapon(InWeapon);
 
 	Weapons[InSlot] = CurrentWeapon;
-	SelectedWeaponSlot = InSlot;
+	CurrentWeaponSlot = InSlot;
 
 	if(GetOwner()->HasAuthority())
 	{
@@ -105,6 +121,11 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 	{
 		PlayEquipMontage();
 	}
+}
+
+void UMETWeaponManager::OnRep_CurrentWeapon(AMETWeapon* InOldWeapon)
+{
+	EquipCurrentWeapon();
 }
 
 void UMETWeaponManager::PlayUnequipMontage()
@@ -175,6 +196,14 @@ void UMETWeaponManager::OnEquipWeaponNotify()
 	WeaponEquippedEvent.Broadcast(CurrentWeapon);
 }
 
+void UMETWeaponManager::EquipCurrentWeapon()
+{
+	if (CurrentWeapon && !CurrentWeapon->IsEquipped() && Weapons[CurrentWeaponSlot] == CurrentWeapon)
+	{
+		EquipWeapon(CurrentWeapon, CurrentWeaponSlot);
+	}
+}
+
 void UMETWeaponManager::FinishEquipWeapon()
 {
 	if(!bIsChangingWeapons) return;
@@ -208,11 +237,11 @@ void UMETWeaponManager::CycleWeapon(const bool bInForward)
 	if(MaxWeapons <= 1) return;
 	if(bIsChangingWeapons) return;
 	
-	int NewSlot = SelectedWeaponSlot + (bInForward ? 1 : -1);
+	int NewSlot = CurrentWeaponSlot + (bInForward ? 1 : -1);
 	if(NewSlot < 0) NewSlot = MaxWeapons - 1;
 	if(NewSlot >= MaxWeapons) NewSlot = 0;
 
-	SelectedWeaponSlot = NewSlot;
+	CurrentWeaponSlot = NewSlot;
 	
 	if(Weapons[NewSlot] != nullptr)
 	{
@@ -227,7 +256,7 @@ void UMETWeaponManager::Server_CycleWeapon_Implementation(const bool bInForward)
 
 int UMETWeaponManager::ChooseEquipSlot() const
 {
-	if(Weapons[SelectedWeaponSlot] != nullptr)
+	if(Weapons[CurrentWeaponSlot] != nullptr)
 	{
 		for(int Slot = 0; Slot < MaxWeapons; ++Slot)
 		{
@@ -235,7 +264,43 @@ int UMETWeaponManager::ChooseEquipSlot() const
 		}
 	}
 
-	return SelectedWeaponSlot;
+	return CurrentWeaponSlot;
+}
+
+void UMETWeaponManager::GrantLoadout(const UMETWeaponLoadout& InLoadout)
+{
+	if(!GetOwner()->HasAuthority()) return;
+	
+	if (InLoadout.Weapons.Num() > MaxWeapons)
+	{
+		UE_LOG(LogMET, Warning, TEXT("METWeaponManager: Could not grant full weapon loadout - loadout size is greater than MaxWeapons"));
+	}
+
+	for (int Index = 0; Index < FMath::Min(InLoadout.Weapons.Num(), MaxWeapons); ++Index)
+	{
+		const auto& WeaponClass = InLoadout.Weapons[Index];
+		AMETWeapon* NewWeapon = GetWorld()->SpawnActorDeferred<AMETWeapon>(
+			WeaponClass,
+			FTransform::Identity,
+			nullptr,
+			nullptr,
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+
+		if (ensure(NewWeapon) && ensure(OwningCharacter))
+		{
+			NewWeapon->SetActorTickEnabled(false);
+			NewWeapon->bStartDropped = false;
+			NewWeapon->GetMesh()->SetVisibility(false, true);
+			NewWeapon->FinishSpawning(FTransform::Identity);
+			Weapons[Index] = NewWeapon;
+		}
+	}
+	
+	if (!Weapons.IsEmpty() && Weapons[0] != nullptr)
+	{
+		EquipWeapon(Weapons[0], 0);
+	}
 }
 
 void UMETWeaponManager::InteractionComponent_OnInteractEvent(AActor* InInteractable)
@@ -259,6 +324,7 @@ void UMETWeaponManager::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME(UMETWeaponManager, CurrentWeapon)
 	DOREPLIFETIME(UMETWeaponManager, OwningCharacter)
 	DOREPLIFETIME(UMETWeaponManager, Weapons)
+	DOREPLIFETIME(UMETWeaponManager, CurrentWeaponSlot)
 }
 
 void UMETWeaponManager::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

@@ -17,11 +17,15 @@ class METEORIC_API AMETAICharacter : public AMETCharacter
 public:
 	AMETAICharacter();
 
-	//~ Begin AMETCharacter interface
+	//~ Begin ACharacter interface
 	virtual void BeginPlay() override;
-	//~ End AMETCharacter interface
+	virtual void PossessedBy(AController* NewController) override;
+	//~ End ACharacter interface
 
 protected:
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
+	
 	//~ Begin AMETCharacter interface
 	virtual void InitAbilityActorInfo() override;
 	//~ End AMETCharacter interface

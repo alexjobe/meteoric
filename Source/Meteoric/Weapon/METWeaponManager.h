@@ -19,11 +19,15 @@ class METEORIC_API UMETWeaponManager : public UActorComponent
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> UnarmedCharacterEquipMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loadout", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<class UMETWeaponLoadout> DefaultWeaponLoadout;
+
 public:
 	UMETWeaponManager();
 
 	//~ Begin UActorComponent interface
 	virtual void InitializeComponent() override;
+	virtual void BeginPlay() override;
 	//~ End UActorComponent interface
 
 	UFUNCTION(BlueprintCallable)
@@ -46,8 +50,10 @@ public:
 	bool IsChangingWeapons() const { return bIsChangingWeapons; }
 	void OnEquipWeaponNotify();
 
+	void EquipCurrentWeapon();
+
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon", Replicated, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon", ReplicatedUsing=OnRep_CurrentWeapon, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<AMETWeapon> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
@@ -66,6 +72,8 @@ protected:
 
 	int ChooseEquipSlot() const;
 
+	void GrantLoadout(const UMETWeaponLoadout& InLoadout);
+
 	UFUNCTION()
 	void InteractionComponent_OnInteractEvent(AActor* InInteractable);
 
@@ -78,13 +86,17 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<AMETWeapon> PreviousWeapon;
-	
-	int SelectedWeaponSlot;
+
+	UPROPERTY(Transient, Replicated)
+	int CurrentWeaponSlot;
 
 	FWeaponEquippedEvent WeaponEquippedEvent;
 	FChangingWeaponsEvent ChangingWeaponsEvent;
 	
 	bool bIsChangingWeapons;
+
+	UFUNCTION()
+	void OnRep_CurrentWeapon(AMETWeapon* InOldWeapon);
 
 	void PlayUnequipMontage();
 	void PlayEquipMontage();

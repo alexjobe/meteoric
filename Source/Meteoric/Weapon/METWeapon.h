@@ -44,8 +44,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "FX")
 	FMETWeaponFXSettings FXSettings;
 
-	AMETWeapon();
+	bool bStartDropped;
 
+	AMETWeapon();
+	
+	bool IsEquipped() const { return bEquipped; }
+	
 	void OnEquipped(ACharacter* InOwningCharacter);
 	void OnUnequipped();
 	void OnAimDownSights(const bool bInIsAiming) const;
@@ -56,7 +60,7 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_Drop();
 
-	void RemoveOwningCharacter();
+	void FinishUnequip();
 	
 public:
 	void SetWeaponDroppedState(bool bInDropped);
@@ -115,12 +119,13 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_OwningCharacter);
+	UPROPERTY(Transient, Replicated);
 	TObjectPtr<ACharacter> OwningCharacter;
 
 	TOptional<FActiveGameplayEffectHandle> ActiveEquippedEffectHandle;
 
 	bool bCanFire;
+	bool bEquipped;
 	float ElapsedTimeSinceFired;
 	float ElapsedTimeSinceDropped;
 
@@ -129,9 +134,6 @@ private:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnReload(const bool bIsReloading) const;
-
-	UFUNCTION()
-	void OnRep_OwningCharacter(ACharacter* InOldOwner);
 
 	void SetWeaponPhysicsEnabled(bool bInEnabled);
 

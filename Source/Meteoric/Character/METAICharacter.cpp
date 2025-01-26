@@ -3,6 +3,9 @@
 
 #include "METAICharacter.h"
 
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Meteoric/AI/METAIController.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 
@@ -29,6 +32,24 @@ void AMETAICharacter::BeginPlay()
 	if (HasAuthority())
 	{
 		AddCharacterAbilities();
+	}
+}
+
+void AMETAICharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority()) return;
+
+	AMETAIController* AIController = Cast<AMETAIController>(NewController);
+	check(AIController);
+
+	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
+
+	if (BlackboardComponent && BehaviorTree)
+	{
+		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		AIController->RunBehaviorTree(BehaviorTree);
 	}
 }
 

@@ -25,8 +25,10 @@ AMETWeapon::AMETWeapon()
 	, FiringMode(SingleShot)
 	, FiringRate(0.2f)
 	, bCanFire(true)
+	, bEquipped(false)
 	, ElapsedTimeSinceFired(0.f)
 	, ElapsedTimeSinceDropped(0.f)
+	, bStartDropped(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -35,7 +37,7 @@ AMETWeapon::AMETWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 
-	SetWeaponDroppedState(true);
+	SetWeaponDroppedState(bStartDropped);
 
 	RecoilComponent = CreateDefaultSubobject<UMETRecoilComponent>("RecoilComponent");
 	WeaponSwayComponent = CreateDefaultSubobject<UMETWeaponSwayComponent>("WeaponSwayComponent");
@@ -63,6 +65,8 @@ void AMETWeapon::OnEquipped(ACharacter* InOwningCharacter)
 	}
 	
 	SetActorTickEnabled(true);
+
+	bEquipped = true;
 }
 
 void AMETWeapon::OnUnequipped()
@@ -71,7 +75,7 @@ void AMETWeapon::OnUnequipped()
 	
 	FinishReload(false);
 	SetActorTickEnabled(false);
-	RemoveOwningCharacter();
+	FinishUnequip();
 }
 
 void AMETWeapon::Drop()
@@ -81,7 +85,7 @@ void AMETWeapon::Drop()
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	SetWeaponDroppedState(true);
 	ElapsedTimeSinceDropped = 0.f;
-	RemoveOwningCharacter();
+	FinishUnequip();
 	GetMesh()->SetVisibility(true, true);
 
 	if(HasAuthority())
@@ -98,7 +102,7 @@ void AMETWeapon::Multicast_Drop_Implementation()
 	}
 }
 
-inline void AMETWeapon::RemoveOwningCharacter()
+inline void AMETWeapon::FinishUnequip()
 {
 	if (GetLocalRole() == ROLE_Authority && ActiveEquippedEffectHandle.IsSet())
 	{
@@ -112,6 +116,7 @@ inline void AMETWeapon::RemoveOwningCharacter()
 	WeaponSpreadComponent->OnWeaponUnequipped();
 	AmmoComponent->OnWeaponUnequipped();
 	bCanFire = true;
+	bEquipped = false;
 }
 
 void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
@@ -253,20 +258,6 @@ void AMETWeapon::Multicast_OnReload_Implementation(const bool bIsReloading) cons
 	if (OwningCharacter->GetLocalRole() == ROLE_SimulatedProxy)
 	{
 		OnReloadEvent.Broadcast(bIsReloading);
-	}
-}
-
-void AMETWeapon::OnRep_OwningCharacter(ACharacter* InOldOwner)
-{
-	if(InOldOwner == OwningCharacter) return;
-
-	if(OwningCharacter)
-	{
-		OnEquipped(OwningCharacter);
-	}
-	else
-	{
-		OnUnequipped();
 	}
 }
 
