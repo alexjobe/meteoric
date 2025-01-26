@@ -123,9 +123,18 @@ void UMETWeaponManager::StartEquipWeapon(AMETWeapon* const InWeapon)
 	}
 }
 
-void UMETWeaponManager::OnRep_CurrentWeapon(AMETWeapon* InOldWeapon)
+void UMETWeaponManager::OnRep_CurrentWeapon(const AMETWeapon* InOldWeapon)
 {
 	EquipCurrentWeapon();
+}
+
+void UMETWeaponManager::OnRep_Weapons(const TArray<AMETWeapon*>& InOldWeapons)
+{
+	if (Weapons != InOldWeapons)
+	{
+		// Attaches reserve weapons to player if they are not already attached.
+		SetupReserveWeaponAttachments();
+	}
 }
 
 void UMETWeaponManager::PlayUnequipMontage()
@@ -279,27 +288,40 @@ void UMETWeaponManager::GrantLoadout(const UMETWeaponLoadout& InLoadout)
 	for (int Index = 0; Index < FMath::Min(InLoadout.Weapons.Num(), MaxWeapons); ++Index)
 	{
 		const auto& WeaponClass = InLoadout.Weapons[Index];
-		AMETWeapon* NewWeapon = GetWorld()->SpawnActorDeferred<AMETWeapon>(
-			WeaponClass,
-			FTransform::Identity,
-			nullptr,
-			nullptr,
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-		);
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		if (ensure(NewWeapon) && ensure(OwningCharacter))
+		if (AMETWeapon* NewWeapon = GetWorld()->SpawnActor<AMETWeapon>(WeaponClass, SpawnParameters); ensure(NewWeapon))
 		{
-			NewWeapon->SetActorTickEnabled(false);
-			NewWeapon->bStartDropped = false;
-			NewWeapon->GetMesh()->SetVisibility(false, true);
-			NewWeapon->FinishSpawning(FTransform::Identity);
 			Weapons[Index] = NewWeapon;
 		}
 	}
-	
-	if (!Weapons.IsEmpty() && Weapons[0] != nullptr)
+
+	if (GetOwner()->HasAuthority())
 	{
-		EquipWeapon(Weapons[0], 0);
+		if (!Weapons.IsEmpty() && Weapons[0] != nullptr)
+		{
+			EquipWeapon(Weapons[0], 0);
+		}
+	}
+	
+	SetupReserveWeaponAttachments();
+}
+
+void UMETWeaponManager::SetupReserveWeaponAttachments()
+{
+	if (!ensure(OwningCharacter)) return;
+	
+	for (int Index = 0; Index < Weapons.Num(); ++Index)
+	{
+		AMETWeapon* Weapon = Weapons[Index];
+		if(Weapon != nullptr && Weapon != CurrentWeapon && !Weapon->IsAttachedTo(OwningCharacter))
+		{
+			Weapon->GetMesh()->SetVisibility(false, true);
+			Weapon->SetActorTickEnabled(false);
+			Weapon->SetWeaponDroppedState(false);
+			Weapon->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Weapon->ParentAttachmentSocket);
+		}
 	}
 }
 

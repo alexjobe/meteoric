@@ -74,6 +74,12 @@ protected:
 
 	void GrantLoadout(const UMETWeaponLoadout& InLoadout);
 
+	/**
+	 * Makes sure weapons in inventory are attached to player. This is mostly relevant for weapons granted to the player
+	 * immediately on spawn.
+	*/
+	void SetupReserveWeaponAttachments();
+
 	UFUNCTION()
 	void InteractionComponent_OnInteractEvent(AActor* InInteractable);
 
@@ -81,7 +87,7 @@ private:
 	UPROPERTY(Transient, Replicated)
 	TObjectPtr<ACharacter> OwningCharacter;
 
-	UPROPERTY(Transient, VisibleAnywhere, Replicated)
+	UPROPERTY(Transient, VisibleAnywhere, ReplicatedUsing=OnRep_Weapons)
 	TArray<TObjectPtr<AMETWeapon>> Weapons;
 
 	UPROPERTY(Transient)
@@ -96,7 +102,10 @@ private:
 	bool bIsChangingWeapons;
 
 	UFUNCTION()
-	void OnRep_CurrentWeapon(AMETWeapon* InOldWeapon);
+	void OnRep_CurrentWeapon(const AMETWeapon* InOldWeapon);
+
+	UFUNCTION()
+	void OnRep_Weapons(const TArray<AMETWeapon*>& InOldWeapons);
 
 	void PlayUnequipMontage();
 	void PlayEquipMontage();
