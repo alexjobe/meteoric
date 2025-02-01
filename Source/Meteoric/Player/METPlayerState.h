@@ -30,7 +30,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<UMETAttributeSet> AttributeSet;
-
-	// Attribute changed callbacks
-	void HealthChanged(const struct FOnAttributeChangeData& Data) const;
 };

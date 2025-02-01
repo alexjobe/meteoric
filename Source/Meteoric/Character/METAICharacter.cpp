@@ -5,11 +5,13 @@
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Meteoric/AI/METAIController.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 
 AMETAICharacter::AMETAICharacter()
+	: CorpseLifeSpan(10.f)
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UMETAbilitySystemComponent>("AbilitySystemComponent");
 	if (ensure(AbilitySystemComponent))
@@ -61,6 +63,14 @@ void AMETAICharacter::InitAbilityActorInfo()
 		if (HasAuthority())
 		{
 			InitializeDefaultAttributes();
+			BindAttributeChangedCallbacks();
+			AbilitySystemComponent->SetTagMapCount(METGameplayTags::State_Dead, 0);
 		}
 	}
+}
+
+void AMETAICharacter::Die()
+{
+	Super::Die();
+	SetLifeSpan(CorpseLifeSpan);
 }

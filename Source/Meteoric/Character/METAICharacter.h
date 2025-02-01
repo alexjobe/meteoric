@@ -25,8 +25,12 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
+
+	UPROPERTY(EditAnywhere, Category = "Death")
+	float CorpseLifeSpan;
 	
 	//~ Begin AMETCharacter interface
 	virtual void InitAbilityActorInfo() override;
+	virtual void Die() override;
 	//~ End AMETCharacter interface
 };

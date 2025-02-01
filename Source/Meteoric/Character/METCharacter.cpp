@@ -8,9 +8,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
-#include "Meteoric/GameMode/METGameModeBase.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
+#include "Meteoric/GAS/METAttributeSet.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
@@ -31,7 +31,8 @@ AMETCharacter::AMETCharacter()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
 	GetMesh()->AddTickPrerequisiteActor(this);
-
+	GetMesh()->SetGenerateOverlapEvents(true);
+	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 
@@ -232,14 +233,6 @@ void AMETCharacter::Die()
 	{
 		PlayAnimMontage(DeathMontage);
 	}
-
-	if (HasAuthority())
-	{
-		if (AMETGameModeBase* GameMode = Cast<AMETGameModeBase>(GetWorld()->GetAuthGameMode()))
-		{
-			GameMode->PlayerDied(GetController());
-		}
-	}
 }
 
 void AMETCharacter::Multicast_FireWeapon_Implementation(bool bInHeld)
@@ -310,6 +303,23 @@ void AMETCharacter::WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapo
 	if(bInIsChangingWeapons && bIsAiming)
 	{
 		SetAiming(false);
+	}
+}
+
+void AMETCharacter::BindAttributeChangedCallbacks()
+{
+	if (!ensure(AbilitySystemComponent) || !ensure(AttributeSet)) return;
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ThisClass::HealthChanged);
+}
+
+void AMETCharacter::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (!ensure(AbilitySystemComponent)) return;
+	
+	const float Health = Data.NewValue;
+	if (Health <= 0.0f && !AbilitySystemComponent->HasMatchingGameplayTag(METGameplayTags::State_Dead))
+	{
+		Die();
 	}
 }
 

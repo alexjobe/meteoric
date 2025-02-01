@@ -129,6 +129,7 @@ void AMETWeapon::SetWeaponDroppedState(bool bInDropped)
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Mesh->SetCollisionObjectType(ECC_WorldDynamic);
 		Mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+		Mesh->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 		Mesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 		Mesh->SetCollisionResponseToChannel(ECC_Interaction, ECR_Block);
 	}

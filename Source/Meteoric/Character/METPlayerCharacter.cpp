@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/GameMode/METGameModeBase.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
 #include "Meteoric/Player/METPlayerState.h"
@@ -75,6 +76,7 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 	}
 
 	InitializeDefaultAttributes();
+	BindAttributeChangedCallbacks();
 
 	const APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController && PlayerController->IsLocalController())
@@ -82,6 +84,18 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 		if (AMETHUD* MetHUD = Cast<AMETHUD>(PlayerController->GetHUD()))
 		{
 			MetHUD->Initialize(AbilitySystemComponent);
+		}
+	}
+}
+
+void AMETPlayerCharacter::Die()
+{
+	Super::Die();
+	if (HasAuthority())
+	{
+		if (AMETGameModeBase* GameMode = Cast<AMETGameModeBase>(GetWorld()->GetAuthGameMode()))
+		{
+			GameMode->PlayerDied(GetController());
 		}
 	}
 }

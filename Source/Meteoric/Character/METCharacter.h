@@ -54,8 +54,6 @@ public:
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
 	virtual FTransform GetEyesViewpoint() const;
 
-	void Die();
-
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<class UMETAbilitySystemComponent> AbilitySystemComponent;
@@ -99,6 +97,8 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
+	virtual void Die();
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(bool bInHeld);
 
@@ -107,6 +107,8 @@ protected:
 
 	UFUNCTION()
 	void WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapons);
+
+	void BindAttributeChangedCallbacks();
 
 private:
 	UPROPERTY(Replicated)
@@ -123,6 +125,9 @@ private:
 
 	void UpdateActorControlRotationDelta();
 	bool IsActorControlRotationAligned() const;
+
+	// Attribute changed callbacks
+	void HealthChanged(const struct FOnAttributeChangeData& Data);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

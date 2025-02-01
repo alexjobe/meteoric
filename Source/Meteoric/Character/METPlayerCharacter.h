@@ -61,6 +61,7 @@ public:
 protected:
 	//~ Begin AMETCharacter interface
 	virtual void InitAbilityActorInfo() override;
+	virtual void Die() override;
 	//~ End AMETCharacter interface
 	
 	void ResetControlRotation() const;
