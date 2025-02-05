@@ -13,4 +13,10 @@ class METEORIC_API AMETAIController : public AAIController
 
 public:
 	AMETAIController();
+
+	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet")
+	TObjectPtr<class UPMPuppetComponent> PuppetComponent;
 };
