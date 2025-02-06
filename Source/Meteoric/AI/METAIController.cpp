@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Teams/PMTeamSettings.h"
 
 AMETAIController::AMETAIController()
 {
@@ -31,4 +32,17 @@ void AMETAIController::BeginPlay()
 	{
 		PuppetComponent->InitializePuppet(this);
 	}
+}
+
+void AMETAIController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	if (InTeamID != GetGenericTeamId())
+	{
+		TeamTag = UPMTeamSettings::GetTeamTag(InTeamID);
+	}
+}
+
+FGenericTeamId AMETAIController::GetGenericTeamId() const
+{
+	return UPMTeamSettings::GetTeamId(TeamTag);
 }

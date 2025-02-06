@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
 
 UCLASS(config=Game)
-class METEORIC_API AMETCharacter : public ACharacter, public IAbilitySystemInterface
+class METEORIC_API AMETCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -53,6 +54,11 @@ public:
 
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
 	virtual FTransform GetEyesViewpoint() const;
+
+	//~ Begin UGenericTeamAgentInterface interface
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	//~ End UGenericTeamAgentInterface interface
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")

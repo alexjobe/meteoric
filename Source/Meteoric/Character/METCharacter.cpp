@@ -209,6 +209,23 @@ FTransform AMETCharacter::GetEyesViewpoint() const
 	return GetActorTransform();
 }
 
+void AMETCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	if (IGenericTeamAgentInterface* Interface = Cast<IGenericTeamAgentInterface>(GetController()))
+	{
+		Interface->SetGenericTeamId(InTeamID);
+	}
+}
+
+FGenericTeamId AMETCharacter::GetGenericTeamId() const
+{
+	if (const IGenericTeamAgentInterface* Interface = Cast<IGenericTeamAgentInterface>(GetController()))
+	{
+		return Interface->GetGenericTeamId();
+	}
+	return FGenericTeamId();
+}
+
 void AMETCharacter::Die()
 {
 	RemoveCharacterAbilities();

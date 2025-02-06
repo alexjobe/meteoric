@@ -16,6 +16,8 @@ class METEORIC_API AMETGameModeBase : public AGameModeBase
 
 public:
 	AMETGameModeBase();
+
+	virtual void StartPlay() override;
 	
 	void PlayerDied(AController* InController);
 

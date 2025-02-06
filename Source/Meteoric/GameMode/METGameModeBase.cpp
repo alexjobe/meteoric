@@ -3,12 +3,19 @@
 
 #include "METGameModeBase.h"
 
-#include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
+#include "Teams/PMTeamSettings.h"
 
 
 AMETGameModeBase::AMETGameModeBase()
 	: RespawnDelay(5.f)
 {
+}
+
+void AMETGameModeBase::StartPlay()
+{
+	FGenericTeamId::SetAttitudeSolver(&UPMTeamSettings::GetAttitude);
+	Super::StartPlay();
 }
 
 void AMETGameModeBase::PlayerDied(AController* InController)

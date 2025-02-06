@@ -8,6 +8,7 @@
 #include "Engine/LocalPlayer.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Input/METInputComponent.h"
+#include "Teams/PMTeamSettings.h"
 
 void AMETPlayerController::BeginPlay()
 {
@@ -60,4 +61,17 @@ UMETAbilitySystemComponent* AMETPlayerController::GetAbilitySystemComponent()
 		AbilitySystemComponent = CastChecked<UMETAbilitySystemComponent>(ASC);
 	}
 	return AbilitySystemComponent;
+}
+
+void AMETPlayerController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	if (InTeamID != GetGenericTeamId())
+	{
+		TeamTag = UPMTeamSettings::GetTeamTag(InTeamID);
+	}
+}
+
+FGenericTeamId AMETPlayerController::GetGenericTeamId() const
+{
+	return UPMTeamSettings::GetTeamId(TeamTag);
 }

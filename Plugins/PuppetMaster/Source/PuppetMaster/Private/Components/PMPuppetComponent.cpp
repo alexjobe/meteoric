@@ -31,4 +31,5 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController)
 
 void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
+	
 }
