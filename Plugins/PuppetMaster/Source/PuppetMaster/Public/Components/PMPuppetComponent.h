@@ -14,6 +14,9 @@ class PUPPETMASTER_API UPMPuppetComponent : public UActorComponent
 public:
 	UPMPuppetComponent();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	FName FocusTargetKeyName;
+
 	UFUNCTION(BlueprintCallable)
 	void InitializePuppet(class AAIController* InController);
 
@@ -25,11 +28,16 @@ protected:
 	TObjectPtr<AActor> FocusTarget;
 
 	UFUNCTION()
-	void PerceptionComponent_OnTargetPerceptionUpdated(AActor* Actor, struct FAIStimulus Stimulus);
+	virtual void PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, struct FAIStimulus InStimulus);
+
+	virtual void HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus);
 
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<AAIController> AIController;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class UBlackboardComponent> BlackboardComponent;
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UAIPerceptionComponent> PerceptionComponent;

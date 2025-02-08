@@ -4,10 +4,14 @@
 #include "Components/PMPuppetComponent.h"
 
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Logging/PuppetMasterLog.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 UPMPuppetComponent::UPMPuppetComponent()
+	: FocusTargetKeyName("FocusTarget")
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -18,6 +22,7 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController)
 	ensure(AIController);
 
 	PerceptionComponent = AIController->GetPerceptionComponent();
+	BlackboardComponent = AIController->GetBlackboardComponent();
 
 	if (ensure(PerceptionComponent))
 	{
@@ -29,7 +34,26 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController)
 	}
 }
 
-void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus)
 {
+	if (!ensure(PerceptionComponent) || !ensure(InActor)) return;
+	
+	const UAISenseConfig* SenseConfig = PerceptionComponent->GetSenseConfig(InStimulus.Type);
+	if (!ensure(SenseConfig)) return;
+
+	if (SenseConfig->GetClass() == UAISenseConfig_Sight::StaticClass())
+	{
+		HandleSense_Sight(*InActor, InStimulus);
+	}
+}
+
+void UPMPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus)
+{
+	FocusTarget = &InActor;
+
+	if (ensure(BlackboardComponent))
+	{
+		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, FocusTarget);
+	}
 	
 }
