@@ -40,7 +40,8 @@ public class PuppetMaster : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore", 
+				"GameplayBehaviorsModule"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

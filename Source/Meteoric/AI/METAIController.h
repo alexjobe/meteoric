@@ -24,7 +24,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet")
-	TObjectPtr<class UPMPuppetComponent> PuppetComponent;
+	TObjectPtr<class UMETPuppetComponent> PuppetComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Team")
 	FGameplayTag TeamTag;

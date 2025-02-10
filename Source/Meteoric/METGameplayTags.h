@@ -4,6 +4,9 @@
 
 #include "NativeGameplayTags.h"
 
+/*
+ * Game-specific native gameplay tags
+ */
 namespace METGameplayTags
 {
 	/* Input tags */
@@ -44,4 +47,10 @@ namespace METGameplayTags
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Pistol);
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Rifle);
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Shotgun);
+
+	/* AI state tags */
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Idle);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Investigating);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Attacking);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Hiding);
 }

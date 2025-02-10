@@ -4,25 +4,32 @@
 #include "Components/PMPuppetComponent.h"
 
 #include "AIController.h"
+#include "GameplayBehaviorsBlueprintFunctionLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Logging/PuppetMasterLog.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig.h"
+#include "Perception/AISenseConfig_Damage.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Touch.h"
 
 UPMPuppetComponent::UPMPuppetComponent()
-	: FocusTargetKeyName("FocusTarget")
+	: StateTagKeyName("StateTag")
+	, FocusTargetKeyName("FocusTarget")
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UPMPuppetComponent::InitializePuppet(AAIController* InController)
+void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGameplayTag& InState)
 {
 	AIController = InController;
 	ensure(AIController);
 
 	PerceptionComponent = AIController->GetPerceptionComponent();
 	BlackboardComponent = AIController->GetBlackboardComponent();
+
+	SetState(InState);
 
 	if (ensure(PerceptionComponent))
 	{
@@ -31,6 +38,25 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController)
 	else
 	{
 		UE_LOG(LogPuppetMaster, Error, TEXT("UPMPuppetComponent: PerceptionComponent not found on AIController %s"), *AIController->GetName());	
+	}
+}
+
+void UPMPuppetComponent::SetState(const FGameplayTag& InState)
+{
+	StateTag = InState;
+
+	if (ensure(BlackboardComponent))
+	{
+		UGameplayBehaviorsBlueprintFunctionLibrary::SetValueAsGameplayTagForBlackboardComp(BlackboardComponent, StateTagKeyName, StateTag.GetSingleTagContainer());
+	}
+}
+
+void UPMPuppetComponent::SetFocusTarget(AActor* const InActor)
+{
+	FocusTarget = InActor;
+	if (ensure(BlackboardComponent))
+	{
+		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, InActor);
 	}
 }
 
@@ -45,15 +71,32 @@ void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* I
 	{
 		HandleSense_Sight(*InActor, InStimulus);
 	}
+	else if (SenseConfig->GetClass() == UAISenseConfig_Hearing::StaticClass())
+	{
+		HandleSense_Hearing(*InActor, InStimulus);
+	}
+	else if (SenseConfig->GetClass() == UAISenseConfig_Damage::StaticClass())
+	{
+		HandleSense_Damage(*InActor, InStimulus);
+	}
+	else if (SenseConfig->GetClass() == UAISenseConfig_Touch::StaticClass())
+	{
+		HandleSense_Touch(*InActor, InStimulus);
+	}
 }
 
 void UPMPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus)
 {
-	FocusTarget = &InActor;
+}
 
-	if (ensure(BlackboardComponent))
-	{
-		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, FocusTarget);
-	}
-	
+void UPMPuppetComponent::HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus)
+{
+}
+
+void UPMPuppetComponent::HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus)
+{
+}
+
+void UPMPuppetComponent::HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus)
+{
 }

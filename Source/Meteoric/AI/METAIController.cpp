@@ -3,9 +3,10 @@
 
 #include "METAIController.h"
 
-#include "Components/PMPuppetComponent.h"
+#include "METPuppetComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Teams/PMTeamSettings.h"
 
@@ -20,7 +21,7 @@ AMETAIController::AMETAIController()
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("PerceptionComponent");
 	check(PerceptionComponent)
 
-	PuppetComponent = CreateDefaultSubobject<UPMPuppetComponent>("PuppetComponent");
+	PuppetComponent = CreateDefaultSubobject<UMETPuppetComponent>("PuppetComponent");
 	check(PerceptionComponent)
 }
 
@@ -30,7 +31,7 @@ void AMETAIController::BeginPlay()
 
 	if (ensure(PuppetComponent))
 	{
-		PuppetComponent->InitializePuppet(this);
+		PuppetComponent->InitializePuppet(this, METGameplayTags::AIState_Idle);
 	}
 }
 
