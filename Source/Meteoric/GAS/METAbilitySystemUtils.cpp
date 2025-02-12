@@ -5,8 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
+#include "METAbilitySystemComponent.h"
 
 FActiveGameplayEffectHandle UMETAbilitySystemUtils::ApplyEffectClassToActor(const AActor* InTarget, const AActor* InSource, const TSubclassOf<UGameplayEffect>& InEffectClass, float InLevel)
 {
@@ -37,4 +39,13 @@ void UMETAbilitySystemUtils::AddHitResultToEffectSpec(const FGameplayEffectSpecH
 		FGameplayEffectContextHandle ContextHandle = EffectHandle->GetEffectContext();
 		ContextHandle.AddHitResult(InHitResult);
 	}
+}
+
+UMETAbilitySystemComponent* UMETAbilitySystemUtils::GetMetAbilitySystemComponentFromActor(AActor* const InActor)
+{
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(InActor))
+	{
+		return Cast<UMETAbilitySystemComponent>(AbilitySystemInterface->GetAbilitySystemComponent());
+	}
+	return nullptr;
 }

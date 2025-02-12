@@ -23,11 +23,11 @@ UPMPuppetComponent::UPMPuppetComponent()
 
 void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGameplayTag& InState)
 {
-	AIController = InController;
-	ensure(AIController);
+	Controller = InController;
+	ensure(Controller);
 
-	PerceptionComponent = AIController->GetPerceptionComponent();
-	BlackboardComponent = AIController->GetBlackboardComponent();
+	PerceptionComponent = Controller->GetPerceptionComponent();
+	BlackboardComponent = Controller->GetBlackboardComponent();
 
 	SetState(InState);
 
@@ -37,7 +37,7 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGa
 	}
 	else
 	{
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMPuppetComponent: PerceptionComponent not found on AIController %s"), *AIController->GetName());	
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMPuppetComponent: PerceptionComponent not found on AIController %s"), *Controller->GetName());	
 	}
 }
 
@@ -58,6 +58,11 @@ void UPMPuppetComponent::SetFocusTarget(AActor* const InActor)
 	{
 		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, InActor);
 	}
+}
+
+void UPMPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const bool bInHeld)
+{
+	// Empty in base class
 }
 
 void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus)
@@ -87,16 +92,20 @@ void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* I
 
 void UPMPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus)
 {
+	// Empty in base class
 }
 
 void UPMPuppetComponent::HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus)
 {
+	// Empty in base class
 }
 
 void UPMPuppetComponent::HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus)
 {
+	// Empty in base class
 }
 
 void UPMPuppetComponent::HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus)
 {
+	// Empty in base class
 }

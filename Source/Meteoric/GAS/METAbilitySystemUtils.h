@@ -23,4 +23,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
 	static void AddHitResultToEffectSpec(const FGameplayEffectSpecHandle& InEffectSpecHandle, const FHitResult& InHitResult);
+
+	UFUNCTION(BlueprintCallable, Category = "GAS Utilities")
+	static class UMETAbilitySystemComponent* GetMetAbilitySystemComponentFromActor(AActor* const InActor);
 };

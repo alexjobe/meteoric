@@ -29,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AActor* GetFocusTarget() const { return FocusTarget; }
 
+	UFUNCTION(BlueprintCallable)
+	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const bool bInHeld = false);
+
+	UFUNCTION(BlueprintCallable)
+	AAIController* GetController() const { return Controller; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
 	FGameplayTag StateTag;
@@ -49,9 +55,10 @@ protected:
 	virtual void HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus);
 	virtual void HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus);
 	virtual void HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus);
-	
+
+private:
 	UPROPERTY(Transient)
-	TObjectPtr<AAIController> AIController;
+	TObjectPtr<AAIController> Controller;
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UBlackboardComponent> BlackboardComponent;

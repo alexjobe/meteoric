@@ -25,7 +25,7 @@ void UPMBTTask_FocusTarget::InitializeFromAsset(UBehaviorTree& Asset)
 	}
 	else
 	{
-		UE_LOG(LogPuppetMaster, Warning, TEXT("Can't initialize task: %s, make sure that behavior tree specifies blackboard asset!"), *GetName());
+		UE_LOG(LogPuppetMaster, Error, TEXT("Can't initialize task: %s, make sure that behavior tree specifies blackboard asset!"), *GetName());
 	}
 }
 

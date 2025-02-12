@@ -4,6 +4,7 @@
 #include "METAbilitySystemComponent.h"
 
 #include "Abilities/METGameplayAbility.h"
+#include "Meteoric/METLogChannels.h"
 
 UMETAbilitySystemComponent::UMETAbilitySystemComponent()
 	: bCharacterAbilitiesGiven(false)
@@ -29,6 +30,10 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagPressed(const FGameplayTag
 	{
 		ActivateAbility(InputTag, OnInputPressed);
 	}
+	else
+	{
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagPressed -- Invalid input tag!"))
+	}
 }
 
 void UMETAbilitySystemComponent::Input_AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -37,12 +42,17 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagHeld(const FGameplayTag& I
 	{
 		ActivateAbility(InputTag, OnInputHeld);
 	}
+	else
+	{
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagHeld -- Invalid input tag!"))
+	}
 }
 
 void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy)
 {
 	if(!InputTag.IsValid()) return;
 
+	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		if(AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
@@ -56,7 +66,12 @@ void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, c
 					TryActivateAbility(AbilitySpec.Handle);
 				}
 			}
+			bAbilityFound = true;
 		}
+	}
+	if(!bAbilityFound)
+	{
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::ActivateAbility -- Unable to find ability with input tag %s!"), *InputTag.ToString())
 	}
 }
 
@@ -64,6 +79,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTa
 {
 	if(!InputTag.IsValid()) return;
 
+	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		if(AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
@@ -73,7 +89,12 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTa
 			{
 				AbilitySpecInputReleased(AbilitySpec);
 			}
+			bAbilityFound = true;
 		}
+	}
+	if(!bAbilityFound)
+	{
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagReleased -- Unable to find ability with input tag %s"), *InputTag.ToString())
 	}
 }
 
