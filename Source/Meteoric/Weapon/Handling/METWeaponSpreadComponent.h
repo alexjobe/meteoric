@@ -54,10 +54,6 @@ class METEORIC_API UMETWeaponSpreadComponent : public UActorComponent
 public:	
 	UMETWeaponSpreadComponent();
 
-	/* How far to trace from the camera when determining shot direction */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Range")
-	float AimTraceRange;
-
 	/* How much time must elapse since last shot before spread cone starts lerping back to minimum */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Spread")
 	float SpreadCooldown;

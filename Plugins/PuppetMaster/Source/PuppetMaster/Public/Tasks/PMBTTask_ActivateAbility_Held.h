@@ -4,26 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "PMBTTask_FireWeapon.generated.h"
+#include "PMBTTask_ActivateAbility_Held.generated.h"
 
-struct FBTFireWeaponMemory
+struct FBTActivateAbilityMemory
 {
-	float TimeToFireFor;
-	float TimeStartedFire;
+	float Duration;
+	float TimeStarted;
 
-	FBTFireWeaponMemory()
-		: TimeToFireFor(0.f)
-		, TimeStartedFire(0.f)
+	FBTActivateAbilityMemory()
+		: Duration(0.f)
+		, TimeStarted(0.f)
 	{}
 };
 
 UCLASS(MinimalAPI)
-class UPMBTTask_FireWeapon : public UBTTaskNode
+class UPMBTTask_ActivateAbility_Held : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
-	PUPPETMASTER_API UPMBTTask_FireWeapon(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_ActivateAbility_Held(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
@@ -33,8 +33,8 @@ public:
 	//~ End UBTTaskNode interface
 
 	UPROPERTY(EditAnywhere, Category = "Node")
-	FGameplayTag FireAbilityTag;
+	FGameplayTag AbilityTag;
 	
 	UPROPERTY(EditAnywhere, Category = "Node")
-	float TimeToFireFor;
+	float Duration;
 };

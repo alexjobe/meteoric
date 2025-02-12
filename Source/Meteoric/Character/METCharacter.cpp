@@ -204,9 +204,9 @@ void AMETCharacter::FireWeapon(bool bInHeld)
 	}
 }
 
-FTransform AMETCharacter::GetEyesViewpoint() const
+FVector AMETCharacter::GetFocalPoint() const
 {
-	return GetActorTransform();
+	return GetActorLocation();
 }
 
 void AMETCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)

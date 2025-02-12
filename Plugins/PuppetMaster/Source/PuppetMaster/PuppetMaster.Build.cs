@@ -28,7 +28,8 @@ public class PuppetMaster : ModuleRules
 				"Core",
 				"AIModule",
 				"DeveloperSettings",
-				"GameplayTags"
+				"GameplayTags",
+				"GameplayAbilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

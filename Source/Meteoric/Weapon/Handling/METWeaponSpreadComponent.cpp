@@ -13,8 +13,7 @@ static TAutoConsoleVariable<int32> CVarDrawWeaponSpreadDebug(
 );
 
 UMETWeaponSpreadComponent::UMETWeaponSpreadComponent()
-	: AimTraceRange(3000.f)
-	, SpreadCooldown(.2f)
+	: SpreadCooldown(.2f)
 	, SpreadResetLerpSpeed(2.f)
 	, CurrentYawInDegrees(0.f)
 	, CurrentPitchInDegrees(0.f)
@@ -74,7 +73,7 @@ FTransform UMETWeaponSpreadComponent::GetProjectileSpawnTransform() const
 #if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
 	if (CVarDrawWeaponSpreadDebug.GetValueOnAnyThread() == 1)
 	{
-		const FVector EndLocation = StartLocation + ShotDirection * AimTraceRange;
+		const FVector EndLocation = OwningCharacter->GetFocalPoint();
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 10.f, 0, 1.f);
 	}
 #endif
@@ -84,9 +83,7 @@ FTransform UMETWeaponSpreadComponent::GetProjectileSpawnTransform() const
 
 FVector UMETWeaponSpreadComponent::GetShotDirection(const FVector& InStartLocation) const
 {
-	const FTransform EyesViewpoint = OwningCharacter->GetEyesViewpoint();
-	const FVector TraceEndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * AimTraceRange;
-
+	const FVector TraceEndLocation = OwningCharacter->GetFocalPoint();
 	FVector ShotDirection = TraceEndLocation - InStartLocation;
 
 	if (CurrentYawInDegrees > 0.f && CurrentPitchInDegrees > 0.f)
@@ -135,8 +132,7 @@ void UMETWeaponSpreadComponent::OnAimDownSights(const bool bInIsAiming)
 void UMETWeaponSpreadComponent::DrawSpreadDebugCone() const
 {
 	const FVector StartLocation = WeaponMesh->GetSocketLocation(FName("S_Muzzle"));
-	const FTransform EyesViewpoint = OwningCharacter->GetEyesViewpoint();
-	const FVector TraceEndLocation = EyesViewpoint.GetLocation() + EyesViewpoint.GetRotation().GetForwardVector() * AimTraceRange;
+	const FVector TraceEndLocation = OwningCharacter->GetFocalPoint();
 	const FVector ShotDirection = TraceEndLocation - StartLocation;
 	
 	DrawDebugCone(

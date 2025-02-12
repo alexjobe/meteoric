@@ -43,7 +43,7 @@ void AMETAICharacter::PossessedBy(AController* NewController)
 
 	if (!HasAuthority()) return;
 
-	AMETAIController* AIController = Cast<AMETAIController>(NewController);
+	AIController = Cast<AMETAIController>(NewController);
 	check(AIController);
 
 	UBlackboardComponent* BlackboardComponent = AIController->GetBlackboardComponent();
@@ -53,6 +53,15 @@ void AMETAICharacter::PossessedBy(AController* NewController)
 		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 		AIController->RunBehaviorTree(BehaviorTree);
 	}
+}
+
+FVector AMETAICharacter::GetFocalPoint() const
+{
+	if (ensure(AIController))
+	{
+		return AIController->GetFocalPoint();
+	}
+	return GetActorLocation();
 }
 
 void AMETAICharacter::InitAbilityActorInfo()

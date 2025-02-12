@@ -44,6 +44,10 @@ class METEORIC_API AMETPlayerCharacter : public AMETCharacter
 	TObjectPtr<UInputAction> FireAction;
 
 public:
+	/* How far to trace from the camera when determining focal point */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FocalPoint")
+    float AimTraceRange;
+	
 	AMETPlayerCharacter();
 
 	//~ Begin ACharacter interface
@@ -55,7 +59,7 @@ public:
 	UCameraComponent* GetMainCamera() const { return MainCamera; }
 
 	//~ Begin AMETCharacter interface
-	virtual FTransform GetEyesViewpoint() const override;
+	virtual FVector GetFocalPoint() const override;
 	//~ End AMETCharacter interface
 
 protected:

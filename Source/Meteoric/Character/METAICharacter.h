@@ -21,6 +21,10 @@ public:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	//~ End ACharacter interface
+	
+	//~ Begin AMETCharacter interface
+	virtual FVector GetFocalPoint() const override;
+	//~ End AMETCharacter interface
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -28,6 +32,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Death")
 	float CorpseLifeSpan;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class AMETAIController> AIController;
 	
 	//~ Begin AMETCharacter interface
 	virtual void InitAbilityActorInfo() override;

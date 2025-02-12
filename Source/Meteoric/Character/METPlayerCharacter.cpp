@@ -16,6 +16,7 @@
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
 AMETPlayerCharacter::AMETPlayerCharacter()
+	: AimTraceRange(3000.f)
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh(), FName("S_Camera"));
@@ -51,15 +52,15 @@ void AMETPlayerCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-FTransform AMETPlayerCharacter::GetEyesViewpoint() const
+FVector AMETPlayerCharacter::GetFocalPoint() const
 {
 	if (ensure(MainCamera))
 	{
 		FMinimalViewInfo ViewInfo;
 		MainCamera->GetCameraView(GetWorld()->DeltaTimeSeconds, ViewInfo);
-		return FTransform(ViewInfo.Rotation, ViewInfo.Location);
+		return ViewInfo.Location + ViewInfo.Rotation.Quaternion().GetForwardVector() * AimTraceRange;
 	}
-	return GetActorTransform();
+	return GetActorLocation();
 }
 
 void AMETPlayerCharacter::InitAbilityActorInfo()

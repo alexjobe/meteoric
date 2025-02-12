@@ -3,6 +3,8 @@
 
 #include "Components/PMPuppetComponent.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "AIController.h"
 #include "GameplayBehaviorsBlueprintFunctionLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -53,14 +55,44 @@ void UPMPuppetComponent::SetState(const FGameplayTag& InState)
 
 void UPMPuppetComponent::SetFocusTarget(AActor* const InActor)
 {
+	if (FocusTarget == InActor) return;
+	
+	ClearFocusTarget();
+	
 	FocusTarget = InActor;
 	if (ensure(BlackboardComponent))
 	{
 		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, InActor);
 	}
+
+	if (UAbilitySystemComponent* FocusASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InActor); ensure(FocusASC))
+	{
+		FocusASC->RegisterGenericGameplayTagEvent().AddUObject(this, &ThisClass::FocusTarget_OnGameplayTagEvent);
+	}
+}
+
+void UPMPuppetComponent::ClearFocusTarget()
+{
+	if (FocusTarget == nullptr) return;
+
+	if (UAbilitySystemComponent* FocusASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(FocusTarget); ensure(FocusASC))
+	{
+		FocusASC->RegisterGenericGameplayTagEvent().RemoveAll(this);
+	}
+	
+	FocusTarget = nullptr;
+	if (ensure(BlackboardComponent))
+	{
+		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, nullptr);
+	}
 }
 
 void UPMPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const bool bInHeld)
+{
+	// Empty in base class
+}
+
+void UPMPuppetComponent::DeactivateAbilityByTag(const FGameplayTag& InTag)
 {
 	// Empty in base class
 }
@@ -106,6 +138,11 @@ void UPMPuppetComponent::HandleSense_Damage(AActor& InActor, const FAIStimulus& 
 }
 
 void UPMPuppetComponent::HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus)
+{
+	// Empty in base class
+}
+
+void UPMPuppetComponent::FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount)
 {
 	// Empty in base class
 }

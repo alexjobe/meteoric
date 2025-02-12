@@ -53,7 +53,7 @@ public:
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
-	virtual FTransform GetEyesViewpoint() const;
+	virtual FVector GetFocalPoint() const;
 
 	//~ Begin UGenericTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;

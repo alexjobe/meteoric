@@ -5,7 +5,6 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
 #include "METAbilitySystemComponent.h"
@@ -43,9 +42,9 @@ void UMETAbilitySystemUtils::AddHitResultToEffectSpec(const FGameplayEffectSpecH
 
 UMETAbilitySystemComponent* UMETAbilitySystemUtils::GetMetAbilitySystemComponentFromActor(AActor* const InActor)
 {
-	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(InActor))
+	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InActor))
 	{
-		return Cast<UMETAbilitySystemComponent>(AbilitySystemInterface->GetAbilitySystemComponent());
+		return Cast<UMETAbilitySystemComponent>(ASC);
 	}
 	return nullptr;
 }
