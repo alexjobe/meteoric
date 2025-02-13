@@ -63,6 +63,15 @@ FVector AMETPlayerCharacter::GetFocalPoint() const
 	return GetActorLocation();
 }
 
+FTransform AMETPlayerCharacter::GetEyesPosition() const
+{
+	if (ensure(MainCamera))
+	{
+		return MainCamera->GetComponentToWorld();
+	}
+	return Super::GetEyesPosition();
+}
+
 void AMETPlayerCharacter::InitAbilityActorInfo()
 {
 	AMETPlayerState* PS = GetPlayerState<AMETPlayerState>();

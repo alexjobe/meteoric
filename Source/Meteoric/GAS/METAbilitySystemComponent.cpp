@@ -24,27 +24,27 @@ void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplay
 	}
 }
 
-void UMETAbilitySystemComponent::Input_AbilityInputTagPressed(const FGameplayTag& InputTag)
+void UMETAbilitySystemComponent::Input_AbilityInputStarted(const FGameplayTag& InputTag)
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, OnInputPressed);
+		ActivateAbility(InputTag, OnInputStarted);
 	}
 	else
 	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagPressed -- Invalid input tag!"))
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputStarted -- Invalid input tag!"))
 	}
 }
 
-void UMETAbilitySystemComponent::Input_AbilityInputTagHeld(const FGameplayTag& InputTag)
+void UMETAbilitySystemComponent::Input_AbilityInputTriggered(const FGameplayTag& InputTag)
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, OnInputHeld);
+		ActivateAbility(InputTag, OnInputTriggered);
 	}
 	else
 	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagHeld -- Invalid input tag!"))
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTriggered -- Invalid input tag!"))
 	}
 }
 
@@ -75,7 +75,7 @@ void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, c
 	}
 }
 
-void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTag& InputTag)
+void UMETAbilitySystemComponent::Input_AbilityInputCompleted(const FGameplayTag& InputTag)
 {
 	if(!InputTag.IsValid()) return;
 
@@ -94,7 +94,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputTagReleased(const FGameplayTa
 	}
 	if(!bAbilityFound)
 	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTagReleased -- Unable to find ability with input tag %s"), *InputTag.ToString())
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputCompleted -- Unable to find ability with input tag %s"), *InputTag.ToString())
 	}
 }
 

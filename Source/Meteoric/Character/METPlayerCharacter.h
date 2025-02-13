@@ -60,6 +60,7 @@ public:
 
 	//~ Begin AMETCharacter interface
 	virtual FVector GetFocalPoint() const override;
+	virtual FTransform GetEyesPosition() const override;
 	//~ End AMETCharacter interface
 
 protected:

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "PuppetMasterTypes.h"
 #include "PMPuppetComponent.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -33,10 +34,10 @@ public:
 	AActor* GetFocusTarget() const { return FocusTarget; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const bool bInHeld = false);
+	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = OnInputStarted);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void DeactivateAbilityByTag(const FGameplayTag& InTag);
+	virtual void FinishAbilityByTag(const FGameplayTag& InTag);
 
 	UFUNCTION(BlueprintCallable)
 	AAIController* GetController() const { return Controller; }

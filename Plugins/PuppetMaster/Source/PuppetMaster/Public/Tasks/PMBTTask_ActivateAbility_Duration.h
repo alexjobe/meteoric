@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PuppetMasterTypes.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "PMBTTask_ActivateAbility_Held.generated.h"
+#include "PMBTTask_ActivateAbility_Duration.generated.h"
 
 struct FBTActivateAbilityMemory
 {
@@ -18,17 +19,18 @@ struct FBTActivateAbilityMemory
 };
 
 UCLASS(MinimalAPI)
-class UPMBTTask_ActivateAbility_Held : public UBTTaskNode
+class UPMBTTask_ActivateAbility_Duration : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
-	PUPPETMASTER_API UPMBTTask_ActivateAbility_Held(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_ActivateAbility_Duration(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 	PUPPETMASTER_API virtual uint16 GetInstanceMemorySize() const override;
 	PUPPETMASTER_API virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	PUPPETMASTER_API virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	PUPPETMASTER_API virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	//~ End UBTTaskNode interface
 
@@ -37,4 +39,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "Node")
 	float Duration;
+
+	UPROPERTY(EditAnywhere, Category = "Node")
+	TEnumAsByte<EPMAbilityActivationPolicy> ActivationPolicy;
 };

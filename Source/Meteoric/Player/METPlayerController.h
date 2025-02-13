@@ -26,9 +26,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	
-	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
-	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
-	void Input_AbilityInputTagHeld(FGameplayTag InputTag);
+	void Input_AbilityInputStarted(FGameplayTag InputTag);
+	void Input_AbilityInputCompleted(FGameplayTag InputTag);
+	void Input_AbilityInputTriggered(FGameplayTag InputTag);
 
 	class UMETAbilitySystemComponent* GetAbilitySystemComponent();
 

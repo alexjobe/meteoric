@@ -127,13 +127,9 @@ void UMETCharacterAnimInstance::SetSightToCameraRoot()
 {
 	if(!ensure(Character)) return;
 
-	const USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
-	const AMETPlayerCharacter* PlayerCharacter = Cast<AMETPlayerCharacter>(Character);
-	const UCameraComponent* MainCamera = PlayerCharacter ? PlayerCharacter->GetMainCamera() : nullptr;
-
-	if (CharacterMesh && MainCamera)
+	if (const USkeletalMeshComponent* CharacterMesh = Character->GetMesh(); ensure(CharacterMesh))
 	{
-		const FTransform CameraTransform = MainCamera->GetComponentToWorld();
+		const FTransform CameraTransform = Character->GetEyesPosition();
 		const FTransform CameraRootBoneTransform = CharacterMesh->GetBoneTransform(CameraRootBone);
 
 		SightToCameraRoot = CameraTransform.GetRelativeTransform(CameraRootBoneTransform);

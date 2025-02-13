@@ -9,8 +9,8 @@
 UENUM(BlueprintType)
 enum EMETAbilityActivationPolicy : uint8
 {
-	OnInputPressed,
-	OnInputHeld
+	OnInputStarted,
+	OnInputTriggered
 };
 
 UCLASS()

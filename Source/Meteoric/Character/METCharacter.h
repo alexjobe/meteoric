@@ -54,6 +54,7 @@ public:
 
 	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
 	virtual FVector GetFocalPoint() const;
+	virtual FTransform GetEyesPosition() const;
 
 	//~ Begin UGenericTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;

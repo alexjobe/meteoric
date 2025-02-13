@@ -26,30 +26,30 @@ void AMETPlayerController::SetupInputComponent()
 
 	UMETInputComponent* MetInputComponent = CastChecked<UMETInputComponent>(InputComponent);
 
-	MetInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, &ThisClass::Input_AbilityInputTagHeld);
+	MetInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputStarted, &ThisClass::Input_AbilityInputCompleted, &ThisClass::Input_AbilityInputTriggered);
 }
 
-void AMETPlayerController::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+void AMETPlayerController::Input_AbilityInputStarted(FGameplayTag InputTag)
 {
 	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		ASC->Input_AbilityInputTagPressed(InputTag);
+		ASC->Input_AbilityInputStarted(InputTag);
 	}
 }
 
-void AMETPlayerController::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+void AMETPlayerController::Input_AbilityInputCompleted(FGameplayTag InputTag)
 {
 	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		ASC->Input_AbilityInputTagReleased(InputTag);
+		ASC->Input_AbilityInputCompleted(InputTag);
 	}
 }
 
-void AMETPlayerController::Input_AbilityInputTagHeld(FGameplayTag InputTag)
+void AMETPlayerController::Input_AbilityInputTriggered(FGameplayTag InputTag)
 {
 	if (UMETAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		ASC->Input_AbilityInputTagHeld(InputTag);
+		ASC->Input_AbilityInputTriggered(InputTag);
 	}
 }
 

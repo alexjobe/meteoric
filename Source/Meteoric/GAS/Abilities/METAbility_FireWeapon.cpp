@@ -56,7 +56,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 		return;
 	}
 
-	MetCharacter->FireWeapon(ActivationPolicy == OnInputHeld);
+	MetCharacter->FireWeapon(ActivationPolicy == OnInputTriggered);
 
 	if (GetAvatarActorFromActorInfo()->HasAuthority())
 	{

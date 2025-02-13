@@ -209,6 +209,15 @@ FVector AMETCharacter::GetFocalPoint() const
 	return GetActorLocation();
 }
 
+FTransform AMETCharacter::GetEyesPosition() const
+{
+	if (const USkeletalMeshComponent* SkeletalMesh = GetMesh(); ensure(SkeletalMesh))
+	{
+		return SkeletalMesh->GetBoneTransform(FName("S_Camera"));
+	}
+	return FTransform();
+}
+
 void AMETCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID)
 {
 	if (IGenericTeamAgentInterface* Interface = Cast<IGenericTeamAgentInterface>(GetController()))

@@ -20,9 +20,9 @@ public:
 	
 	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities, UObject* InSourceObject);
 	
-	void Input_AbilityInputTagPressed(const FGameplayTag& InputTag);
-	void Input_AbilityInputTagHeld(const FGameplayTag& InputTag);
-	void Input_AbilityInputTagReleased(const FGameplayTag& InputTag);
+	void Input_AbilityInputStarted(const FGameplayTag& InputTag);
+	void Input_AbilityInputTriggered(const FGameplayTag& InputTag);
+	void Input_AbilityInputCompleted(const FGameplayTag& InputTag);
 
 	bool bCharacterAbilitiesGiven;
 

@@ -6,6 +6,7 @@
 #include "AbilitySystemGlobals.h"
 #include "METAIController.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/METLogChannels.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 
@@ -28,7 +29,7 @@ void UMETPuppetComponent::HandleSense_Hearing(AActor& InActor, const FAIStimulus
 {
 }
 
-void UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const bool bInHeld)
+void UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
 {
 	const AAIController* AIController = GetController();
 	if (!ensure(AIController)) return;
@@ -36,24 +37,27 @@ void UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const 
 	UMETAbilitySystemComponent* ASC = UMETAbilitySystemUtils::GetMetAbilitySystemComponentFromActor(AIController->GetPawn());
 	if (!ensure(ASC)) return;
 
-	if (bInHeld)
+	switch (InActivationPolicy)
 	{
-		ASC->Input_AbilityInputTagHeld(InTag);
-	}
-	else
-	{
-		ASC->Input_AbilityInputTagPressed(InTag);
+	case OnInputStarted:
+		ASC->Input_AbilityInputStarted(InTag);
+		break;
+	case OnInputTriggered:
+		ASC->Input_AbilityInputTriggered(InTag);
+		break;
+	default:
+		UE_LOG(LogMET, Warning, TEXT("UMETPuppetComponent::ActivateAbilityByTag -- Activation policy not recognized! %s"), *UEnum::GetValueAsString(InActivationPolicy));
 	}
 }
 
-void UMETPuppetComponent::DeactivateAbilityByTag(const FGameplayTag& InTag)
+void UMETPuppetComponent::FinishAbilityByTag(const FGameplayTag& InTag)
 {
 	const AAIController* AIController = GetController();
 	if (!ensure(AIController)) return;
 
 	if (UMETAbilitySystemComponent* ASC = UMETAbilitySystemUtils::GetMetAbilitySystemComponentFromActor(AIController->GetPawn()); ensure(ASC))
 	{
-		ASC->Input_AbilityInputTagReleased(InTag);	
+		ASC->Input_AbilityInputCompleted(InTag);	
 	}
 }
 

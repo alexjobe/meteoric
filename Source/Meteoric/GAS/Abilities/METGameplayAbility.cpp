@@ -6,7 +6,7 @@
 #include "Meteoric/Character/METCharacter.h"
 
 UMETGameplayAbility::UMETGameplayAbility()
-	: ActivationPolicy(OnInputPressed)
+	: ActivationPolicy(OnInputStarted)
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }

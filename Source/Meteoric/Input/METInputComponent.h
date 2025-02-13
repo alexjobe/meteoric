@@ -16,13 +16,13 @@ class METEORIC_API UMETInputComponent : public UEnhancedInputComponent
 	GENERATED_BODY()
 
 public:
-	template<class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HeldFuncType>
-	void BindAbilityActions(const UMETInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, HeldFuncType HeldFunc);
+	template<class UserClass, typename StartedFuncType, typename CompletedFuncType, typename TriggeredFuncType>
+	void BindAbilityActions(const UMETInputConfig* InputConfig, UserClass* Object, StartedFuncType InputStartedFunc, CompletedFuncType InputCompletedFunc, TriggeredFuncType InputTriggeredFunc);
 	
 };
 
-template <class UserClass, typename PressedFuncType, typename ReleasedFuncType, typename HeldFuncType>
-void UMETInputComponent::BindAbilityActions(const UMETInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, HeldFuncType HeldFunc)
+template <class UserClass, typename StartedFuncType, typename CompletedFuncType, typename TriggeredFuncType>
+void UMETInputComponent::BindAbilityActions(const UMETInputConfig* InputConfig, UserClass* Object, StartedFuncType InputStartedFunc, CompletedFuncType InputCompletedFunc, TriggeredFuncType InputTriggeredFunc)
 {
 	check(InputConfig);
 
@@ -30,17 +30,17 @@ void UMETInputComponent::BindAbilityActions(const UMETInputConfig* InputConfig, 
 	{
 		if (Action.InputAction && Action.InputTag.IsValid())
 		{
-			if(PressedFunc)
+			if(InputStartedFunc)
 			{
-				BindAction(Action.InputAction, ETriggerEvent::Started, Object, PressedFunc, Action.InputTag);
+				BindAction(Action.InputAction, ETriggerEvent::Started, Object, InputStartedFunc, Action.InputTag);
 			}
-			if(ReleasedFunc)
+			if(InputCompletedFunc)
 			{
-				BindAction(Action.InputAction, ETriggerEvent::Completed, Object, ReleasedFunc, Action.InputTag);
+				BindAction(Action.InputAction, ETriggerEvent::Completed, Object, InputCompletedFunc, Action.InputTag);
 			}
-			if(HeldFunc)
+			if(InputTriggeredFunc)
 			{
-				BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, HeldFunc, Action.InputTag);
+				BindAction(Action.InputAction, ETriggerEvent::Triggered, Object, InputTriggeredFunc, Action.InputTag);
 			}
 		}
 	}
