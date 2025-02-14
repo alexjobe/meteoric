@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "PuppetMasterTypes.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "PMBTTask_ActivateAbility_Duration.generated.h"
+#include "PMBTTask_ActivateAbility_Held.generated.h"
 
 struct FBTActivateAbilityMemory
 {
@@ -18,13 +18,17 @@ struct FBTActivateAbilityMemory
 	{}
 };
 
+/*
+ * Gameplay Abilities that are activated and "held" for a duration, rather than fired off instantly
+ * (e.g. holding the trigger on an automatic weapon)
+ */
 UCLASS(MinimalAPI)
-class UPMBTTask_ActivateAbility_Duration : public UBTTaskNode
+class UPMBTTask_ActivateAbility_Held : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
 public:
-	PUPPETMASTER_API UPMBTTask_ActivateAbility_Duration(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_ActivateAbility_Held(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
@@ -41,5 +45,5 @@ public:
 	float Duration;
 
 	UPROPERTY(EditAnywhere, Category = "Node")
-	TEnumAsByte<EPMAbilityActivationPolicy> ActivationPolicy;
+	EPMAbilityActivationPolicy ActivationPolicy;
 };

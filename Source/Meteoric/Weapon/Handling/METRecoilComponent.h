@@ -68,7 +68,7 @@ protected:
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
-	TEnumAsByte<EWeaponFiringMode> FiringMode;
+	EWeaponFiringMode FiringMode;
 
 	TOptional<FDelegateHandle> GameplayTagEventHandle_FireWeapon;
 

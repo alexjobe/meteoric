@@ -28,7 +28,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputStarted(const FGameplayTag& I
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, OnInputStarted);
+		ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputStarted);
 	}
 	else
 	{
@@ -40,7 +40,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputTriggered(const FGameplayTag&
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, OnInputTriggered);
+		ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputTriggered);
 	}
 	else
 	{

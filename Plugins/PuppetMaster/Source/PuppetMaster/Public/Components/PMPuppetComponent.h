@@ -34,7 +34,7 @@ public:
 	AActor* GetFocusTarget() const { return FocusTarget; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = OnInputStarted);
+	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void FinishAbilityByTag(const FGameplayTag& InTag);

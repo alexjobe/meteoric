@@ -39,10 +39,10 @@ void UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const 
 
 	switch (InActivationPolicy)
 	{
-	case OnInputStarted:
+	case EPMAbilityActivationPolicy::OnInputStarted:
 		ASC->Input_AbilityInputStarted(InTag);
 		break;
-	case OnInputTriggered:
+	case EPMAbilityActivationPolicy::OnInputTriggered:
 		ASC->Input_AbilityInputTriggered(InTag);
 		break;
 	default:

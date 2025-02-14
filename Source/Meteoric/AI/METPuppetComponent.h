@@ -18,7 +18,7 @@ protected:
 	//~ Begin UPMPuppetComponent interface
 	virtual void HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus) override;
 	virtual void HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus) override;
-	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = OnInputStarted) override;
+	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted) override;
 	virtual void FinishAbilityByTag(const FGameplayTag& InTag) override;
 	virtual void FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount) override;
 	//~ End UPMPuppetComponent interface

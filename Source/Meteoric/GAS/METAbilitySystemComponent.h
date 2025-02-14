@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "METAbilityTypes.h"
 #include "METAbilitySystemComponent.generated.h"
 
-enum EMETAbilityActivationPolicy : uint8;
 /**
  * 
  */

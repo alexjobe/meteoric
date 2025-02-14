@@ -22,13 +22,13 @@
 AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
-	, FiringMode(SingleShot)
+	, FiringMode(EWeaponFiringMode::SingleShot)
+	, bStartDropped(true)
 	, FiringRate(0.2f)
 	, bCanFire(true)
 	, bEquipped(false)
 	, ElapsedTimeSinceFired(0.f)
 	, ElapsedTimeSinceDropped(0.f)
-	, bStartDropped(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -158,7 +158,7 @@ void AMETWeapon::BeginPlay()
 void AMETWeapon::Fire(bool bInHeld)
 {
 	if(!bCanFire) return;
-	if(bInHeld && FiringMode != Automatic) return;
+	if(bInHeld && FiringMode != EWeaponFiringMode::Automatic) return;
 
 	if (!ensure(AmmoComponent) || !AmmoComponent->TryConsumeAmmo()) return;
 

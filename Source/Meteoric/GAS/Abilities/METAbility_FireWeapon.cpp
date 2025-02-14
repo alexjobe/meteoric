@@ -32,7 +32,7 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		return;
 	}
 
-	if (ActivationPolicy == SingleShot)
+	if (ActivationPolicy == EMETAbilityActivationPolicy::OnInputStarted)
 	{
 		FireWeapon();
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
@@ -56,7 +56,8 @@ void UMETAbility_FireWeapon::FireWeapon()
 		return;
 	}
 
-	MetCharacter->FireWeapon(ActivationPolicy == OnInputTriggered);
+	const bool bHeld = ActivationPolicy == EMETAbilityActivationPolicy::OnInputTriggered;
+	MetCharacter->FireWeapon(bHeld);
 
 	if (GetAvatarActorFromActorInfo()->HasAuthority())
 	{

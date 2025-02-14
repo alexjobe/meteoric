@@ -17,7 +17,7 @@ UMETRecoilComponent::UMETRecoilComponent()
 	, RecoilForce_Z(100.f)
 	, RecoilForce_Y(200.f)
 	, RecoilForce_Pitch(100.f)
-	, FiringMode(SingleShot)
+	, FiringMode(EWeaponFiringMode::SingleShot)
 	, FireActionStartTime(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -76,7 +76,7 @@ void UMETRecoilComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter, 
 
 void UMETRecoilComponent::OnFireActionHeld()
 {
-	if(AimRecoilCurve && FiringMode == Automatic)
+	if(AimRecoilCurve && FiringMode == EWeaponFiringMode::Automatic)
 	{
 		LastRecoilCurvePos = CurrentRecoilCurvePos;
 		const float ElapsedRecoilTime = GetWorld()->GetTimeSeconds() - FireActionStartTime;
@@ -94,7 +94,7 @@ void UMETRecoilComponent::OnWeaponFired()
 
 	AController* Controller = OwningCharacter->GetController();
 	
-	if(Controller && AimRecoilCurve && FiringMode == Automatic)
+	if(Controller && AimRecoilCurve && FiringMode == EWeaponFiringMode::Automatic)
 	{
 		FRotator ControlRotation = Controller->GetControlRotation();
 		FVector2d RecoilDirection = CurrentRecoilCurvePos - LastRecoilCurvePos;
@@ -122,7 +122,7 @@ void UMETRecoilComponent::Reset()
 	}
 	
 	OwningCharacter = nullptr;
-	FiringMode = SingleShot;
+	FiringMode = EWeaponFiringMode::SingleShot;
 	FireActionStartTime = 0.f;
 	CurrentRecoilCurvePos = FVector2d::ZeroVector;
 	LastRecoilCurvePos = FVector2d::ZeroVector;

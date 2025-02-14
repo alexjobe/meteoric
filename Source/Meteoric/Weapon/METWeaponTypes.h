@@ -6,7 +6,7 @@
 #include "METWeaponTypes.generated.h"
 
 UENUM(BlueprintType)
-enum EWeaponFiringMode
+enum class EWeaponFiringMode : uint8
 {
 	SingleShot,
 	Automatic

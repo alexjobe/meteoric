@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PuppetMasterTypes.generated.h"
+#include "METAbilityTypes.generated.h"
 
 UENUM(BlueprintType)
-enum class EPMAbilityActivationPolicy : uint8
+enum class EMETAbilityActivationPolicy : uint8
 {
 	OnInputStarted,
 	OnInputTriggered

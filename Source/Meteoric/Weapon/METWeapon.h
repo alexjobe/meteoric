@@ -36,7 +36,7 @@ public:
 	FTransform RightHandToSight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
-	TEnumAsByte<EWeaponFiringMode> FiringMode;
+	EWeaponFiringMode FiringMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	FMETWeaponAnimationSettings AnimationSettings;

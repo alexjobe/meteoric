@@ -1,34 +1,34 @@
 ﻿// Copyright Alex Jobe
 
 
-#include "Tasks/PMBTTask_ActivateAbility_Duration.h"
+#include "Tasks/PMBTTask_ActivateAbility_Held.h"
 
 #include "AIController.h"
 #include "Components/PMPuppetComponent.h"
 #include "Logging/PuppetMasterLog.h"
 
-UPMBTTask_ActivateAbility_Duration::UPMBTTask_ActivateAbility_Duration(const FObjectInitializer& ObjectInitializer)
+UPMBTTask_ActivateAbility_Held::UPMBTTask_ActivateAbility_Held(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 	, Duration(5.f)
-	, ActivationPolicy(OnInputStarted)
+	, ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
 {
-	NodeName = "ActivateAbility_Duration";
+	NodeName = "ActivateAbility_Held";
 	bNotifyTick = true;
 	bNotifyTaskFinished = true;
 	bCreateNodeInstance = false;
 }
 
-void UPMBTTask_ActivateAbility_Duration::InitializeFromAsset(UBehaviorTree& Asset)
+void UPMBTTask_ActivateAbility_Held::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	Super::InitializeFromAsset(Asset);
 }
 
-uint16 UPMBTTask_ActivateAbility_Duration::GetInstanceMemorySize() const
+uint16 UPMBTTask_ActivateAbility_Held::GetInstanceMemorySize() const
 {
 	return sizeof(FBTActivateAbilityMemory);
 }
 
-EBTNodeResult::Type UPMBTTask_ActivateAbility_Duration::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UPMBTTask_ActivateAbility_Held::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	if (!OwnerComp.GetAIOwner())
 	{
@@ -44,7 +44,7 @@ EBTNodeResult::Type UPMBTTask_ActivateAbility_Duration::ExecuteTask(UBehaviorTre
 	return EBTNodeResult::InProgress;
 }
 
-EBTNodeResult::Type UPMBTTask_ActivateAbility_Duration::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UPMBTTask_ActivateAbility_Held::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const AAIController* AIController = OwnerComp.GetAIOwner();
 	UPMPuppetComponent* PuppetComponent = AIController ? AIController->FindComponentByClass<UPMPuppetComponent>() : nullptr;
@@ -55,13 +55,13 @@ EBTNodeResult::Type UPMBTTask_ActivateAbility_Duration::AbortTask(UBehaviorTreeC
 	else
 	{
 		const FString OwnerString = AIController ? AIController->GetName() : OwnerComp.GetName();
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Duration::AbortTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Held::AbortTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
 	}
 	
 	return EBTNodeResult::Aborted;
 }
 
-void UPMBTTask_ActivateAbility_Duration::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UPMBTTask_ActivateAbility_Held::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	if (!OwnerComp.GetAIOwner())
 	{
@@ -80,7 +80,7 @@ void UPMBTTask_ActivateAbility_Duration::TickTask(UBehaviorTreeComponent& OwnerC
 	if (!ensure(PuppetComponent))
 	{
 		const FString OwnerString = AIController ? AIController->GetName() : OwnerComp.GetName();
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Duration::TickTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Held::TickTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
 
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;

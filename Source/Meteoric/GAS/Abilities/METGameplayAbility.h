@@ -4,14 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Meteoric/GAS/METAbilityTypes.h"
 #include "METGameplayAbility.generated.h"
-
-UENUM(BlueprintType)
-enum EMETAbilityActivationPolicy : uint8
-{
-	OnInputStarted,
-	OnInputTriggered
-};
 
 UCLASS()
 class METEORIC_API UMETGameplayAbility : public UGameplayAbility
@@ -29,7 +23,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Activation")
-	TEnumAsByte<EMETAbilityActivationPolicy> ActivationPolicy;
+	EMETAbilityActivationPolicy ActivationPolicy;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FGameplayTag InputTag;
