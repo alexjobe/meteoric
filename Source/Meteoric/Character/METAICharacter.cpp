@@ -80,6 +80,12 @@ void AMETAICharacter::InitAbilityActorInfo()
 
 void AMETAICharacter::Die()
 {
+	if (UBrainComponent* BrainComponent = AIController ? AIController->GetBrainComponent() : nullptr; ensure(BrainComponent))
+	{
+		BrainComponent->StopLogic(FString("Dead"));
+	}
+	
 	Super::Die();
+	
 	SetLifeSpan(CorpseLifeSpan);
 }

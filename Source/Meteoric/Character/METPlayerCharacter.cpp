@@ -15,6 +15,12 @@
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
+static TAutoConsoleVariable<int32> CVarInvinciblePlayer(
+	TEXT("METPlayerCharacter.Invincible"),
+	0,
+	TEXT("If 1, player won't die")
+);
+
 AMETPlayerCharacter::AMETPlayerCharacter()
 	: AimTraceRange(3000.f)
 {
@@ -100,7 +106,16 @@ void AMETPlayerCharacter::InitAbilityActorInfo()
 
 void AMETPlayerCharacter::Die()
 {
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	if (CVarInvinciblePlayer.GetValueOnAnyThread() == 1)
+	{
+		// Invincible for debugging
+		return;
+	}
+#endif
+	
 	Super::Die();
+	
 	if (HasAuthority())
 	{
 		if (AMETGameModeBase* GameMode = Cast<AMETGameModeBase>(GetWorld()->GetAuthGameMode()))
