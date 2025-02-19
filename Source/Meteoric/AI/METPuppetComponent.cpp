@@ -29,25 +29,28 @@ void UMETPuppetComponent::HandleSense_Hearing(AActor& InActor, const FAIStimulus
 {
 }
 
-void UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
+FGameplayAbilitySpecHandle UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
 {
+	FGameplayAbilitySpecHandle Handle;
 	const AAIController* AIController = GetController();
-	if (!ensure(AIController)) return;
+	if (!ensure(AIController)) return Handle;
 	
 	UMETAbilitySystemComponent* ASC = UMETAbilitySystemUtils::GetMetAbilitySystemComponentFromActor(AIController->GetPawn());
-	if (!ensure(ASC)) return;
+	if (!ensure(ASC)) return Handle;
 
 	switch (InActivationPolicy)
 	{
 	case EPMAbilityActivationPolicy::OnInputStarted:
-		ASC->Input_AbilityInputStarted(InTag);
+		Handle = ASC->Input_AbilityInputStarted(InTag);
 		break;
 	case EPMAbilityActivationPolicy::OnInputTriggered:
-		ASC->Input_AbilityInputTriggered(InTag);
+		Handle = ASC->Input_AbilityInputTriggered(InTag);
 		break;
 	default:
 		UE_LOG(LogMET, Warning, TEXT("UMETPuppetComponent::ActivateAbilityByTag -- Activation policy not recognized! %s"), *UEnum::GetValueAsString(InActivationPolicy));
 	}
+	
+	return Handle;
 }
 
 void UMETPuppetComponent::FinishAbilityByTag(const FGameplayTag& InTag)
@@ -65,6 +68,7 @@ void UMETPuppetComponent::FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int
 {
 	if (InTag == METGameplayTags::State_Dead && InCount > 0)
 	{
+		SetState(METGameplayTags::State_Dead);
 		ClearFocusTarget();
 	}
 }

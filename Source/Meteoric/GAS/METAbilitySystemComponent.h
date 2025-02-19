@@ -20,8 +20,8 @@ public:
 	
 	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities, UObject* InSourceObject);
 	
-	void Input_AbilityInputStarted(const FGameplayTag& InputTag);
-	void Input_AbilityInputTriggered(const FGameplayTag& InputTag);
+	FGameplayAbilitySpecHandle Input_AbilityInputStarted(const FGameplayTag& InputTag);
+	FGameplayAbilitySpecHandle Input_AbilityInputTriggered(const FGameplayTag& InputTag);
 	void Input_AbilityInputCompleted(const FGameplayTag& InputTag);
 
 	bool bCharacterAbilitiesGiven;
@@ -33,5 +33,5 @@ protected:
 	//~ End UAbilitySystemComponent interface
 
 private:
-	void ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy);
+	FGameplayAbilitySpecHandle ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy);
 };

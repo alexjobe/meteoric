@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpecHandle.h"
 #include "GameplayTagContainer.h"
 #include "PuppetMasterTypes.h"
 #include "PMPuppetComponent.generated.h"
@@ -34,7 +35,7 @@ public:
 	AActor* GetFocusTarget() const { return FocusTarget; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted);
+	virtual FGameplayAbilitySpecHandle ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void FinishAbilityByTag(const FGameplayTag& InTag);

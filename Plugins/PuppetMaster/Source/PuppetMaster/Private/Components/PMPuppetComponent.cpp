@@ -87,9 +87,10 @@ void UPMPuppetComponent::ClearFocusTarget()
 	}
 }
 
-void UPMPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
+FGameplayAbilitySpecHandle UPMPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
 {
 	// Empty in base class
+	return FGameplayAbilitySpecHandle();
 }
 
 void UPMPuppetComponent::FinishAbilityByTag(const FGameplayTag& InTag)

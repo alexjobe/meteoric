@@ -20,5 +20,15 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayBehaviors",
+			"Enabled": true
+		}
 	]
 }

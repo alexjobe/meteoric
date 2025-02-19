@@ -24,33 +24,30 @@ void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplay
 	}
 }
 
-void UMETAbilitySystemComponent::Input_AbilityInputStarted(const FGameplayTag& InputTag)
+FGameplayAbilitySpecHandle UMETAbilitySystemComponent::Input_AbilityInputStarted(const FGameplayTag& InputTag)
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputStarted);
+		return ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputStarted);
 	}
-	else
-	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputStarted -- Invalid input tag!"))
-	}
+	UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputStarted -- Invalid input tag!"))
+	return FGameplayAbilitySpecHandle();
 }
 
-void UMETAbilitySystemComponent::Input_AbilityInputTriggered(const FGameplayTag& InputTag)
+FGameplayAbilitySpecHandle UMETAbilitySystemComponent::Input_AbilityInputTriggered(const FGameplayTag& InputTag)
 {
 	if(InputTag.IsValid())
 	{
-		ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputTriggered);
+		return ActivateAbility(InputTag, EMETAbilityActivationPolicy::OnInputTriggered);
 	}
-	else
-	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTriggered -- Invalid input tag!"))
-	}
+	UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputTriggered -- Invalid input tag!"))
+	return FGameplayAbilitySpecHandle();
 }
 
-void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy)
+FGameplayAbilitySpecHandle UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy)
 {
-	if(!InputTag.IsValid()) return;
+	FGameplayAbilitySpecHandle Handle;
+	if(!InputTag.IsValid()) return Handle;
 
 	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
@@ -58,6 +55,7 @@ void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, c
 		if(AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			const UMETGameplayAbility* MetAbility = CastChecked<UMETGameplayAbility>(AbilitySpec.Ability);
+			bAbilityFound = true;
 			if (MetAbility->GetActivationPolicy() == InActivationPolicy)
 			{
 				AbilitySpecInputPressed(AbilitySpec);
@@ -65,14 +63,17 @@ void UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, c
 				{
 					TryActivateAbility(AbilitySpec.Handle);
 				}
+				Handle = AbilitySpec.Handle;
+				break;
 			}
-			bAbilityFound = true;
 		}
 	}
 	if(!bAbilityFound)
 	{
 		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::ActivateAbility -- Unable to find ability with input tag %s!"), *InputTag.ToString())
 	}
+	
+	return Handle;
 }
 
 void UMETAbilitySystemComponent::Input_AbilityInputCompleted(const FGameplayTag& InputTag)
