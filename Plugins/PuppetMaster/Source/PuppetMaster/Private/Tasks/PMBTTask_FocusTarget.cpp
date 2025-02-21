@@ -18,8 +18,7 @@ void UPMBTTask_FocusTarget::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	Super::InitializeFromAsset(Asset);
 
-	UBlackboardData* BBAsset = GetBlackboardAsset();
-	if (BBAsset)
+	if (const UBlackboardData* BBAsset = GetBlackboardAsset())
 	{
 		FocusTargetKey.ResolveSelectedKey(*BBAsset);
 	}
@@ -32,7 +31,7 @@ void UPMBTTask_FocusTarget::InitializeFromAsset(UBehaviorTree& Asset)
 EBTNodeResult::Type UPMBTTask_FocusTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	UBlackboardComponent* BlackboardComponent = AIController ? OwnerComp.GetBlackboardComponent() : nullptr;
+	const UBlackboardComponent* BlackboardComponent = AIController ? OwnerComp.GetBlackboardComponent() : nullptr;
 	if (!ensure(BlackboardComponent)) return EBTNodeResult::Failed;
 	
 	AActor* FocusActor = Cast<AActor>(BlackboardComponent->GetValueAsObject(FocusTargetKey.SelectedKeyName));

@@ -64,6 +64,15 @@ FVector AMETAICharacter::GetFocalPoint() const
 	return GetActorLocation();
 }
 
+UPMPuppetComponent* AMETAICharacter::GetPuppetComponent() const
+{
+	if (ensure(AIController))
+	{
+		return AIController->GetPuppetComponent();
+	}
+	return nullptr;
+}
+
 void AMETAICharacter::InitAbilityActorInfo()
 {
 	if (ensure(AbilitySystemComponent))

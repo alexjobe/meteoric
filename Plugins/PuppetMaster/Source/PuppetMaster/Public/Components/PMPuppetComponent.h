@@ -50,7 +50,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	FName StateTagKeyName;
 	
-	UPROPERTY(Transient)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Target")
 	TObjectPtr<AActor> FocusTarget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "GameplayTagContainer.h"
+#include "Interface/PuppetMasterInterface.h"
 #include "METAIController.generated.h"
 
 UCLASS()
-class METEORIC_API AMETAIController : public AAIController
+class METEORIC_API AMETAIController : public AAIController, public IPuppetMasterInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,10 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	//~ End UGenericTeamAgentInterface interface
+
+	//~ Begin IPuppetMasterInterface interface
+	virtual UPMPuppetComponent* GetPuppetComponent() const override;
+	//~ End IPuppetMasterInterface interface
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet")

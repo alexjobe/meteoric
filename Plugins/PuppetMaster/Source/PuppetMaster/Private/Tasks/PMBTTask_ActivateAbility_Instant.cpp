@@ -5,7 +5,10 @@
 
 #include "AIController.h"
 #include "Components/PMPuppetComponent.h"
+#include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
+
+class IPuppetMasterInterface;
 
 UPMBTTask_ActivateAbility_Instant::UPMBTTask_ActivateAbility_Instant(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -22,11 +25,13 @@ EBTNodeResult::Type UPMBTTask_ActivateAbility_Instant::ExecuteTask(UBehaviorTree
 	}
 
 	const AAIController* AIController = OwnerComp.GetAIOwner();
-	UPMPuppetComponent* PuppetComponent = AIController ? AIController->FindComponentByClass<UPMPuppetComponent>() : nullptr;
+	const IPuppetMasterInterface* PuppetMasterInterface = Cast<IPuppetMasterInterface>(AIController);
+	
+	UPMPuppetComponent* PuppetComponent = PuppetMasterInterface ? PuppetMasterInterface->GetPuppetComponent() : nullptr;
 	if (!ensure(PuppetComponent))
 	{
 		const FString OwnerString = AIController ? AIController->GetName() : OwnerComp.GetName();
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Instant::ExecuteTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Instant::ExecuteTask -- Owner must implement IPuppetMasterInterface! Owner: %s"), *OwnerString);
 
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return EBTNodeResult::Failed;

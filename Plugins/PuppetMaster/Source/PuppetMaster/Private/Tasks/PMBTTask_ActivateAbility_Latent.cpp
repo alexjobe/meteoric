@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "AIController.h"
 #include "Components/PMPuppetComponent.h"
+#include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
 
 UPMBTTask_ActivateAbility_Latent::UPMBTTask_ActivateAbility_Latent(const FObjectInitializer& ObjectInitializer)
@@ -46,16 +47,16 @@ EBTNodeResult::Type UPMBTTask_ActivateAbility_Latent::ExecuteTask(UBehaviorTreeC
 
 EBTNodeResult::Type UPMBTTask_ActivateAbility_Latent::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	const AAIController* AIController = OwnerComp.GetAIOwner();
-	UPMPuppetComponent* PuppetComponent = AIController ? AIController->FindComponentByClass<UPMPuppetComponent>() : nullptr;
-	if (ensure(PuppetComponent))
+	const IPuppetMasterInterface* PuppetMasterInterface = Cast<IPuppetMasterInterface>(OwnerComp.GetAIOwner());
+	if (UPMPuppetComponent* PuppetComponent = PuppetMasterInterface ? PuppetMasterInterface->GetPuppetComponent() : nullptr; ensure(PuppetComponent))
 	{
 		PuppetComponent->FinishAbilityByTag(AbilityTag);
 	}
 	else
 	{
+		const AAIController* AIController = OwnerComp.GetAIOwner();
 		const FString OwnerString = AIController ? AIController->GetName() : OwnerComp.GetName();
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Latent::AbortTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Latent::AbortTask -- Owner must implement IPuppetMasterInterface! Owner: %s"), *OwnerString);
 	}
 	
 	return EBTNodeResult::Aborted;
@@ -77,11 +78,13 @@ void UPMBTTask_ActivateAbility_Latent::TickTask(UBehaviorTreeComponent& OwnerCom
 	}
 
 	const AAIController* AIController = OwnerComp.GetAIOwner();
-	UPMPuppetComponent* PuppetComponent = AIController ? AIController->FindComponentByClass<UPMPuppetComponent>() : nullptr;
+	const IPuppetMasterInterface* PuppetMasterInterface = Cast<IPuppetMasterInterface>(AIController);
+	
+	UPMPuppetComponent* PuppetComponent = PuppetMasterInterface ? PuppetMasterInterface->GetPuppetComponent() : nullptr;
 	if (!ensure(PuppetComponent))
 	{
 		const FString OwnerString = AIController ? AIController->GetName() : OwnerComp.GetName();
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Latent::TickTask -- PuppetComponent not found! Owner: %s"), *OwnerString);
+		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Latent::TickTask -- Owner must implement IPuppetMasterInterface! Owner: %s"), *OwnerString);
 
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return;

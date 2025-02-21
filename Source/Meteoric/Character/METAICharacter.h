@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "METCharacter.h"
+#include "Interface/PuppetMasterInterface.h"
 #include "METAICharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class METEORIC_API AMETAICharacter : public AMETCharacter
+class METEORIC_API AMETAICharacter : public AMETCharacter, public IPuppetMasterInterface
 {
 	GENERATED_BODY()
 
@@ -25,6 +26,10 @@ public:
 	//~ Begin AMETCharacter interface
 	virtual FVector GetFocalPoint() const override;
 	//~ End AMETCharacter interface
+
+	//~ Begin IPuppetMasterInterface interface
+	virtual UPMPuppetComponent* GetPuppetComponent() const override;
+	//~ End IPuppetMasterInterface interface
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI")

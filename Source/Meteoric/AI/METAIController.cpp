@@ -22,7 +22,7 @@ AMETAIController::AMETAIController()
 	check(PerceptionComponent)
 
 	PuppetComponent = CreateDefaultSubobject<UMETPuppetComponent>("PuppetComponent");
-	check(PerceptionComponent)
+	check(PuppetComponent)
 }
 
 void AMETAIController::BeginPlay()
@@ -46,4 +46,9 @@ void AMETAIController::SetGenericTeamId(const FGenericTeamId& InTeamID)
 FGenericTeamId AMETAIController::GetGenericTeamId() const
 {
 	return UPMTeamSettings::GetTeamId(TeamTag);
+}
+
+UPMPuppetComponent* AMETAIController::GetPuppetComponent() const
+{
+	return PuppetComponent;
 }
