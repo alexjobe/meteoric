@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "PMBTTask_FocusTarget.generated.h"
+#include "PMBTTask_SetFocus.generated.h"
 
 /**
  * 
  */
 UCLASS(MinimalAPI)
-class UPMBTTask_FocusTarget : public UBTTaskNode
+class UPMBTTask_SetFocus : public UBTTaskNode
 {
 	GENERATED_BODY()
 
 public:
-	PUPPETMASTER_API UPMBTTask_FocusTarget(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_SetFocus(const FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual void InitializeFromAsset(UBehaviorTree& Asset) override;

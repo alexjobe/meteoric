@@ -18,6 +18,12 @@
 
 DEFINE_LOG_CATEGORY(LogMETCharacter);
 
+static TAutoConsoleVariable<int32> CVarDrawCharacterRotationDebug(
+	TEXT("METCharacter.DrawRotationDebug"),
+	0,
+	TEXT("If 1, draws actor rotation and aim rotation")
+);
+
 AMETCharacter::AMETCharacter()
 	: bIsAiming(false)
 	, bIsTurningInPlace(false)
@@ -63,6 +69,13 @@ void AMETCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	
 	UpdateCharacterAimRotation(DeltaSeconds);
+
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	if (CVarDrawCharacterRotationDebug.GetValueOnAnyThread() == 1)
+	{
+		DrawCharacterRotationDebug();
+	}
+#endif
 }
 
 void AMETCharacter::UpdateCharacterAimRotation(float DeltaSeconds)
@@ -74,8 +87,11 @@ void AMETCharacter::UpdateCharacterAimRotation(float DeltaSeconds)
 	{
 		RepControlRotation = GetControlRotation();
 	}
+
+	// Interp aim rotation towards control rotation, to prevent "snapping"
+	AimRotation = FMath::Lerp(AimRotation, RepControlRotation, DeltaSeconds * CharacterConfig.AimInterpSpeed);
 	
-	if (FMath::Abs(ActorControlRotationDelta.Yaw) > 90.f)
+	if (FMath::Abs(ActorAimRotationDelta.Yaw) > 90.f)
 	{
 		bIsTurningInPlace = true;
 	}
@@ -85,16 +101,16 @@ void AMETCharacter::UpdateCharacterAimRotation(float DeltaSeconds)
 	if (bIsTurningInPlace || (bIsMoving && !IsActorControlRotationAligned()))
 	{
 		FRotator TargetActorRotation = GetActorRotation();
-		TargetActorRotation.Yaw = RepControlRotation.Yaw;
+		TargetActorRotation.Yaw = AimRotation.Yaw;
 		
-		const float InterpSpeed = bIsMoving ? 20.f : 10.f;
+		const float InterpSpeed = bIsMoving ? CharacterConfig.TurnInPlaceSpeed_Moving : CharacterConfig.TurnInPlaceSpeed_Stationary;
 		FRotator NewActorRotation = FMath::InterpSinInOut(GetActorRotation(), TargetActorRotation, DeltaSeconds * InterpSpeed);
 		NewActorRotation.Normalize();
 		
 		SetActorRotation(NewActorRotation);
 	}
-
-	UpdateActorControlRotationDelta();
+	
+	UpdateActorAimRotationDelta();
 
 	if (IsActorControlRotationAligned())
 	{
@@ -112,19 +128,19 @@ void AMETCharacter::UpdateCharacterAimRotation(float DeltaSeconds)
 	}
 }
 
-void AMETCharacter::UpdateActorControlRotationDelta()
+void AMETCharacter::UpdateActorAimRotationDelta()
 {
-	FRotator Delta = GetActorRotation() - RepControlRotation;
+	FRotator Delta = GetActorRotation() - AimRotation;
 	Delta.Normalize();
 
-	ActorControlRotationDelta.Roll = 0.f;
-	ActorControlRotationDelta.Yaw = -Delta.Yaw;
-	ActorControlRotationDelta.Pitch = Delta.Pitch;
+	ActorAimRotationDelta.Roll = 0.f;
+	ActorAimRotationDelta.Yaw = -Delta.Yaw;
+	ActorAimRotationDelta.Pitch = Delta.Pitch;
 }
 
 bool AMETCharacter::IsActorControlRotationAligned() const
 {
-	return FMath::Abs(ActorControlRotationDelta.Yaw) < 5.f;
+	return FMath::Abs(ActorAimRotationDelta.Yaw) < 5.f;
 }
 
 void AMETCharacter::AddCharacterAbilities()
@@ -242,9 +258,9 @@ void AMETCharacter::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCharacterMovement()->GravityScale = 0.f;
 	GetCharacterMovement()->Velocity = FVector::ZeroVector;
-
-	RepControlRotation = FRotator::ZeroRotator;
-	ActorControlRotationDelta = FRotator::ZeroRotator;
+	
+	AimRotation = FRotator::ZeroRotator;
+	ActorAimRotationDelta = FRotator::ZeroRotator;
 	bIsTurningInPlace = false;
 	
 	WeaponManager->DropAllWeapons();
@@ -348,6 +364,24 @@ void AMETCharacter::HealthChanged(const FOnAttributeChangeData& Data)
 		Die();
 	}
 }
+
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+void AMETCharacter::DrawCharacterRotationDebug() const
+{
+	// Actor Rotation
+	const FVector LineStart = GetActorLocation();
+	FVector LineEnd = LineStart + GetActorForwardVector() * 150.f;;
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Blue, false, -1, 0, 2.f);
+
+	// Control Rotation
+	LineEnd = LineStart + RepControlRotation.Vector() * 150.f;
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Red, false, -1, 0, 2.f);
+
+	// Aim Rotation
+	LineEnd = LineStart + AimRotation.Vector() * 150.f;
+	DrawDebugLine(GetWorld(), LineStart, LineEnd, FColor::Green, false, -1, 0, 2.f);
+}
+#endif
 
 void AMETCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {

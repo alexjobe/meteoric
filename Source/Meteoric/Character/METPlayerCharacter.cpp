@@ -33,6 +33,8 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 	MainCamera->bUsePawnControlRotation = false;
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
+
+	CharacterConfig.AimInterpSpeed = 40.f;
 }
 
 void AMETPlayerCharacter::OnRep_PlayerState()

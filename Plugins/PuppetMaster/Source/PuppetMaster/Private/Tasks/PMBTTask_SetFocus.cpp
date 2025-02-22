@@ -1,20 +1,20 @@
 ﻿// Copyright Alex Jobe
 
 
-#include "Tasks/PMBTTask_FocusTarget.h"
+#include "Tasks/PMBTTask_SetFocus.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Logging/PuppetMasterLog.h"
 
 
-UPMBTTask_FocusTarget::UPMBTTask_FocusTarget(const FObjectInitializer& ObjectInitializer)
+UPMBTTask_SetFocus::UPMBTTask_SetFocus(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	NodeName = "FocusTarget";
+	NodeName = "SetFocus";
 }
 
-void UPMBTTask_FocusTarget::InitializeFromAsset(UBehaviorTree& Asset)
+void UPMBTTask_SetFocus::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	Super::InitializeFromAsset(Asset);
 
@@ -28,7 +28,7 @@ void UPMBTTask_FocusTarget::InitializeFromAsset(UBehaviorTree& Asset)
 	}
 }
 
-EBTNodeResult::Type UPMBTTask_FocusTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UPMBTTask_SetFocus::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	const UBlackboardComponent* BlackboardComponent = AIController ? OwnerComp.GetBlackboardComponent() : nullptr;

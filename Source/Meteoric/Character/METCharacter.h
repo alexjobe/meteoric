@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GenericTeamAgentInterface.h"
+#include "METCharacterTypes.h"
 #include "GameFramework/Character.h"
 #include "METCharacter.generated.h"
 
@@ -52,7 +53,7 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
 
-	FRotator GetActorControlRotationDelta() const { return ActorControlRotationDelta; }
+	FRotator GetActorAimRotationDelta() const { return ActorAimRotationDelta; }
 	virtual FVector GetFocalPoint() const;
 	virtual FTransform GetEyesPosition() const;
 
@@ -77,6 +78,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character")
+	FMETCharacterConfig CharacterConfig;
+
 	/* Abilities granted by this character. Added on possession, and removed on death */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<class UGameplayAbility>> CharacterAbilities;
@@ -98,10 +102,10 @@ protected:
 	virtual void InitAbilityActorInfo();
 	void InitializeDefaultAttributes() const;
 
-	/** Called for movement input */
+	/* Called for movement input */
 	void Move(const struct FInputActionValue& Value);
 
-	/** Called for looking input */
+	/* Called for looking input */
 	void Look(const FInputActionValue& Value);
 
 	virtual void Die();
@@ -118,10 +122,15 @@ protected:
 	void BindAttributeChangedCallbacks();
 
 private:
+	/* Replicated control rotation -- used to calculate aim rotation */
 	UPROPERTY(Replicated)
 	FRotator RepControlRotation;
-	
-	FRotator ActorControlRotationDelta;
+
+	/* Where the character is currently aiming, determined by control rotation */
+	FRotator AimRotation;
+
+	/* Delta between actor rotation and aim rotation (control rotation) */
+	FRotator ActorAimRotationDelta;
 	
 	FAimDownSightsEvent AimDownSightsEvent;
 
@@ -130,11 +139,16 @@ private:
 
 	void UpdateCharacterAimRotation(float DeltaSeconds);
 
-	void UpdateActorControlRotationDelta();
+	void UpdateActorAimRotationDelta();
 	bool IsActorControlRotationAligned() const;
 
 	// Attribute changed callbacks
 	void HealthChanged(const struct FOnAttributeChangeData& Data);
+
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	// Draw actor rotation and aim rotation
+	void DrawCharacterRotationDebug() const;
+#endif
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

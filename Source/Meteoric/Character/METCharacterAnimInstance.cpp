@@ -44,7 +44,7 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	UpdateMovementData();
 	
-	ActorControlRotationDelta = Character->GetActorControlRotationDelta();
+	ActorControlRotationDelta = Character->GetActorAimRotationDelta();
 	bIsTurningInPlace = Character->IsTurningInPlace();
 	
 	SetSightToCameraRoot();
