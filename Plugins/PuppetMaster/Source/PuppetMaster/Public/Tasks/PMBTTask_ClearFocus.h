@@ -15,7 +15,7 @@ class UPMBTTask_ClearFocus : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
-	PUPPETMASTER_API UPMBTTask_ClearFocus(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_ClearFocus();
 	
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;

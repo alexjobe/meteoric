@@ -10,9 +10,8 @@
 #include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
 
-UPMBTTask_ActivateAbility_Latent::UPMBTTask_ActivateAbility_Latent(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-	, ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
+UPMBTTask_ActivateAbility_Latent::UPMBTTask_ActivateAbility_Latent()
+	: ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
 	, CompletionPolicy(EPMTaskNodeCompletionPolicy::Duration)
 	, Duration(5.f)
 {

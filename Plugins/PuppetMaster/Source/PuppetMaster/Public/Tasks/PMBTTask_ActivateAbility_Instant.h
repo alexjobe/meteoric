@@ -16,7 +16,7 @@ class UPMBTTask_ActivateAbility_Instant : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
-	PUPPETMASTER_API UPMBTTask_ActivateAbility_Instant(const FObjectInitializer& ObjectInitialize);
+	PUPPETMASTER_API UPMBTTask_ActivateAbility_Instant();
 	
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;

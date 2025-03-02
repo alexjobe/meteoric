@@ -18,7 +18,7 @@
 
 UPMPuppetComponent::UPMPuppetComponent()
 	: StateTagKeyName("StateTag")
-	, FocusTargetKeyName("FocusTarget")
+	, TargetActorKeyName("TargetActor")
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -53,37 +53,37 @@ void UPMPuppetComponent::SetState(const FGameplayTag& InState)
 	}
 }
 
-void UPMPuppetComponent::SetFocusTarget(AActor* const InActor)
+void UPMPuppetComponent::SetTargetActor(AActor* const InActor)
 {
-	if (FocusTarget == InActor) return;
+	if (TargetActor == InActor) return;
 	
-	ClearFocusTarget();
+	ClearTargetActor();
 	
-	FocusTarget = InActor;
+	TargetActor = InActor;
 	if (ensure(BlackboardComponent))
 	{
-		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, InActor);
+		BlackboardComponent->SetValueAsObject(TargetActorKeyName, InActor);
 	}
 
-	if (UAbilitySystemComponent* FocusASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InActor); ensure(FocusASC))
+	if (UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InActor); ensure(TargetASC))
 	{
-		FocusASC->RegisterGenericGameplayTagEvent().AddUObject(this, &ThisClass::FocusTarget_OnGameplayTagEvent);
+		TargetASC->RegisterGenericGameplayTagEvent().AddUObject(this, &ThisClass::TargetActor_OnGameplayTagEvent);
 	}
 }
 
-void UPMPuppetComponent::ClearFocusTarget()
+void UPMPuppetComponent::ClearTargetActor()
 {
-	if (FocusTarget == nullptr) return;
+	if (TargetActor == nullptr) return;
 
-	if (UAbilitySystemComponent* FocusASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(FocusTarget); ensure(FocusASC))
+	if (UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor); ensure(TargetASC))
 	{
-		FocusASC->RegisterGenericGameplayTagEvent().RemoveAll(this);
+		TargetASC->RegisterGenericGameplayTagEvent().RemoveAll(this);
 	}
 	
-	FocusTarget = nullptr;
+	TargetActor = nullptr;
 	if (ensure(BlackboardComponent))
 	{
-		BlackboardComponent->SetValueAsObject(FocusTargetKeyName, nullptr);
+		BlackboardComponent->SetValueAsObject(TargetActorKeyName, nullptr);
 	}
 }
 
@@ -143,7 +143,7 @@ void UPMPuppetComponent::HandleSense_Touch(AActor& InActor, const FAIStimulus& I
 	// Empty in base class
 }
 
-void UPMPuppetComponent::FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount)
+void UPMPuppetComponent::TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount)
 {
 	// Empty in base class
 }

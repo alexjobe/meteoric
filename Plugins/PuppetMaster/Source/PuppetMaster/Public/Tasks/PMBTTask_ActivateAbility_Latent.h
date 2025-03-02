@@ -39,7 +39,7 @@ class UPMBTTask_ActivateAbility_Latent : public UBTTaskNode
 	GENERATED_BODY()
 	
 public:
-	PUPPETMASTER_API UPMBTTask_ActivateAbility_Latent(const FObjectInitializer& ObjectInitializer);
+	PUPPETMASTER_API UPMBTTask_ActivateAbility_Latent();
 
 	//~ Begin UBTTaskNode interface
 	PUPPETMASTER_API virtual uint16 GetInstanceMemorySize() const override;

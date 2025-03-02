@@ -5,8 +5,7 @@
 
 #include "AIController.h"
 
-UPMBTTask_ClearFocus::UPMBTTask_ClearFocus(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UPMBTTask_ClearFocus::UPMBTTask_ClearFocus()
 {
 	NodeName = "ClearFocus";
 }

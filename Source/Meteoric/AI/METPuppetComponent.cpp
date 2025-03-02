@@ -18,10 +18,10 @@ UMETPuppetComponent::UMETPuppetComponent()
 
 void UMETPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus)
 {
-	if (!FocusTarget)
+	if (!TargetActor)
 	{
-		SetFocusTarget(&InActor);
-		SetState(METGameplayTags::AIState_Attacking);
+		SetTargetActor(&InActor);
+		SetState(METGameplayTags::AIState_Combat_FindCover);
 	}
 }
 
@@ -64,11 +64,11 @@ void UMETPuppetComponent::FinishAbilityByTag(const FGameplayTag& InTag)
 	}
 }
 
-void UMETPuppetComponent::FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount)
+void UMETPuppetComponent::TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount)
 {
 	if (InTag == METGameplayTags::State_Dead && InCount > 0)
 	{
 		SetState(METGameplayTags::State_Dead);
-		ClearFocusTarget();
+		ClearTargetActor();
 	}
 }

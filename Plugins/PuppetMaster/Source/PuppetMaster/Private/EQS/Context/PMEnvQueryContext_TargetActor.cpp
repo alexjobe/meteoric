@@ -1,7 +1,7 @@
 ﻿// Copyright Alex Jobe
 
 
-#include "EQS/Context/PMEnvQueryContext_FocusTarget.h"
+#include "EQS/Context/PMEnvQueryContext_TargetActor.h"
 
 #include "Components/PMPuppetComponent.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
@@ -9,28 +9,28 @@
 #include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
 
-void UPMEnvQueryContext_FocusTarget::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
+void UPMEnvQueryContext_TargetActor::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryContextData& ContextData) const
 {
 	const IPuppetMasterInterface* PuppetMasterInterface = Cast<IPuppetMasterInterface>(QueryInstance.Owner.Get());
 	
 	if (const UPMPuppetComponent* PuppetComponent = PuppetMasterInterface ? PuppetMasterInterface->GetPuppetComponent() : nullptr)
 	{
-		if (const AActor* FocusTarget = PuppetComponent->GetFocusTarget())
+		if (const AActor* TargetActor = PuppetComponent->GetTargetActor())
 		{
-			UEnvQueryItemType_Actor::SetContextHelper(ContextData, FocusTarget);
+			UEnvQueryItemType_Actor::SetContextHelper(ContextData, TargetActor);
 		}
 		else
 		{
-			LogError("UPMEnvQueryContext_FocusTarget::ProvideContext -- Owner has no FocusTarget!", QueryInstance);
+			LogError("UPMEnvQueryContext_TargetActor::ProvideContext -- Owner has no TargetActor!", QueryInstance);
 		}
 	}
 	else
 	{
-		LogError("UPMEnvQueryContext_FocusTarget::ProvideContext -- Owner must implement IPuppetMasterInterface!", QueryInstance);
+		LogError("UPMEnvQueryContext_TargetActor::ProvideContext -- Owner must implement IPuppetMasterInterface!", QueryInstance);
 	}
 }
 
-void UPMEnvQueryContext_FocusTarget::LogError(const FString& Message, const FEnvQueryInstance& QueryInstance)
+void UPMEnvQueryContext_TargetActor::LogError(const FString& Message, const FEnvQueryInstance& QueryInstance)
 {
 	const AActor* OwningActor = Cast<AActor>(QueryInstance.Owner.Get());
 	const FString OwnerString = OwningActor ? OwningActor->GetName() : QueryInstance.QueryName;

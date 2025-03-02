@@ -20,6 +20,6 @@ protected:
 	virtual void HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus) override;
 	virtual FGameplayAbilitySpecHandle ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted) override;
 	virtual void FinishAbilityByTag(const FGameplayTag& InTag) override;
-	virtual void FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount) override;
+	virtual void TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount) override;
 	//~ End UPMPuppetComponent interface
 };

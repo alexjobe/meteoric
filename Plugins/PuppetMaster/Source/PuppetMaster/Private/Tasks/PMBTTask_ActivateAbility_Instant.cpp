@@ -10,9 +10,8 @@
 
 class IPuppetMasterInterface;
 
-UPMBTTask_ActivateAbility_Instant::UPMBTTask_ActivateAbility_Instant(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-	, ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
+UPMBTTask_ActivateAbility_Instant::UPMBTTask_ActivateAbility_Instant()
+	: ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
 {
 	NodeName = "ActivateAbility_Instant";
 }

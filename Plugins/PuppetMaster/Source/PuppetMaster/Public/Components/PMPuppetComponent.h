@@ -26,13 +26,13 @@ public:
 	FGameplayTag GetState() const { return StateTag; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SetFocusTarget(AActor* const InActor);
+	virtual void SetTargetActor(AActor* const InActor);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ClearFocusTarget();
+	virtual void ClearTargetActor();
 	
 	UFUNCTION(BlueprintCallable)
-	AActor* GetFocusTarget() const { return FocusTarget; }
+	AActor* GetTargetActor() const { return TargetActor; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual FGameplayAbilitySpecHandle ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted);
@@ -44,17 +44,19 @@ public:
 	AAIController* GetController() const { return Controller; }
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "State")
+	// Blackboard Values
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
 	FGameplayTag StateTag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
+	TObjectPtr<AActor> TargetActor;
+
+	// Blackboard Key Names
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	FName StateTagKeyName;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Target")
-	TObjectPtr<AActor> FocusTarget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
-	FName FocusTargetKeyName;
+	FName TargetActorKeyName;
 
 	UFUNCTION()
 	virtual void PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, struct FAIStimulus InStimulus);
@@ -64,7 +66,7 @@ protected:
 	virtual void HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus);
 	virtual void HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus);
 
-	virtual void FocusTarget_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount);
+	virtual void TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount);
 
 private:
 	UPROPERTY(Transient)

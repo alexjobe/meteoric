@@ -8,8 +8,7 @@
 #include "Logging/PuppetMasterLog.h"
 
 
-UPMBTTask_SetFocus::UPMBTTask_SetFocus(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UPMBTTask_SetFocus::UPMBTTask_SetFocus()
 {
 	NodeName = "SetFocus";
 }
@@ -20,7 +19,7 @@ void UPMBTTask_SetFocus::InitializeFromAsset(UBehaviorTree& Asset)
 
 	if (const UBlackboardData* BBAsset = GetBlackboardAsset())
 	{
-		FocusTargetKey.ResolveSelectedKey(*BBAsset);
+		TargetActorKey.ResolveSelectedKey(*BBAsset);
 	}
 	else
 	{
@@ -34,9 +33,9 @@ EBTNodeResult::Type UPMBTTask_SetFocus::ExecuteTask(UBehaviorTreeComponent& Owne
 	const UBlackboardComponent* BlackboardComponent = AIController ? OwnerComp.GetBlackboardComponent() : nullptr;
 	if (!ensure(BlackboardComponent)) return EBTNodeResult::Failed;
 	
-	AActor* FocusActor = Cast<AActor>(BlackboardComponent->GetValueAsObject(FocusTargetKey.SelectedKeyName));
-	if (!FocusActor) return EBTNodeResult::Failed;
+	AActor* TargetActor = Cast<AActor>(BlackboardComponent->GetValueAsObject(TargetActorKey.SelectedKeyName));
+	if (!TargetActor) return EBTNodeResult::Failed;
 
-	AIController->SetFocus(FocusActor);
+	AIController->SetFocus(TargetActor);
 	return EBTNodeResult::Succeeded;
 }

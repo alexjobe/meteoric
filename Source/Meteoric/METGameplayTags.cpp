@@ -45,7 +45,11 @@ namespace METGameplayTags
 
 	/* AI state tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Idle, "AIState.Idle", "Idle state tag");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Investigating, "AIState.Investigating", "Investigating state tag");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Attacking, "AIState.Attacking", "Attacking state tag");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Hiding, "AIState.Hiding", "Hiding state tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Investigate, "AIState.Investigate", "Investigate state tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat, "AIState.Combat", "Combat state tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Hide, "AIState.Hide", "Hide state tag");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_FindCover, "AIState.Combat.FindCover", "Find cover state tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_FindAttackLocation, "AIState.Combat.FindAttackLocation", "Find attack location state tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_Attack, "AIState.Combat.Attack", "Attack state tag");
 }
