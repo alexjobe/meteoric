@@ -17,8 +17,12 @@
 #include "Perception/AISenseConfig_Touch.h"
 
 UPMPuppetComponent::UPMPuppetComponent()
-	: StateTagKeyName("StateTag")
+	: MinIdealTargetDistance(500.f)
+	, MaxIdealTargetDistance(2000.f)
+	, StateTagKeyName("StateTag")
 	, TargetActorKeyName("TargetActor")
+	, MinIdealTargetDistanceKeyName("MinIdealTargetDistance")
+	, MaxIdealTargetDistanceKeyName("MaxIdealTargetDistance")
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -32,6 +36,7 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGa
 	BlackboardComponent = Controller->GetBlackboardComponent();
 
 	SetState(InState);
+	SetIdealTargetDistance(MinIdealTargetDistance, MaxIdealTargetDistance);
 
 	if (ensure(PerceptionComponent))
 	{
@@ -84,6 +89,18 @@ void UPMPuppetComponent::ClearTargetActor()
 	if (ensure(BlackboardComponent))
 	{
 		BlackboardComponent->SetValueAsObject(TargetActorKeyName, nullptr);
+	}
+}
+
+void UPMPuppetComponent::SetIdealTargetDistance(float InMinIdealTargetDistance, float InMaxIdealTargetDistance)
+{
+	MinIdealTargetDistance = InMinIdealTargetDistance;
+	MaxIdealTargetDistance = InMaxIdealTargetDistance;
+
+	if (ensure(BlackboardComponent))
+	{
+		BlackboardComponent->SetValueAsFloat(MinIdealTargetDistanceKeyName, MinIdealTargetDistance);
+		BlackboardComponent->SetValueAsFloat(MaxIdealTargetDistanceKeyName, MaxIdealTargetDistance);
 	}
 }
 

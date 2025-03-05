@@ -35,6 +35,9 @@ public:
 	AActor* GetTargetActor() const { return TargetActor; }
 
 	UFUNCTION(BlueprintCallable)
+	void SetIdealTargetDistance(float InMinIdealTargetDistance, float InMaxIdealTargetDistance);
+
+	UFUNCTION(BlueprintCallable)
 	virtual FGameplayAbilitySpecHandle ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted);
 
 	UFUNCTION(BlueprintCallable)
@@ -51,12 +54,24 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
 	TObjectPtr<AActor> TargetActor;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	float MinIdealTargetDistance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	float MaxIdealTargetDistance;
+
 	// Blackboard Key Names
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	FName StateTagKeyName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	FName TargetActorKeyName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	FName MinIdealTargetDistanceKeyName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	FName MaxIdealTargetDistanceKeyName;
 
 	UFUNCTION()
 	virtual void PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, struct FAIStimulus InStimulus);
