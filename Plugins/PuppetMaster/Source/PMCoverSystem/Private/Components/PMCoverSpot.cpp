@@ -5,12 +5,14 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "Subsystems/PMCoverSubsystem.h"
 
 
 UPMCoverSpot::UPMCoverSpot()
 	: CoverEffectLevel(1.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	SphereRadius = 50.f;
 }
 
 void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel)
@@ -29,28 +31,36 @@ float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 bool UPMCoverSpot::ClaimCoverSpot(AActor* InActor)
 {
 	if (CurrentOccupant) return false;
+	if (!GetOwner()->HasAuthority()) return false;
+	
 	CurrentOccupant = InActor;
 	ApplyCoverEffectToOccupant();
-	DrawDebugSphere(GetWorld(), GetComponentLocation(), SphereRadius, 16, FColor::Yellow, false, 5.f, 0, 2.f);
+
+	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
+	{
+		CoverSubsystem->AddActiveCoverSpot(this);
+	}
+	
 	return true;
 }
 
 void UPMCoverSpot::ReleaseCoverSpot()
 {
+	if (!GetOwner()->HasAuthority()) return;
+	
 	RemoveCoverEffectFromOccupant();
 	CurrentOccupant = nullptr;
-}
 
-void UPMCoverSpot::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	
+	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
+	{
+		CoverSubsystem->RemoveActiveCoverSpot(this);
+	}
 }
 
 void UPMCoverSpot::ApplyCoverEffectToOccupant()
 {
 	if (!ensure(CurrentOccupant) || !CoverEffectClass || ActiveCoverEffectHandle.IsSet()) return;
+	if (!GetOwner()->HasAuthority()) return;
 
 	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentOccupant))
 	{
@@ -64,6 +74,7 @@ void UPMCoverSpot::ApplyCoverEffectToOccupant()
 void UPMCoverSpot::RemoveCoverEffectFromOccupant()
 {
 	if (!ensure(CurrentOccupant) || !ActiveCoverEffectHandle.IsSet()) return;
+	if (!GetOwner()->HasAuthority()) return;
 
 	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentOccupant);
 	if (ensure(AbilitySystemComponent))

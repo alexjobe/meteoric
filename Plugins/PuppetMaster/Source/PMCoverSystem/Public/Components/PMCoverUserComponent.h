@@ -17,6 +17,12 @@ public:
 
 	void InitializeCoverUser(UPrimitiveComponent* OverlappedComponent);
 	void ReleaseCoverSpot() const;
+	
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	/* Tick is only used for drawing debug helpers - should only be enabled in development builds */
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void DrawCoverDebug(const bool bShouldDraw);
+#endif
 
 private:
 	UPROPERTY(Transient)

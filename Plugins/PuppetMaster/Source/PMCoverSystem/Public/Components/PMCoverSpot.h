@@ -28,10 +28,7 @@ public:
 	bool IsOccupied() const { return CurrentOccupant != nullptr; }
 	bool ClaimCoverSpot(AActor* InActor);
 	void ReleaseCoverSpot();
-
-	//~ Begin USphereComponent interface
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	//~ End USphereComponent interface
+	AActor* GetCurrentOccupant() const { return CurrentOccupant; }
 
 private:
 	UPROPERTY(Transient)
