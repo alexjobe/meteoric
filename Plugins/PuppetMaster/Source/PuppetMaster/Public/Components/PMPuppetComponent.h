@@ -47,7 +47,9 @@ public:
 	AAIController* GetController() const { return Controller; }
 
 protected:
-	// Blackboard Values
+	/*
+	 * Blackboard Values
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
 	FGameplayTag StateTag;
 
@@ -59,8 +61,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	float MaxIdealTargetDistance;
-
-	// Blackboard Key Names
+	
+	/*
+	 * Blackboard Key Names
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
 	FName StateTagKeyName;
 

@@ -23,7 +23,8 @@ public class Meteoric : ModuleRules
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"PuppetMaster"
+			"PuppetMaster",
+			"PMCoverSystem"
 		});
 
 		// Uncomment if you are using Slate UI

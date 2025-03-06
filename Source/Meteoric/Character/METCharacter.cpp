@@ -15,6 +15,7 @@
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 #include "Net/UnrealNetwork.h"
+#include "PMCoverSystem/Public/Components/PMCoverUserComponent.h"
 
 DEFINE_LOG_CATEGORY(LogMETCharacter);
 
@@ -47,6 +48,8 @@ AMETCharacter::AMETCharacter()
 	WeaponManager->OnChangingWeaponsEvent().AddUniqueDynamic(this, &AMETCharacter::WeaponManager_OnChangingWeaponsEvent);
 
 	AmmoManager = CreateDefaultSubobject<UMETAmmoManager>(TEXT("AmmoManager"));
+	CoverUserComponent = CreateDefaultSubobject<UPMCoverUserComponent>(TEXT("CoverUserComponent"));
+	CoverUserComponent->InitializeCoverUser(GetCapsuleComponent());
 }
 
 UAbilitySystemComponent* AMETCharacter::GetAbilitySystemComponent() const
@@ -263,10 +266,18 @@ void AMETCharacter::Die()
 	AimRotation = FRotator::ZeroRotator;
 	ActorAimRotationDelta = FRotator::ZeroRotator;
 	bIsTurningInPlace = false;
+
+	if (ensure(WeaponManager))
+	{
+		WeaponManager->DropAllWeapons();
+	}
+
+	if (ensure(CoverUserComponent))
+	{
+		CoverUserComponent->ReleaseCoverSpot();
+	}
 	
-	WeaponManager->DropAllWeapons();
-	
-	if (AbilitySystemComponent)
+	if (ensure(AbilitySystemComponent))
 	{
 		AbilitySystemComponent->CancelAllAbilities();
 		AbilitySystemComponent->AddLooseGameplayTag(METGameplayTags::State_Dead);

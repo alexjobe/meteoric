@@ -74,6 +74,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMETAmmoManager> AmmoManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Cover", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UPMCoverUserComponent> CoverUserComponent;
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsAiming, Category = "Weapon", meta=(AllowPrivateAccess = "true"))
 	bool bIsAiming;
