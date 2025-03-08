@@ -9,7 +9,9 @@ public class PMCoverSystem : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "GameplayAbilities",
+                "Core", 
+                "GameplayAbilities",
+                "AIModule"
             }
         );
 

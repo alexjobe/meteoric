@@ -133,6 +133,16 @@ void UPMBTTask_ActivateAbility_Latent::TickTask(UBehaviorTreeComponent& OwnerCom
 	}
 }
 
+void UPMBTTask_ActivateAbility_Latent::InitializeMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryInit::Type InitType) const
+{
+	InitializeNodeMemory<FBTActivateAbilityMemory>(NodeMemory, InitType);
+}
+
+void UPMBTTask_ActivateAbility_Latent::CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const
+{
+	CleanupNodeMemory<FBTActivateAbilityMemory>(NodeMemory, CleanupType);
+}
+
 bool UPMBTTask_ActivateAbility_Latent::IsAbilityActive(const FGameplayAbilitySpecHandle& InHandle, const AAIController& InController)
 {
 	const UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(&InController);

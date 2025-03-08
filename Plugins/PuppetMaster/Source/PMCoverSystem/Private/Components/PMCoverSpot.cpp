@@ -12,7 +12,6 @@ UPMCoverSpot::UPMCoverSpot()
 	: CoverEffectLevel(1.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	SphereRadius = 50.f;
 }
 
 void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel)

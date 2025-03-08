@@ -8,7 +8,7 @@
 #include "PMCoverSpot.generated.h"
 
 /*
- * Represents a single cover spot that can be claimed by actors with a PMCoverUserComponent. Intended to be added to
+ * Represents a single cover spot that can be claimed by actors with a PMCoverUserComponent. Intended to be attached to
  * actors with a PMCoverComponent.
  */
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
