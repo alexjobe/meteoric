@@ -54,6 +54,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Search") 
 	float SearchRadius;
 
+	// Test if querier can reach cover spot -- potentially expensive
+	UPROPERTY(EditAnywhere, Category = "Search") 
+	bool bTestCoverSpotNavigable;
+
 	// Find all cover actors (IPMCoverInterface) in search radius
 	static TArray<AActor*>FindCoverActors(const AActor* ContextActor, const FVector& SearchCenter, const float& SearchRadius);
 
@@ -65,7 +69,7 @@ private:
 		const FVector& QuerierLocation, const EPMCoverSearchMode& SearchMode);
 
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
-	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation);
+	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const FVector& QuerierLocation, const bool bTestCoverSpotNavigable = true);
 
 	static FVector GetKeyLocation(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key);
 	static float GetKeyFloatValue(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key);

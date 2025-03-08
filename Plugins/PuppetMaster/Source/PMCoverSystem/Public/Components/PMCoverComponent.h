@@ -30,11 +30,20 @@ public:
 	virtual void BeginPlay() override;
 	//~ End UActorComponent interface
 
+	/*
+	 * Returns the best cover spot from the target location
+	 * @param InTargetLocation: Location to test against cover
+	 * @param InQuerierLocation: Location of querier looking for cover
+	 * @param bTestCoverSpotNavigable: Test if querier can reach cover spot -- potentially expensive
+	 */
 	UFUNCTION(BlueprintCallable)
-	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation);
+	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, const FVector& InQuerierLocation, const bool bTestCoverSpotNavigable = true);
 
 private:
 	/* Cover spots associated with this cover */
 	UPROPERTY(Transient)
 	TArray<UPMCoverSpot*> CoverSpots;
+
+	/* Test if querier can reach cover spot -- potentially expensive */
+	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, const FVector& InQuerierLocation);
 };
