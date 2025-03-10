@@ -10,6 +10,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Components/PMCoverComponent.h"
 #include "Components/PMCoverSpot.h"
+#include "Components/PMCoverUserComponent.h"
 #include "Interface/PMCoverInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Logging/PMCoverSystemLog.h"
@@ -58,14 +59,21 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 {
 	const AAIController* Controller = OwnerComp.GetAIOwner();
 	const APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
-	UBlackboardComponent* MyBlackboard = OwnerComp.GetBlackboardComponent();
+	UPMCoverUserComponent* CoverUserComponent = Pawn ? Pawn->FindComponentByClass<UPMCoverUserComponent>() : nullptr;
+	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 	
-	if (!ensure(Pawn) || !ensure(MyBlackboard)) return EBTNodeResult::Failed;
+	if (!ensure(CoverUserComponent) || !ensure(BlackboardComp))
+	{
+		UE_LOG(LogCoverSystem, Error,
+			TEXT("UPMBTTask_FindCover::ExecuteTask -- Owner must have BlackboardComponent and CoverUserComponent! %s"),
+			*OwnerComp.GetName())
+		return EBTNodeResult::Failed;
+	}
 
-	const FVector TargetLocation = GetKeyLocation(MyBlackboard, TargetKey);
-	const FVector SearchCenter = GetKeyLocation(MyBlackboard, SearchCenterKey);
-	const float MinDistanceToTarget = GetKeyFloatValue(MyBlackboard, MinDistanceToTargetKey);
-	const float MaxDistanceToTarget = GetKeyFloatValue(MyBlackboard, MaxDistanceToTargetKey);
+	const FVector TargetLocation = GetKeyLocation(BlackboardComp, TargetKey);
+	const FVector SearchCenter = GetKeyLocation(BlackboardComp, SearchCenterKey);
+	const float MinDistanceToTarget = GetKeyFloatValue(BlackboardComp, MinDistanceToTargetKey);
+	const float MaxDistanceToTarget = GetKeyFloatValue(BlackboardComp, MaxDistanceToTargetKey);
 
 	// Find all cover actors (IPMCoverInterface) in search radius
 	TArray<AActor*> FoundCoverActors = FindCoverActors(Pawn, SearchCenter, SearchRadius);
@@ -79,10 +87,13 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 	SortCoverActors(FilteredCoverActors, TargetLocation, Pawn->GetActorLocation(), SearchMode);
 
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
-	if (const UPMCoverSpot* BestCoverSpot = GetBestCoverSpot(FilteredCoverActors, TargetLocation, Pawn->GetActorLocation(), bTestCoverSpotNavigable))
+	if (UPMCoverSpot* BestCoverSpot = GetBestCoverSpot(FilteredCoverActors, TargetLocation, Pawn->GetActorLocation(), bTestCoverSpotNavigable))
 	{
-		MyBlackboard->SetValueAsVector(MoveToLocationKey.SelectedKeyName, BestCoverSpot->GetComponentLocation());
-		return EBTNodeResult::Succeeded;
+		if (CoverUserComponent->ClaimCoverSpot(BestCoverSpot))
+		{
+			BlackboardComp->SetValueAsVector(MoveToLocationKey.SelectedKeyName, BestCoverSpot->GetComponentLocation());
+			return EBTNodeResult::Succeeded;
+		}
 	}
 	return EBTNodeResult::Failed;
 }

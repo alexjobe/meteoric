@@ -274,7 +274,7 @@ void AMETCharacter::Die()
 
 	if (ensure(CoverUserComponent))
 	{
-		CoverUserComponent->ReleaseCoverSpot();
+		CoverUserComponent->ReleaseCoverSpots();
 	}
 	
 	if (ensure(AbilitySystemComponent))

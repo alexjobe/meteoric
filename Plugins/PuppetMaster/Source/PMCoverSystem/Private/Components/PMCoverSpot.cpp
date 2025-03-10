@@ -27,41 +27,85 @@ float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 	return FVector::DotProduct(GetForwardVector(), DirectionToTarget);
 }
 
-bool UPMCoverSpot::ClaimCoverSpot(AActor* InActor)
+bool UPMCoverSpot::ClaimCoverSpot(AActor* InActor, const float InClaimDuration)
 {
-	if (CurrentOccupant) return false;
+	if (!ensure(InActor) || IsOccupied() || IsClaimed()) return false;
 	if (!GetOwner()->HasAuthority()) return false;
-	
-	CurrentOccupant = InActor;
-	ApplyCoverEffectToOccupant();
+
+	Claimant = InActor;
+	ClaimChangedEvent.Broadcast(Claimant);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
-		CoverSubsystem->AddActiveCoverSpot(this);
+		CoverSubsystem->AddClaimedCoverSpot(this);
+	}
+
+	// Set a timer for claim duration, "reserving" this spot for the specified time
+	TWeakObjectPtr<UPMCoverSpot> WeakThis = this;
+	GetWorld()->GetTimerManager().SetTimer(ClaimTimerHandle, [WeakThis]()
+	{
+		if (WeakThis.IsValid())
+		{
+			WeakThis.Get()->UnclaimCoverSpot();
+		}
+	}, InClaimDuration, false);
+
+	return true;
+}
+
+void UPMCoverSpot::UnclaimCoverSpot()
+{
+	if (!GetOwner()->HasAuthority()) return;
+	if (!IsClaimed()) return;
+	
+	Claimant = nullptr;
+	ClaimChangedEvent.Broadcast(nullptr);
+
+	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
+	{
+		CoverSubsystem->RemoveClaimedCoverSpot(this);
+	}
+}
+
+bool UPMCoverSpot::OccupyCoverSpot(AActor* InActor)
+{
+	if (IsOccupied()) return false;
+	if (!GetOwner()->HasAuthority()) return false;
+	
+	Occupant = InActor;
+	ApplyCoverEffectToOccupant();
+
+	// If an actor is occupying this spot, other actors cannot claim it, and any existing claims are invalid
+	UnclaimCoverSpot();
+
+	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
+	{
+		CoverSubsystem->AddOccupiedCoverSpot(this);
 	}
 	
 	return true;
 }
 
-void UPMCoverSpot::ReleaseCoverSpot()
+void UPMCoverSpot::UnoccupyCoverSpot()
 {
 	if (!GetOwner()->HasAuthority()) return;
+	if (!IsOccupied()) return;
 	
 	RemoveCoverEffectFromOccupant();
-	CurrentOccupant = nullptr;
+	Occupant = nullptr;
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
-		CoverSubsystem->RemoveActiveCoverSpot(this);
+		CoverSubsystem->RemoveOccupiedCoverSpot(this);
 	}
 }
 
 void UPMCoverSpot::ApplyCoverEffectToOccupant()
 {
-	if (!ensure(CurrentOccupant) || !CoverEffectClass || ActiveCoverEffectHandle.IsSet()) return;
+	if (!ensure(Occupant) || !CoverEffectClass || ActiveCoverEffectHandle.IsSet()) return;
 	if (!GetOwner()->HasAuthority()) return;
 
-	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentOccupant))
+	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Occupant))
 	{
 		FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
 		ContextHandle.AddSourceObject(this);
@@ -72,11 +116,10 @@ void UPMCoverSpot::ApplyCoverEffectToOccupant()
 
 void UPMCoverSpot::RemoveCoverEffectFromOccupant()
 {
-	if (!ensure(CurrentOccupant) || !ActiveCoverEffectHandle.IsSet()) return;
+	if (!ensure(Occupant) || !ActiveCoverEffectHandle.IsSet()) return;
 	if (!GetOwner()->HasAuthority()) return;
 
-	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentOccupant);
-	if (ensure(AbilitySystemComponent))
+	if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Occupant); ensure(AbilitySystemComponent))
 	{
 		AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveCoverEffectHandle.GetValue());
 	}

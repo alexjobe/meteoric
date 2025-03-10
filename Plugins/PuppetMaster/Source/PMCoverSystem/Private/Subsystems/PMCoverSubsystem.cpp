@@ -6,29 +6,24 @@
 #include "Components/PMCoverSpot.h"
 #include "Logging/PMCoverSystemLog.h"
 
-void UPMCoverSubsystem::AddActiveCoverSpot(const UPMCoverSpot* InSpot)
+void UPMCoverSubsystem::AddOccupiedCoverSpot(const UPMCoverSpot* InSpot)
 {
-	if (InSpot == nullptr) return;
-	bool bIsAlreadyActive = false;
-	ActiveCoverSpots.Emplace(InSpot, &bIsAlreadyActive);
-	if (!ensure(!bIsAlreadyActive))
-	{
-		UE_LOG(LogCoverSystem, Error,
-			TEXT("UPMCoverSubsystem::AddActiveCoverSpot -- Cover spot already active! %s"),
-			*InSpot->GetName());
-	}
+	AddCoverSpot(InSpot, OccupiedCoverSpots);
 }
 
-void UPMCoverSubsystem::RemoveActiveCoverSpot(const UPMCoverSpot* const InSpot)
+void UPMCoverSubsystem::RemoveOccupiedCoverSpot(const UPMCoverSpot* const InSpot)
 {
-	if (InSpot == nullptr) return;
-	const int32 NumRemoved = ActiveCoverSpots.Remove(InSpot);
-	if (!ensure(NumRemoved > 0))
-	{
-		UE_LOG(LogCoverSystem, Error,
-			TEXT("UPMCoverSubsystem::RemoveActiveCoverSpot -- Unable to remove cover spot! %s"),
-			*InSpot->GetName());
-	}
+	RemoveCoverSpot(InSpot, OccupiedCoverSpots);
+}
+
+void UPMCoverSubsystem::AddClaimedCoverSpot(const UPMCoverSpot* InSpot)
+{
+	AddCoverSpot(InSpot, ClaimedCoverSpots);
+}
+
+void UPMCoverSubsystem::RemoveClaimedCoverSpot(const UPMCoverSpot* InSpot)
+{
+	RemoveCoverSpot(InSpot, ClaimedCoverSpots);
 }
 
 UPMCoverSubsystem* UPMCoverSubsystem::GetSubsystem(const UObject* WorldContextObject)
@@ -36,4 +31,29 @@ UPMCoverSubsystem* UPMCoverSubsystem::GetSubsystem(const UObject* WorldContextOb
 	const UWorld* World = WorldContextObject ? WorldContextObject->GetWorld() : nullptr;
 	const UGameInstance* GameInstance = World ? World->GetGameInstance() : nullptr;
 	return GameInstance ? GameInstance->GetSubsystem<UPMCoverSubsystem>() : nullptr;
+}
+
+void UPMCoverSubsystem::AddCoverSpot(const UPMCoverSpot* InSpot, TSet<const UPMCoverSpot*>& InSet)
+{
+	if (!ensure(InSpot)) return;
+	bool bIsAlreadyActive = false;
+	InSet.Emplace(InSpot, &bIsAlreadyActive);
+	if (!ensure(!bIsAlreadyActive))
+	{
+		UE_LOG(LogCoverSystem, Error,
+			TEXT("UPMCoverSubsystem::AddCoverSpot -- Cover spot already found! %s"),
+			*InSpot->GetName());
+	}
+}
+
+void UPMCoverSubsystem::RemoveCoverSpot(const UPMCoverSpot* InSpot, TSet<const UPMCoverSpot*>& InSet)
+{
+	if (!ensure(InSpot)) return;
+	const int32 NumRemoved = InSet.Remove(InSpot);
+	if (!ensure(NumRemoved > 0))
+	{
+		UE_LOG(LogCoverSystem, Error,
+			TEXT("UPMCoverSubsystem::RemoveCoverSpot -- Unable to remove cover spot! %s"),
+			*InSpot->GetName());
+	}
 }

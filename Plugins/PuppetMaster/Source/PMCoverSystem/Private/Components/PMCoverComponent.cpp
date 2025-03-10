@@ -34,7 +34,7 @@ UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocatio
 	
 	for (const auto Spot : CoverSpots)
 	{
-		if (Spot->IsOccupied()) continue;
+		if (Spot->IsOccupied() || Spot->IsClaimed()) continue;
 		float Score = Spot->GetCoverScore(InTargetLocation);
 		if (Score > BestCoverScore)
 		{
