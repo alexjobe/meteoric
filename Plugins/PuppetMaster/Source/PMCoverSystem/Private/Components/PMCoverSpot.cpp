@@ -9,9 +9,12 @@
 
 
 UPMCoverSpot::UPMCoverSpot()
-	: CoverEffectLevel(1.f)
+	: ValidCoverHalfAngle(70.f)
+	, CoverEffectLevel(1.f)
+	, MinCoverScore(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	MinCoverScore = FMath::Cos(FMath::DegreesToRadians(ValidCoverHalfAngle));
 }
 
 void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel)
@@ -24,7 +27,8 @@ float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 {
 	FVector DirectionToTarget = InTargetLocation - GetComponentLocation();
 	DirectionToTarget.Normalize();
-	return FVector::DotProduct(GetForwardVector(), DirectionToTarget);
+	const float Score = FVector::DotProduct(GetForwardVector(), DirectionToTarget);
+	return Score > MinCoverScore ? Score : 0.f;
 }
 
 bool UPMCoverSpot::CanBeReserved(const AActor* InActor) const
