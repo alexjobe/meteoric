@@ -25,7 +25,7 @@ void UPMCoverComponent::BeginPlay()
 	}
 }
 
-UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, const FVector& InQuerierLocation, const bool bTestCoverSpotNavigable)
+UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, const AActor* InQuerier, const bool bTestCoverSpotNavigable)
 {
 	UPMCoverSpot* BestCoverSpot = nullptr;
 	float BestCoverScore = 0.f;
@@ -34,7 +34,7 @@ UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocatio
 	
 	for (const auto Spot : CoverSpots)
 	{
-		if (Spot->IsOccupied() || Spot->IsClaimed()) continue;
+		if (!Spot->CanBeClaimed(InQuerier)) continue;
 		float Score = Spot->GetCoverScore(InTargetLocation);
 		if (Score > BestCoverScore)
 		{
@@ -44,9 +44,9 @@ UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocatio
 		ScoredSpots.Emplace(TTuple<UPMCoverSpot*, float>(Spot, Score));
 	}
 
-	if (bTestCoverSpotNavigable)
+	if (BestCoverSpot && bTestCoverSpotNavigable)
 	{
-		BestCoverSpot = ChooseBestNavigableSpot(BestCoverSpot, ScoredSpots, InQuerierLocation);
+		BestCoverSpot = ChooseBestNavigableSpot(BestCoverSpot, ScoredSpots, InQuerier->GetActorLocation());
 	}
 	
 	return BestCoverSpot;

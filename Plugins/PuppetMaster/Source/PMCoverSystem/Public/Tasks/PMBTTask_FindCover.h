@@ -69,7 +69,7 @@ private:
 		const FVector& QuerierLocation, const EPMCoverSearchMode& SearchMode);
 
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
-	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const FVector& QuerierLocation, const bool bTestCoverSpotNavigable = true);
+	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const AActor* Querier, const bool bTestCoverSpotNavigable = true);
 
 	static FVector GetKeyLocation(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key);
 	static float GetKeyFloatValue(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key);

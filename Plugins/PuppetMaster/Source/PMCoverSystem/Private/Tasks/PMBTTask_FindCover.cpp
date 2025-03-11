@@ -87,7 +87,7 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 	SortCoverActors(FilteredCoverActors, TargetLocation, Pawn->GetActorLocation(), SearchMode);
 
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
-	if (UPMCoverSpot* BestCoverSpot = GetBestCoverSpot(FilteredCoverActors, TargetLocation, Pawn->GetActorLocation(), bTestCoverSpotNavigable))
+	if (UPMCoverSpot* BestCoverSpot = GetBestCoverSpot(FilteredCoverActors, TargetLocation, Pawn, bTestCoverSpotNavigable))
 	{
 		if (CoverUserComponent->ClaimCoverSpot(BestCoverSpot))
 		{
@@ -177,13 +177,14 @@ void UPMBTTask_FindCover::SortCoverActors(TArray<AActor*>& CoverActors, const FV
 	}
 }
 
-UPMCoverSpot* UPMBTTask_FindCover::GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const FVector& QuerierLocation, const bool bTestCoverSpotNavigable)
+UPMCoverSpot* UPMBTTask_FindCover::GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const AActor* Querier, const bool bTestCoverSpotNavigable)
 {
+	if (!ensure(Querier)) return nullptr;
 	for (const AActor* Cover : CoverActors)
 	{
 		if (UPMCoverComponent* CoverComponent = IPMCoverInterface::Execute_GetCoverComponent(Cover); ensure(CoverComponent))
 		{
-			if (UPMCoverSpot* BestCoverSpot = CoverComponent->GetBestCoverSpot(TargetLocation, QuerierLocation, bTestCoverSpotNavigable))
+			if (UPMCoverSpot* BestCoverSpot = CoverComponent->GetBestCoverSpot(TargetLocation, Querier, bTestCoverSpotNavigable))
 			{
 				return BestCoverSpot;
 			}

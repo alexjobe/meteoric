@@ -27,10 +27,18 @@ float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 	return FVector::DotProduct(GetForwardVector(), DirectionToTarget);
 }
 
+bool UPMCoverSpot::CanBeClaimed(const AActor* InActor) const
+{
+	if (!ensure(InActor)) return false;
+	if (InActor == Occupant) return true;
+	return !IsClaimed() && !IsOccupied();
+}
+
 bool UPMCoverSpot::ClaimCoverSpot(AActor* InActor, const float InClaimDuration)
 {
-	if (!ensure(InActor) || IsOccupied() || IsClaimed()) return false;
+	if (!CanBeClaimed(InActor)) return false;
 	if (!GetOwner()->HasAuthority()) return false;
+	if (InActor == Occupant) return true;
 
 	Claimant = InActor;
 	ClaimChangedEvent.Broadcast(Claimant);

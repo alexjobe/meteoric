@@ -28,6 +28,7 @@ public:
 	 * spot to the target location
 	 */
 	float GetCoverScore(const FVector& InTargetLocation) const;
+	bool CanBeClaimed(const AActor* InActor) const;
 	bool IsClaimed() const { return Claimant != nullptr; }
 	bool IsOccupied() const { return Occupant != nullptr; }
 	bool ClaimCoverSpot(AActor* InActor, const float InClaimDuration = 10.f);

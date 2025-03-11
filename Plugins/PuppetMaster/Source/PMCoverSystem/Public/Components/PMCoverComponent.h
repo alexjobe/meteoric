@@ -37,7 +37,7 @@ public:
 	 * @param bTestCoverSpotNavigable: Test if querier can reach cover spot -- potentially expensive
 	 */
 	UFUNCTION(BlueprintCallable)
-	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, const FVector& InQuerierLocation, const bool bTestCoverSpotNavigable = true);
+	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, const AActor* InQuerier, const bool bTestCoverSpotNavigable = true);
 
 private:
 	/* Cover spots associated with this cover */

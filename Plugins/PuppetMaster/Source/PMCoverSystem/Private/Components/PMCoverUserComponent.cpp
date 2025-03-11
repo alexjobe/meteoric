@@ -31,6 +31,9 @@ bool UPMCoverUserComponent::ClaimCoverSpot(UPMCoverSpot* CoverSpot)
 {
 	if (!ensure(CoverSpot)) return false;
 	if (ClaimedCoverSpot == CoverSpot) return false;
+	
+	// If we try to claim a spot we already occupy, just return early
+	if (CoverSpot->GetOccupant() == GetOwner()) return true;
 
 	UnclaimCoverSpot();
 	
