@@ -14,14 +14,14 @@ class METEORIC_API AMETAIController : public AAIController, public IPuppetMaster
 	GENERATED_BODY()
 
 public:
-	AMETAIController();
+	AMETAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void BeginPlay() override;
 
-	//~ Begin UGenericTeamAgentInterface interface
+	//~ Begin IGenericTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
-	//~ End UGenericTeamAgentInterface interface
+	//~ End IGenericTeamAgentInterface interface
 
 	//~ Begin IPuppetMasterInterface interface
 	virtual UPMPuppetComponent* GetPuppetComponent() const override;

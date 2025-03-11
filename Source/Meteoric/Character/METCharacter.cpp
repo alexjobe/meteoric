@@ -14,6 +14,7 @@
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
+#include "Navigation/CrowdManager.h"
 #include "Net/UnrealNetwork.h"
 #include "PMCoverSystem/Public/Components/PMCoverUserComponent.h"
 
@@ -65,6 +66,11 @@ void AMETCharacter::BeginPlay()
 	{
 		// Make sure the mesh is updated on server so projectiles spawn in the correct location
 		GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+
+		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this))
+		{
+			CrowdManager->RegisterAgent(this);
+		}
 	}
 }
 
@@ -191,7 +197,7 @@ void AMETCharacter::InitializeDefaultAttributes() const
 
 void AMETCharacter::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
@@ -202,7 +208,7 @@ void AMETCharacter::Move(const FInputActionValue& Value)
 
 void AMETCharacter::Look(const FInputActionValue& Value)
 {
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	if (Controller != nullptr)
 	{
@@ -211,7 +217,7 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::FireWeapon(bool bInHeld)
+void AMETCharacter::FireWeapon(const bool bInHeld)
 {
 	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
@@ -253,6 +259,38 @@ FGenericTeamId AMETCharacter::GetGenericTeamId() const
 		return Interface->GetGenericTeamId();
 	}
 	return FGenericTeamId();
+}
+
+FVector AMETCharacter::GetCrowdAgentLocation() const
+{
+	return GetActorLocation();
+}
+
+FVector AMETCharacter::GetCrowdAgentVelocity() const
+{
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
+	{
+		return MovementComponent->GetVelocityForRVOConsideration();
+	}
+	return FVector::ZeroVector;
+}
+
+void AMETCharacter::GetCrowdAgentCollisions(float& CylinderRadius, float& CylinderHalfHeight) const
+{
+	if (const UCapsuleComponent* Capsule = GetCapsuleComponent(); ensure(Capsule))
+	{
+		CylinderRadius = Capsule->GetScaledCapsuleRadius();
+		CylinderHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	}
+}
+
+float AMETCharacter::GetCrowdAgentMaxSpeed() const
+{
+	if (const UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
+	{
+		return MovementComponent->GetMaxSpeed();
+	}
+	return 0.f;
 }
 
 void AMETCharacter::Die()
@@ -343,7 +381,7 @@ bool AMETCharacter::ShouldEnableLeftHandIK() const
 bool AMETCharacter::CanFireWeapon() const
 {
 	if(!ensure(WeaponManager)) return false;
-	AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
+	const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon();
 	return CurrentWeapon && CurrentWeapon->CanFire() && !WeaponManager->IsChangingWeapons();
 }
 
