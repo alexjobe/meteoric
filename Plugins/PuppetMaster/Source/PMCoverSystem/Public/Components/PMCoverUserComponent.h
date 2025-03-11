@@ -16,7 +16,7 @@ public:
 	UPMCoverUserComponent();
 
 	void InitializeCoverUser(UPrimitiveComponent* OverlappedComponent);
-	bool ClaimCoverSpot(class UPMCoverSpot* CoverSpot);
+	bool ReserveCoverSpot(class UPMCoverSpot* CoverSpot);
 	void ReleaseCoverSpots();
 
 	//~ Begin UActorComponent interface
@@ -34,10 +34,10 @@ private:
 	TObjectPtr<UPMCoverSpot> OccupiedCoverSpot;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UPMCoverSpot> ClaimedCoverSpot;
+	TObjectPtr<UPMCoverSpot> ReservedCoverSpot;
 
 	UFUNCTION()
-	void ClaimedCoverSpot_OnClaimChangedEvent(const AActor* Claimant);
+	void ReservedCoverSpot_OnReservationChangedEvent(const AActor* Reserver);
 
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -47,5 +47,5 @@ private:
 	void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	void UnclaimCoverSpot();
+	void CancelReservation();
 };

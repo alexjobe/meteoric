@@ -27,20 +27,20 @@ void UPMCoverUserComponent::InitializeCoverUser(UPrimitiveComponent* OverlappedC
 	}
 }
 
-bool UPMCoverUserComponent::ClaimCoverSpot(UPMCoverSpot* CoverSpot)
+bool UPMCoverUserComponent::ReserveCoverSpot(UPMCoverSpot* CoverSpot)
 {
 	if (!ensure(CoverSpot)) return false;
-	if (ClaimedCoverSpot == CoverSpot) return false;
+	if (ReservedCoverSpot == CoverSpot) return false;
 	
-	// If we try to claim a spot we already occupy, just return early
+	// If we try to reserve a spot we already occupy, just return early
 	if (CoverSpot->GetOccupant() == GetOwner()) return true;
 
-	UnclaimCoverSpot();
+	CancelReservation();
 	
-	if (CoverSpot->ClaimCoverSpot(GetOwner()))
+	if (CoverSpot->Reserve(GetOwner()))
 	{
-		ClaimedCoverSpot = CoverSpot;
-		ClaimedCoverSpot->OnClaimChangedEvent().AddUObject(this, &UPMCoverUserComponent::ClaimedCoverSpot_OnClaimChangedEvent);
+		ReservedCoverSpot = CoverSpot;
+		ReservedCoverSpot->OnReservationChangedEvent().AddUObject(this, &UPMCoverUserComponent::ReservedCoverSpot_OnReservationChangedEvent);
 		return true;
 	}
 	return false;
@@ -50,10 +50,10 @@ void UPMCoverUserComponent::ReleaseCoverSpots()
 {
 	if (OccupiedCoverSpot)
 	{
-		OccupiedCoverSpot->UnoccupyCoverSpot();
+		OccupiedCoverSpot->Unoccupy();
 		OccupiedCoverSpot = nullptr;
 	}
-	UnclaimCoverSpot();
+	CancelReservation();
 }
 
 void UPMCoverUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -62,13 +62,13 @@ void UPMCoverUserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void UPMCoverUserComponent::UnclaimCoverSpot()
+void UPMCoverUserComponent::CancelReservation()
 {
-	if (ClaimedCoverSpot)
+	if (ReservedCoverSpot)
 	{
-		ClaimedCoverSpot->OnClaimChangedEvent().RemoveAll(this);
-		ClaimedCoverSpot->UnclaimCoverSpot();
-		ClaimedCoverSpot = nullptr;
+		ReservedCoverSpot->OnReservationChangedEvent().RemoveAll(this);
+		ReservedCoverSpot->CancelReservation();
+		ReservedCoverSpot = nullptr;
 	}
 }
 
@@ -96,15 +96,15 @@ void UPMCoverUserComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		}
 	}
 
-	// Draw all claimed cover spots
-	for (const auto& CoverSpots = CoverSubsystem->GetClaimedCoverSpots(); const UPMCoverSpot* Spot : CoverSpots)
+	// Draw all reserved cover spots
+	for (const auto& CoverSpots = CoverSubsystem->GetReservedCoverSpots(); const UPMCoverSpot* Spot : CoverSpots)
 	{
-		if (const AActor* Claimant = Spot ? Spot->GetClaimant() : nullptr; ensure(Claimant))
+		if (const AActor* Reserver = Spot ? Spot->GetReservation() : nullptr; ensure(Reserver))
 		{
 			DrawDebugSphere(GetWorld(), Spot->GetComponentLocation(), Spot->GetScaledSphereRadius(),
 				16, FColor::Yellow, false, -1, 0, 2.f);
 
-			DrawDebugLine(GetWorld(), Spot->GetComponentLocation(), Claimant->GetActorLocation(),
+			DrawDebugLine(GetWorld(), Spot->GetComponentLocation(), Reserver->GetActorLocation(),
 				FColor::Yellow, false, -1, 0, 2.f);
 		}
 	}
@@ -116,12 +116,12 @@ void UPMCoverUserComponent::DrawCoverDebug(const bool bShouldDraw)
 }
 #endif
 
-void UPMCoverUserComponent::ClaimedCoverSpot_OnClaimChangedEvent(const AActor* Claimant)
+void UPMCoverUserComponent::ReservedCoverSpot_OnReservationChangedEvent(const AActor* Reserver)
 {
-	if (ensure(ClaimedCoverSpot) && GetOwner() != Claimant)
+	if (ensure(ReservedCoverSpot) && GetOwner() != Reserver)
 	{
-		ClaimedCoverSpot->OnClaimChangedEvent().RemoveAll(this);
-		ClaimedCoverSpot = nullptr;
+		ReservedCoverSpot->OnReservationChangedEvent().RemoveAll(this);
+		ReservedCoverSpot = nullptr;
 	}
 }
 
@@ -131,11 +131,11 @@ void UPMCoverUserComponent::OnComponentBeginOverlap(UPrimitiveComponent* Overlap
 	UPMCoverSpot* CoverSpot = Cast<UPMCoverSpot>(OtherComp);
 	if (!CoverSpot) return;
 
-	if (CoverSpot->OccupyCoverSpot(GetOwner()))
+	if (CoverSpot->Occupy(GetOwner()))
 	{
 		if (OccupiedCoverSpot && OccupiedCoverSpot != CoverSpot)
 		{
-			OccupiedCoverSpot->UnoccupyCoverSpot();
+			OccupiedCoverSpot->Unoccupy();
 		}
 		OccupiedCoverSpot = CoverSpot;
 	}
@@ -146,7 +146,7 @@ void UPMCoverUserComponent::OnComponentEndOverlap(UPrimitiveComponent* Overlappe
 {
 	if (OccupiedCoverSpot && OccupiedCoverSpot == OtherComp)
 	{
-		OccupiedCoverSpot->UnoccupyCoverSpot();
+		OccupiedCoverSpot->Unoccupy();
 		OccupiedCoverSpot = nullptr;
 	}
 }

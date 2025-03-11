@@ -27,55 +27,55 @@ float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 	return FVector::DotProduct(GetForwardVector(), DirectionToTarget);
 }
 
-bool UPMCoverSpot::CanBeClaimed(const AActor* InActor) const
+bool UPMCoverSpot::CanBeReserved(const AActor* InActor) const
 {
 	if (!ensure(InActor)) return false;
 	if (InActor == Occupant) return true;
-	return !IsClaimed() && !IsOccupied();
+	return !IsReserved() && !IsOccupied();
 }
 
-bool UPMCoverSpot::ClaimCoverSpot(AActor* InActor, const float InClaimDuration)
+bool UPMCoverSpot::Reserve(AActor* InActor, const float InReservationDuration)
 {
-	if (!CanBeClaimed(InActor)) return false;
+	if (!CanBeReserved(InActor)) return false;
 	if (!GetOwner()->HasAuthority()) return false;
 	if (InActor == Occupant) return true;
 
-	Claimant = InActor;
-	ClaimChangedEvent.Broadcast(Claimant);
+	Reserver = InActor;
+	ReservationChangedEvent.Broadcast(Reserver);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
-		CoverSubsystem->AddClaimedCoverSpot(this);
+		CoverSubsystem->AddReservedCoverSpot(this);
 	}
 
-	// Set a timer for claim duration, "reserving" this spot for the specified time
+	// Reserve this spot for the specified time
 	TWeakObjectPtr<UPMCoverSpot> WeakThis = this;
-	GetWorld()->GetTimerManager().SetTimer(ClaimTimerHandle, [WeakThis]()
+	GetWorld()->GetTimerManager().SetTimer(ReservationTimerHandle, [WeakThis]()
 	{
 		if (WeakThis.IsValid())
 		{
-			WeakThis.Get()->UnclaimCoverSpot();
+			WeakThis.Get()->CancelReservation();
 		}
-	}, InClaimDuration, false);
+	}, InReservationDuration, false);
 
 	return true;
 }
 
-void UPMCoverSpot::UnclaimCoverSpot()
+void UPMCoverSpot::CancelReservation()
 {
 	if (!GetOwner()->HasAuthority()) return;
-	if (!IsClaimed()) return;
+	if (!IsReserved()) return;
 	
-	Claimant = nullptr;
-	ClaimChangedEvent.Broadcast(nullptr);
+	Reserver = nullptr;
+	ReservationChangedEvent.Broadcast(nullptr);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
-		CoverSubsystem->RemoveClaimedCoverSpot(this);
+		CoverSubsystem->RemoveReservedCoverSpot(this);
 	}
 }
 
-bool UPMCoverSpot::OccupyCoverSpot(AActor* InActor)
+bool UPMCoverSpot::Occupy(AActor* InActor)
 {
 	if (IsOccupied()) return false;
 	if (!GetOwner()->HasAuthority()) return false;
@@ -83,8 +83,9 @@ bool UPMCoverSpot::OccupyCoverSpot(AActor* InActor)
 	Occupant = InActor;
 	ApplyCoverEffectToOccupant();
 
-	// If an actor is occupying this spot, other actors cannot claim it, and any existing claims are invalid
-	UnclaimCoverSpot();
+	// If an actor is occupying this spot, other actors cannot reserve it, and any existing reservations are invalid
+	// This prevents bots from reserving a spot if a player occupies it
+	CancelReservation();
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
@@ -94,7 +95,7 @@ bool UPMCoverSpot::OccupyCoverSpot(AActor* InActor)
 	return true;
 }
 
-void UPMCoverSpot::UnoccupyCoverSpot()
+void UPMCoverSpot::Unoccupy()
 {
 	if (!GetOwner()->HasAuthority()) return;
 	if (!IsOccupied()) return;

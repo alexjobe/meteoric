@@ -16,14 +16,14 @@ void UPMCoverSubsystem::RemoveOccupiedCoverSpot(const UPMCoverSpot* const InSpot
 	RemoveCoverSpot(InSpot, OccupiedCoverSpots);
 }
 
-void UPMCoverSubsystem::AddClaimedCoverSpot(const UPMCoverSpot* InSpot)
+void UPMCoverSubsystem::AddReservedCoverSpot(const UPMCoverSpot* InSpot)
 {
-	AddCoverSpot(InSpot, ClaimedCoverSpots);
+	AddCoverSpot(InSpot, ReservedCoverSpots);
 }
 
-void UPMCoverSubsystem::RemoveClaimedCoverSpot(const UPMCoverSpot* InSpot)
+void UPMCoverSubsystem::RemoveReservedCoverSpot(const UPMCoverSpot* InSpot)
 {
-	RemoveCoverSpot(InSpot, ClaimedCoverSpots);
+	RemoveCoverSpot(InSpot, ReservedCoverSpots);
 }
 
 UPMCoverSubsystem* UPMCoverSubsystem::GetSubsystem(const UObject* WorldContextObject)

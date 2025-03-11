@@ -89,7 +89,7 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
 	if (UPMCoverSpot* BestCoverSpot = GetBestCoverSpot(FilteredCoverActors, TargetLocation, Pawn, bTestCoverSpotNavigable))
 	{
-		if (CoverUserComponent->ClaimCoverSpot(BestCoverSpot))
+		if (CoverUserComponent->ReserveCoverSpot(BestCoverSpot))
 		{
 			BlackboardComp->SetValueAsVector(MoveToLocationKey.SelectedKeyName, BestCoverSpot->GetComponentLocation());
 			return EBTNodeResult::Succeeded;

@@ -7,7 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "PMCoverSpot.generated.h"
 
-DECLARE_EVENT_OneParam(UPMCoverSpot, FOnClaimChangedEvent, const AActor* Claimant)
+DECLARE_EVENT_OneParam(UPMCoverSpot, FOnReservationChangedEvent, const AActor* Reserver)
 
 /*
  * Represents a single cover spot that can be occupied by actors with a PMCoverUserComponent. Intended to be attached to
@@ -28,16 +28,16 @@ public:
 	 * spot to the target location
 	 */
 	float GetCoverScore(const FVector& InTargetLocation) const;
-	bool CanBeClaimed(const AActor* InActor) const;
-	bool IsClaimed() const { return Claimant != nullptr; }
+	bool CanBeReserved(const AActor* InActor) const;
+	bool IsReserved() const { return Reserver != nullptr; }
 	bool IsOccupied() const { return Occupant != nullptr; }
-	bool ClaimCoverSpot(AActor* InActor, const float InClaimDuration = 10.f);
-	void UnclaimCoverSpot();
-	bool OccupyCoverSpot(AActor* InActor);
-	void UnoccupyCoverSpot();
-	AActor* GetClaimant() const { return Claimant; }
+	bool Reserve(AActor* InActor, const float InReservationDuration = 10.f);
+	void CancelReservation();
+	bool Occupy(AActor* InActor);
+	void Unoccupy();
+	AActor* GetReservation() const { return Reserver; }
 	AActor* GetOccupant() const { return Occupant; }
-	FOnClaimChangedEvent& OnClaimChangedEvent() { return ClaimChangedEvent; }
+	FOnReservationChangedEvent& OnReservationChangedEvent() { return ReservationChangedEvent; }
 
 private:
 	/* Actor currently occupying this cover spot */
@@ -45,11 +45,11 @@ private:
 	TObjectPtr<AActor> Occupant;
 
 	/* 
-	 * Actor that has claimed this spot - used to prevent multiple AI actors from attempting to move to the same spot
-	 * Claiming a spot is declaring intention to use it, but does not prevent other actors from occupying it
+	 * Actor that has reserved this spot - used to prevent multiple AI actors from attempting to move to the same spot
+	 * Reserving a spot is declaring intention to use it, but does not prevent other actors from occupying it
 	 */
 	UPROPERTY(Transient)
-	TObjectPtr<AActor> Claimant;
+	TObjectPtr<AActor> Reserver;
 	
 	/* Effect applied to actor using this cover */
 	UPROPERTY(Transient)
@@ -60,8 +60,8 @@ private:
 
 	TOptional<FActiveGameplayEffectHandle> ActiveCoverEffectHandle;
 
-	FTimerHandle ClaimTimerHandle;
-	FOnClaimChangedEvent ClaimChangedEvent;
+	FTimerHandle ReservationTimerHandle;
+	FOnReservationChangedEvent ReservationChangedEvent;
 
 	void ApplyCoverEffectToOccupant();
 	void RemoveCoverEffectFromOccupant();
