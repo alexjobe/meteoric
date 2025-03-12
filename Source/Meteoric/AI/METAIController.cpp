@@ -25,6 +25,11 @@ AMETAIController::AMETAIController(const FObjectInitializer& ObjectInitializer)
 
 	PuppetComponent = CreateDefaultSubobject<UMETPuppetComponent>("PuppetComponent");
 	check(PuppetComponent)
+
+	if (UCrowdFollowingComponent* CrowdFollowingComponent = GetComponentByClass<UCrowdFollowingComponent>(); ensure(CrowdFollowingComponent))
+	{
+		CrowdFollowingComponent->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
+	}
 }
 
 void AMETAIController::BeginPlay()
@@ -34,11 +39,6 @@ void AMETAIController::BeginPlay()
 	if (ensure(PuppetComponent))
 	{
 		PuppetComponent->InitializePuppet(this, METGameplayTags::AIState_Idle);
-	}
-
-	if (UCrowdFollowingComponent* CrowdFollowingComponent = GetComponentByClass<UCrowdFollowingComponent>(); ensure(CrowdFollowingComponent))
-	{
-		CrowdFollowingComponent->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Good);
 	}
 }
 

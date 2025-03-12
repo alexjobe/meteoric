@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "METCharacter.h"
+#include "Navigation/CrowdAgentInterface.h"
 #include "METPlayerCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class METEORIC_API AMETPlayerCharacter : public AMETCharacter
+class METEORIC_API AMETPlayerCharacter : public AMETCharacter, public ICrowdAgentInterface
 {
 	GENERATED_BODY()
 
@@ -51,6 +52,7 @@ public:
 	AMETPlayerCharacter();
 
 	//~ Begin ACharacter interface
+	virtual void BeginPlay() override;
 	virtual void OnRep_PlayerState() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -62,6 +64,13 @@ public:
 	virtual FVector GetFocalPoint() const override;
 	virtual FTransform GetEyesPosition() const override;
 	//~ End AMETCharacter interface
+
+	//~ Begin ICrowdAgentInterface interface
+	virtual FVector GetCrowdAgentLocation() const override;
+	virtual FVector GetCrowdAgentVelocity() const override;
+	virtual void GetCrowdAgentCollisions(float& CylinderRadius, float& CylinderHalfHeight) const override;
+	virtual float GetCrowdAgentMaxSpeed() const override;
+	//~ End ICrowdAgentInterface interface
 
 protected:
 	//~ Begin AMETCharacter interface

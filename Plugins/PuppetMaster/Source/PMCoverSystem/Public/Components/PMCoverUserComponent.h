@@ -18,6 +18,7 @@ public:
 	void InitializeCoverUser(UPrimitiveComponent* OverlappedComponent);
 	bool ReserveCoverSpot(class UPMCoverSpot* CoverSpot);
 	void ReleaseCoverSpots();
+	UPMCoverSpot* GetOccupiedCoverSpot() { return OccupiedCoverSpot; }
 
 	//~ Begin UActorComponent interface
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

@@ -6,14 +6,13 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Float.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Components/PMCoverComponent.h"
 #include "Components/PMCoverSpot.h"
 #include "Components/PMCoverUserComponent.h"
 #include "Interface/PMCoverInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Logging/PMCoverSystemLog.h"
+#include "Utils/PMCoverSystemUtils.h"
 
 
 UPMBTTask_FindCover::UPMBTTask_FindCover()
@@ -70,10 +69,10 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 		return EBTNodeResult::Failed;
 	}
 
-	const FVector TargetLocation = GetKeyLocation(BlackboardComp, TargetKey);
-	const FVector SearchCenter = GetKeyLocation(BlackboardComp, SearchCenterKey);
-	const float MinDistanceToTarget = GetKeyFloatValue(BlackboardComp, MinDistanceToTargetKey);
-	const float MaxDistanceToTarget = GetKeyFloatValue(BlackboardComp, MaxDistanceToTargetKey);
+	const FVector TargetLocation = UPMCoverSystemUtils::GetKeyLocation(BlackboardComp, TargetKey);
+	const FVector SearchCenter = UPMCoverSystemUtils::GetKeyLocation(BlackboardComp, SearchCenterKey);
+	const float MinDistanceToTarget = UPMCoverSystemUtils::GetKeyFloatValue(BlackboardComp, MinDistanceToTargetKey);
+	const float MaxDistanceToTarget = UPMCoverSystemUtils::GetKeyFloatValue(BlackboardComp, MaxDistanceToTargetKey);
 
 	// Find all cover actors (IPMCoverInterface) in search radius
 	TArray<AActor*> FoundCoverActors = FindCoverActors(Pawn, SearchCenter, SearchRadius);
@@ -142,8 +141,7 @@ TArray<AActor*> UPMBTTask_FindCover::FilterCoverActors(TArray<AActor*>& CoverAct
 	return ValidCover;
 }
 
-void UPMBTTask_FindCover::SortCoverActors(TArray<AActor*>& CoverActors, const FVector& TargetLocation,
-	const FVector& QuerierLocation, const EPMCoverSearchMode& SearchMode)
+void UPMBTTask_FindCover::SortCoverActors(TArray<AActor*>& CoverActors, const FVector& TargetLocation, const FVector& QuerierLocation, const EPMCoverSearchMode& SearchMode)
 {
 	switch (SearchMode) {
 	case EPMCoverSearchMode::LeastDistanceToQuerier:
@@ -198,38 +196,4 @@ UPMCoverSpot* UPMBTTask_FindCover::GetBestCoverSpot(const TArray<AActor*>& Cover
 		}
 	}
 	return nullptr;
-}
-
-FVector UPMBTTask_FindCover::GetKeyLocation(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key)
-{
-	FVector KeyLocation = FVector::ZeroVector;
-	if (!ensure(BlackboardComp)) return KeyLocation;
-
-	if (Key.SelectedKeyType == UBlackboardKeyType_Object::StaticClass())
-	{
-		UObject* KeyValue = BlackboardComp->GetValue<UBlackboardKeyType_Object>(Key.GetSelectedKeyID());
-		if (const AActor* KeyActor = Cast<AActor>(KeyValue))
-		{
-			KeyLocation = KeyActor->GetActorLocation();
-		}
-	}
-	else if (Key.SelectedKeyType == UBlackboardKeyType_Vector::StaticClass())
-	{
-		KeyLocation = BlackboardComp->GetValue<UBlackboardKeyType_Vector>(Key.GetSelectedKeyID());
-	}
-	
-	return KeyLocation;
-}
-
-float UPMBTTask_FindCover::GetKeyFloatValue(const UBlackboardComponent* BlackboardComp, const FBlackboardKeySelector& Key)
-{
-	float KeyValue = 0.0f;
-	if (!ensure(BlackboardComp)) return KeyValue;
-
-	if (Key.SelectedKeyType == UBlackboardKeyType_Float::StaticClass())
-	{
-		KeyValue = BlackboardComp->GetValue<UBlackboardKeyType_Float>(Key.GetSelectedKeyID());
-	}
-	
-	return KeyValue;
 }

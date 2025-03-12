@@ -5,6 +5,8 @@
 
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/GameMode/METGameModeBase.h"
@@ -14,6 +16,8 @@
 #include "Meteoric/UI/HUD/METHUD.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
+#include "Navigation/CrowdManager.h"
+
 
 static TAutoConsoleVariable<int32> CVarInvinciblePlayer(
 	TEXT("METPlayerCharacter.Invincible"),
@@ -35,6 +39,16 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 
 	CharacterConfig.AimInterpSpeed = 40.f;
+}
+
+void AMETPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this); ensure(CrowdManager))
+	{
+		CrowdManager->RegisterAgent(this);
+	}
 }
 
 void AMETPlayerCharacter::OnRep_PlayerState()
@@ -78,6 +92,38 @@ FTransform AMETPlayerCharacter::GetEyesPosition() const
 		return MainCamera->GetComponentToWorld();
 	}
 	return Super::GetEyesPosition();
+}
+
+FVector AMETPlayerCharacter::GetCrowdAgentLocation() const
+{
+	return GetActorLocation();
+}
+
+FVector AMETPlayerCharacter::GetCrowdAgentVelocity() const
+{
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
+	{
+		return MovementComponent->GetVelocityForRVOConsideration();
+	}
+	return FVector::ZeroVector;
+}
+
+void AMETPlayerCharacter::GetCrowdAgentCollisions(float& CylinderRadius, float& CylinderHalfHeight) const
+{
+	if (const UCapsuleComponent* Capsule = GetCapsuleComponent(); ensure(Capsule))
+	{
+		CylinderRadius = Capsule->GetScaledCapsuleRadius();
+		CylinderHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+	}
+}
+
+float AMETPlayerCharacter::GetCrowdAgentMaxSpeed() const
+{
+	if (const UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
+	{
+		return MovementComponent->GetMaxSpeed();
+	}
+	return 0.f;
 }
 
 void AMETPlayerCharacter::InitAbilityActorInfo()

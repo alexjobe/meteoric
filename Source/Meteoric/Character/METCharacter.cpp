@@ -14,7 +14,6 @@
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
-#include "Navigation/CrowdManager.h"
 #include "Net/UnrealNetwork.h"
 #include "PMCoverSystem/Public/Components/PMCoverUserComponent.h"
 
@@ -66,11 +65,6 @@ void AMETCharacter::BeginPlay()
 	{
 		// Make sure the mesh is updated on server so projectiles spawn in the correct location
 		GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
-
-		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this))
-		{
-			CrowdManager->RegisterAgent(this);
-		}
 	}
 }
 
@@ -259,38 +253,6 @@ FGenericTeamId AMETCharacter::GetGenericTeamId() const
 		return Interface->GetGenericTeamId();
 	}
 	return FGenericTeamId();
-}
-
-FVector AMETCharacter::GetCrowdAgentLocation() const
-{
-	return GetActorLocation();
-}
-
-FVector AMETCharacter::GetCrowdAgentVelocity() const
-{
-	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
-	{
-		return MovementComponent->GetVelocityForRVOConsideration();
-	}
-	return FVector::ZeroVector;
-}
-
-void AMETCharacter::GetCrowdAgentCollisions(float& CylinderRadius, float& CylinderHalfHeight) const
-{
-	if (const UCapsuleComponent* Capsule = GetCapsuleComponent(); ensure(Capsule))
-	{
-		CylinderRadius = Capsule->GetScaledCapsuleRadius();
-		CylinderHalfHeight = Capsule->GetScaledCapsuleHalfHeight();
-	}
-}
-
-float AMETCharacter::GetCrowdAgentMaxSpeed() const
-{
-	if (const UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
-	{
-		return MovementComponent->GetMaxSpeed();
-	}
-	return 0.f;
 }
 
 void AMETCharacter::Die()

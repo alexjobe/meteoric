@@ -7,13 +7,12 @@
 #include "GenericTeamAgentInterface.h"
 #include "METCharacterTypes.h"
 #include "GameFramework/Character.h"
-#include "Navigation/CrowdAgentInterface.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
 
 UCLASS(config=Game)
-class METEORIC_API AMETCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface, public ICrowdAgentInterface
+class METEORIC_API AMETCharacter : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -62,13 +61,6 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	//~ End IGenericTeamAgentInterface interface
-
-	//~ Begin ICrowdAgentInterface interface
-	virtual FVector GetCrowdAgentLocation() const override;
-	virtual FVector GetCrowdAgentVelocity() const override;
-	virtual void GetCrowdAgentCollisions(float& CylinderRadius, float& CylinderHalfHeight) const override;
-	virtual float GetCrowdAgentMaxSpeed() const override;
-	//~ End ICrowdAgentInterface interface
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")

@@ -9,7 +9,7 @@
 
 
 UPMCoverSpot::UPMCoverSpot()
-	: ValidCoverHalfAngle(70.f)
+	: ValidCoverHalfAngle(50.f)
 	, CoverEffectLevel(1.f)
 	, MinCoverScore(0.f)
 {
