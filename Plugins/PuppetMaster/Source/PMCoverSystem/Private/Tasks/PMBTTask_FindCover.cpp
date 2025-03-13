@@ -57,7 +57,7 @@ void UPMBTTask_FindCover::InitializeFromAsset(UBehaviorTree& Asset)
 EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const AAIController* Controller = OwnerComp.GetAIOwner();
-	const APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
+	APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
 	UPMCoverUserComponent* CoverUserComponent = Pawn ? Pawn->FindComponentByClass<UPMCoverUserComponent>() : nullptr;
 	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 	
@@ -175,14 +175,15 @@ void UPMBTTask_FindCover::SortCoverActors(TArray<AActor*>& CoverActors, const FV
 	}
 }
 
-UPMCoverSpot* UPMBTTask_FindCover::GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const AActor* Querier, const bool bTestCoverSpotNavigable)
+UPMCoverSpot* UPMBTTask_FindCover::GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, APawn* Querier, const bool bTestCoverSpotNavigable)
 {
 	if (!ensure(Querier)) return nullptr;
 	for (const AActor* Cover : CoverActors)
 	{
 		if (UPMCoverComponent* CoverComponent = IPMCoverInterface::Execute_GetCoverComponent(Cover); ensure(CoverComponent))
 		{
-			if (UPMCoverSpot* BestCoverSpot = CoverComponent->GetBestCoverSpot(TargetLocation, Querier, bTestCoverSpotNavigable))
+			const bool bCoverAvailable = CoverComponent->IsCoverAvailable(Querier);
+			if (UPMCoverSpot* BestCoverSpot = bCoverAvailable ? CoverComponent->GetBestCoverSpot(TargetLocation, Querier, bTestCoverSpotNavigable) : nullptr)
 			{
 				return BestCoverSpot;
 			}

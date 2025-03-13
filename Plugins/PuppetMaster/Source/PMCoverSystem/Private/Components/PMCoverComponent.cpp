@@ -10,6 +10,7 @@
 
 UPMCoverComponent::UPMCoverComponent()
 	: CoverEffectLevel(1.f)
+	, MaxOccupants(1)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -22,10 +23,12 @@ void UPMCoverComponent::BeginPlay()
 	for (const auto Spot : CoverSpots)
 	{
 		Spot->InitializeCoverSpot(CoverEffectClass, CoverEffectLevel);
+		Spot->OnOccupantChanged().AddUObject(this, &UPMCoverComponent::CoverSpot_OnOccupantChanged);
+		Spot->OnReservationChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnReservationChanged);
 	}
 }
 
-UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, const AActor* InQuerier, const bool bTestCoverSpotNavigable)
+UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, APawn* InQuerier, const bool bTestCoverSpotNavigable)
 {
 	UPMCoverSpot* BestCoverSpot = nullptr;
 	float BestCoverScore = 0.f;
@@ -46,19 +49,28 @@ UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocatio
 
 	if (BestCoverSpot && bTestCoverSpotNavigable)
 	{
-		BestCoverSpot = ChooseBestNavigableSpot(BestCoverSpot, ScoredSpots, InQuerier->GetActorLocation());
+		BestCoverSpot = ChooseBestNavigableSpot(BestCoverSpot, ScoredSpots, InQuerier);
 	}
 	
 	return BestCoverSpot;
 }
 
-UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, const FVector& InQuerierLocation)
+bool UPMCoverComponent::IsCoverAvailable(const AActor* InQuerier) const
+{
+	if (!ensure(InQuerier)) return false;
+	const int32 ClaimedSpots = Occupants.Num() + Reservations.Num();
+	const int32 OpenSpots = CoverSpots.Num() - ClaimedSpots;
+	if (!ensure(OpenSpots >= 0)) return false;
+	return Occupants.Contains(InQuerier) || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
+}
+
+UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, APawn* InQuerier)
 {
 	const UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
-	if (!ensure(NavSystem) || !ensure(InCandidate)) return nullptr;
+	if (!ensure(NavSystem) || !ensure(InCandidate) || !ensure(InQuerier)) return nullptr;
 
 	// Test candidate -- if valid, we don't have to sort scored spots
-	const UNavigationPath* CandidatePath = NavSystem->FindPathToLocationSynchronously(this, InQuerierLocation, InCandidate->GetComponentLocation());
+	const UNavigationPath* CandidatePath = NavSystem->FindPathToLocationSynchronously(this, InQuerier->GetActorLocation(), InCandidate->GetComponentLocation(), InQuerier);
 	if (CandidatePath && CandidatePath->IsValid())
 	{
 		return InCandidate;
@@ -74,7 +86,7 @@ UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandida
 	for (const auto& Pair : InScoredSpots)
 	{
 		if (!ensure(Pair.Key)) continue;
-		const UNavigationPath* Path = NavSystem->FindPathToLocationSynchronously(this, InQuerierLocation, Pair.Key->GetComponentLocation());
+		const UNavigationPath* Path = NavSystem->FindPathToLocationSynchronously(this, InQuerier->GetActorLocation(), Pair.Key->GetComponentLocation(), InQuerier);
 		if (Path && Path->IsValid())
 		{
 			return Pair.Key;
@@ -82,4 +94,26 @@ UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandida
 	}
 	
 	return nullptr;
+}
+
+void UPMCoverComponent::CoverSpot_OnOccupantChanged(const AActor* NewOccupant, const AActor* OldOccupant)
+{
+	UpdateActorPropertySet(Occupants, NewOccupant, OldOccupant);
+}
+
+void UPMCoverComponent::CoverSpot_OnReservationChanged(const AActor* NewReserver, const AActor* OldReserver)
+{
+	UpdateActorPropertySet(Reservations, NewReserver, OldReserver);
+}
+
+void UPMCoverComponent::UpdateActorPropertySet(TSet<AActor const*>& InSet, const AActor* InNewActor, const AActor* InOldActor)
+{
+	if (InOldActor != nullptr && InSet.Contains(InOldActor))
+	{
+		InSet.Remove(InOldActor);
+	}
+	if (InNewActor != nullptr)
+	{
+		InSet.Emplace(InNewActor);
+	}
 }

@@ -68,5 +68,5 @@ private:
 	static void SortCoverActors(TArray<AActor*>& CoverActors, const FVector& TargetLocation, const FVector& QuerierLocation, const EPMCoverSearchMode& SearchMode);
 
 	// Once cover actors are sorted, iterate until we find one with a valid cover spot
-	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, const AActor* Querier, const bool bTestCoverSpotNavigable = true);
+	static class UPMCoverSpot* GetBestCoverSpot(const TArray<AActor*>& CoverActors, const FVector& TargetLocation, APawn* Querier, const bool bTestCoverSpotNavigable = true);
 };

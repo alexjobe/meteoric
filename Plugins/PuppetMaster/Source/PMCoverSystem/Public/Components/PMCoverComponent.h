@@ -23,6 +23,14 @@ public:
 	/* CoverEffectClass level */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	float CoverEffectLevel;
+
+	/*
+	 * Maximum number of actors that can occupy this cover, regardless of how many cover spots are available
+	 * Used for querying if cover is available - does not prevent more actors from occupying this cover
+	 * For example, if MaxOccupants is 1 and 1 of 4 spots is occupied, this cover is considered full
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover")
+	int32 MaxOccupants;
 	
 	UPMCoverComponent();
 
@@ -33,17 +41,32 @@ public:
 	/*
 	 * Returns the best cover spot from the target location
 	 * @param InTargetLocation: Location to test against cover
-	 * @param InQuerierLocation: Location of querier looking for cover
+	 * @param InQuerier: Pawn looking for cover
 	 * @param bTestCoverSpotNavigable: Test if querier can reach cover spot -- potentially expensive
 	 */
-	UFUNCTION(BlueprintCallable)
-	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, const AActor* InQuerier, const bool bTestCoverSpotNavigable = true);
+	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, APawn* InQuerier, const bool bTestCoverSpotNavigable = true);
+
+	/*
+	 * Returns true if cover spots are available and number of current occupants is less than MaxOccupants, or if
+	 * querier is already an occupant
+	 */
+	bool IsCoverAvailable(const AActor* InQuerier) const;
 
 private:
 	/* Cover spots associated with this cover */
 	UPROPERTY(Transient)
 	TArray<UPMCoverSpot*> CoverSpots;
 
+	UPROPERTY(Transient)
+	TSet<const AActor*> Occupants;
+
+	UPROPERTY(Transient)
+	TSet<const AActor*> Reservations;
+
 	/* Test if querier can reach cover spot -- potentially expensive */
-	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, const FVector& InQuerierLocation);
+	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, APawn* InQuerier);
+
+	void CoverSpot_OnOccupantChanged(const AActor* NewOccupant, const AActor* OldOccupant);
+	void CoverSpot_OnReservationChanged(const AActor* NewReserver, const AActor* OldReserver);
+	static void UpdateActorPropertySet(TSet<const AActor*>& InSet, const AActor* InNewActor, const AActor* InOldActor);
 };

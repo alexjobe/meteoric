@@ -7,7 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "PMCoverSpot.generated.h"
 
-DECLARE_EVENT_OneParam(UPMCoverSpot, FOnReservationChangedEvent, const AActor* Reserver)
+DECLARE_EVENT_TwoParams(UPMCoverSpot, FOnActorPropertyChangedEvent, const AActor* NewActor, const AActor* OldActor)
 
 /*
  * Represents a single cover spot that can be occupied by actors with a PMCoverUserComponent. Intended to be attached to
@@ -44,7 +44,8 @@ public:
 	void Unoccupy();
 	AActor* GetReservation() const { return Reserver; }
 	AActor* GetOccupant() const { return Occupant; }
-	FOnReservationChangedEvent& OnReservationChangedEvent() { return ReservationChangedEvent; }
+	FOnActorPropertyChangedEvent& OnReservationChangedEvent() { return ReservationChangedEvent; }
+	FOnActorPropertyChangedEvent& OnOccupantChanged() { return OccupantChangedEvent; }
 
 private:
 	/* Actor currently occupying this cover spot */
@@ -68,7 +69,8 @@ private:
 	TOptional<FActiveGameplayEffectHandle> ActiveCoverEffectHandle;
 
 	FTimerHandle ReservationTimerHandle;
-	FOnReservationChangedEvent ReservationChangedEvent;
+	FOnActorPropertyChangedEvent ReservationChangedEvent;
+	FOnActorPropertyChangedEvent OccupantChangedEvent;
 
 	// Cosine of the ValidCoverHalfAngle
 	float MinCoverScore;

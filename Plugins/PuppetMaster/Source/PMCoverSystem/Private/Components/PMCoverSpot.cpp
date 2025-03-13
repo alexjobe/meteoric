@@ -44,8 +44,8 @@ bool UPMCoverSpot::Reserve(AActor* InActor, const float InReservationDuration)
 	if (!GetOwner()->HasAuthority()) return false;
 	if (InActor == Occupant) return true;
 
+	const AActor* OldReserver = Reserver;
 	Reserver = InActor;
-	ReservationChangedEvent.Broadcast(Reserver);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
@@ -62,6 +62,8 @@ bool UPMCoverSpot::Reserve(AActor* InActor, const float InReservationDuration)
 		}
 	}, InReservationDuration, false);
 
+	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
+
 	return true;
 }
 
@@ -69,21 +71,24 @@ void UPMCoverSpot::CancelReservation()
 {
 	if (!GetOwner()->HasAuthority()) return;
 	if (!IsReserved()) return;
-	
+
+	const AActor* OldReserver = Reserver;
 	Reserver = nullptr;
-	ReservationChangedEvent.Broadcast(nullptr);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
 		CoverSubsystem->RemoveReservedCoverSpot(this);
 	}
+	
+	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
 }
 
 bool UPMCoverSpot::Occupy(AActor* InActor)
 {
 	if (IsOccupied()) return false;
 	if (!GetOwner()->HasAuthority()) return false;
-	
+
+	const AActor* OldOccupant = Occupant;
 	Occupant = InActor;
 	ApplyCoverEffectToOccupant();
 
@@ -95,6 +100,8 @@ bool UPMCoverSpot::Occupy(AActor* InActor)
 	{
 		CoverSubsystem->AddOccupiedCoverSpot(this);
 	}
+
+	OccupantChangedEvent.Broadcast(Occupant, OldOccupant);
 	
 	return true;
 }
@@ -105,12 +112,16 @@ void UPMCoverSpot::Unoccupy()
 	if (!IsOccupied()) return;
 	
 	RemoveCoverEffectFromOccupant();
+	
+	const AActor* OldOccupant = Occupant;
 	Occupant = nullptr;
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
 		CoverSubsystem->RemoveOccupiedCoverSpot(this);
 	}
+
+	OccupantChangedEvent.Broadcast(Occupant, OldOccupant);
 }
 
 void UPMCoverSpot::ApplyCoverEffectToOccupant()
