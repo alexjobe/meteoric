@@ -61,6 +61,12 @@ void AMETCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent()))
+	{
+		MovementComponent->NavAgentProps.bCanCrouch = true;
+		MovementComponent->CrouchedHalfHeight = 60.f;
+	}
+
 	if (HasAuthority())
 	{
 		// Make sure the mesh is updated on server so projectiles spawn in the correct location
@@ -303,7 +309,7 @@ AMETWeapon* AMETCharacter::GetWeapon() const
 	return WeaponManager ? WeaponManager->GetCurrentWeapon() : nullptr;
 }
 
-void AMETCharacter::SetAiming(bool bInIsAiming)
+void AMETCharacter::SetAiming(const bool bInIsAiming)
 {
 	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{

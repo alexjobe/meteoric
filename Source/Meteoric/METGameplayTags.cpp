@@ -9,6 +9,7 @@ namespace METGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_AimDownSights, "InputTag.AimDownSights", "Aim down sights input");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_ReloadWeapon, "InputTag.ReloadWeapon", "Reload weapon input");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_CycleAmmo, "InputTag.CycleAmmo", "Cycle ammo input");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Crouch, "InputTag.Crouch", "Crouch input");
 
 	/* Attribute tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Health, "Attribute.Health", "Health attribute");

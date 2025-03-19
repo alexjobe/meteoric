@@ -4,8 +4,6 @@
 #include "METCharacterAnimInstance.h"
 
 #include "METCharacter.h"
-#include "METPlayerCharacter.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Meteoric/Weapon/Handling/METRecoilComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
@@ -13,9 +11,12 @@
 #include "Meteoric/Weapon/Handling/METWeaponSwayComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
-	: GroundSpeed(0.f)
+	: Direction(0.f)
+	, GroundSpeed(0.f)
 	, bShouldMove(false)
 	, bIsFalling(false)
+	, bIsCrouched(false)
+	, CrouchBlendTime(0.2f)
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
@@ -46,6 +47,7 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	ActorControlRotationDelta = Character->GetActorAimRotationDelta();
 	bIsTurningInPlace = Character->IsTurningInPlace();
+	bIsCrouched = Character->bIsCrouched;
 	
 	SetSightToCameraRoot();
 	SetRightHandToCameraRoot();
@@ -87,6 +89,10 @@ void UMETCharacterAnimInstance::UpdateMovementData()
 	
 	Velocity = MovementComponent->Velocity;
 	GroundSpeed = Velocity.Size2D();
+
+	const FVector LocalVelocity = Character->GetActorRotation().UnrotateVector(Velocity);
+	Direction = LocalVelocity.Rotation().Yaw;
+	
 	bShouldMove = Character->IsMoving();
 	bIsFalling = MovementComponent->IsFalling();
 }

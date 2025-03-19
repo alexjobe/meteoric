@@ -42,6 +42,9 @@ protected:
 	FVector Velocity;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float Direction;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float GroundSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
@@ -49,6 +52,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bIsFalling;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bIsCrouched;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	float CrouchBlendTime;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Control")
 	FRotator ActorControlRotationDelta;

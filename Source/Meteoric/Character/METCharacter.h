@@ -36,7 +36,7 @@ public:
 
 	/* Aim down sights */
 	UFUNCTION(BlueprintCallable)
-	void SetAiming(bool bInIsAiming);
+	void SetAiming(const bool bInIsAiming);
 	
 	bool IsAiming() const { return bIsAiming; }
 	bool IsTurningInPlace() const { return bIsTurningInPlace; }
