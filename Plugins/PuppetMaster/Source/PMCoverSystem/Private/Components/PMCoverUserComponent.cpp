@@ -8,6 +8,7 @@
 
 
 UPMCoverUserComponent::UPMCoverUserComponent()
+	: bShouldHoldSpot(true)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -137,6 +138,10 @@ void UPMCoverUserComponent::OnComponentBeginOverlap(UPrimitiveComponent* Overlap
 		{
 			OccupiedCoverSpot->Unoccupy();
 		}
+		if (ReservedCoverSpot)
+		{
+			CancelReservation();
+		}
 		OccupiedCoverSpot = CoverSpot;
 	}
 }
@@ -146,7 +151,13 @@ void UPMCoverUserComponent::OnComponentEndOverlap(UPrimitiveComponent* Overlappe
 {
 	if (OccupiedCoverSpot && OccupiedCoverSpot == OtherComp)
 	{
+		UPMCoverSpot* OldSpot = OccupiedCoverSpot;
 		OccupiedCoverSpot->Unoccupy();
 		OccupiedCoverSpot = nullptr;
+
+		if (bShouldHoldSpot && ReservedCoverSpot == nullptr)
+		{
+			ReserveCoverSpot(OldSpot);
+		}
 	}
 }

@@ -9,18 +9,24 @@
 
 
 UPMCoverSpot::UPMCoverSpot()
-	: ValidCoverHalfAngle(50.f)
-	, CoverEffectLevel(1.f)
+	: CoverEffectLevel(1.f)
+	, ValidCoverHalfAngle(45.f)
 	, MinCoverScore(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	MinCoverScore = FMath::Cos(FMath::DegreesToRadians(ValidCoverHalfAngle));
+	SetValidCoverHalfAngle(ValidCoverHalfAngle);
 }
 
 void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel)
 {
 	CoverEffectClass = InCoverEffectClass;
 	CoverEffectLevel = InCoverEffectLevel;
+}
+
+void UPMCoverSpot::SetValidCoverHalfAngle(const float InHalfAngle)
+{
+	ValidCoverHalfAngle = InHalfAngle;
+	MinCoverScore = FMath::Cos(FMath::DegreesToRadians(ValidCoverHalfAngle));
 }
 
 float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
@@ -112,7 +118,7 @@ void UPMCoverSpot::Unoccupy()
 	if (!IsOccupied()) return;
 	
 	RemoveCoverEffectFromOccupant();
-	
+
 	const AActor* OldOccupant = Occupant;
 	Occupant = nullptr;
 

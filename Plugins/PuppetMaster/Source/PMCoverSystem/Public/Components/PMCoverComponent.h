@@ -31,6 +31,13 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover")
 	int32 MaxOccupants;
+
+	/*
+	 * Half angle of the cone with vertex at the cover spot, and axis along the cover spot's forward vector. Cover is
+	 * valid against target if target is inside the cone.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (ClampMin = 0, ClampMax = 90))
+	float ValidCoverHalfAngle;
 	
 	UPMCoverComponent();
 

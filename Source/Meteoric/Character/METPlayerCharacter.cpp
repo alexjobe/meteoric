@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PMCoverUserComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/METGameplayTags.h"
@@ -29,14 +30,21 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 	: AimTraceRange(3000.f)
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	check(CameraBoom);
 	CameraBoom->SetupAttachment(GetMesh(), FName("S_Camera"));
 	CameraBoom->TargetArmLength = 0.f;
 
 	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainCamera"));
+	check(MainCamera);
 	MainCamera->SetupAttachment(CameraBoom);
 	MainCamera->bUsePawnControlRotation = false;
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
+
+	if (ensure(CoverUserComponent))
+	{
+		CoverUserComponent->bShouldHoldSpot = false;
+	}
 
 	CharacterConfig.AimInterpSpeed = 40.f;
 }

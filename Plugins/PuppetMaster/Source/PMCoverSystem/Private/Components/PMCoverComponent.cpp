@@ -11,6 +11,7 @@
 UPMCoverComponent::UPMCoverComponent()
 	: CoverEffectLevel(1.f)
 	, MaxOccupants(1)
+	, ValidCoverHalfAngle(45.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -23,6 +24,7 @@ void UPMCoverComponent::BeginPlay()
 	for (const auto Spot : CoverSpots)
 	{
 		Spot->InitializeCoverSpot(CoverEffectClass, CoverEffectLevel);
+		Spot->SetValidCoverHalfAngle(ValidCoverHalfAngle);
 		Spot->OnOccupantChanged().AddUObject(this, &UPMCoverComponent::CoverSpot_OnOccupantChanged);
 		Spot->OnReservationChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnReservationChanged);
 	}

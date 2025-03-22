@@ -13,6 +13,9 @@ class PMCOVERSYSTEM_API UPMCoverUserComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover")
+	bool bShouldHoldSpot;
+	
 	UPMCoverUserComponent();
 
 	void InitializeCoverUser(UPrimitiveComponent* OverlappedComponent);
