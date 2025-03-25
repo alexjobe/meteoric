@@ -74,6 +74,15 @@ EBTNodeResult::Type UPMBTTask_FindCover::ExecuteTask(UBehaviorTreeComponent& Own
 	const float MinDistanceToTarget = UPMCoverSystemUtils::GetKeyFloatValue(BlackboardComp, MinDistanceToTargetKey);
 	const float MaxDistanceToTarget = UPMCoverSystemUtils::GetKeyFloatValue(BlackboardComp, MaxDistanceToTargetKey);
 
+	if (UPMCoverSpot* ReservedCoverSpot = CoverUserComponent->GetReservedCoverSpot())
+	{
+		if (ReservedCoverSpot->GetCoverScore(TargetLocation) > 0 && ReservedCoverSpot->RenewReservation(Pawn))
+		{
+			BlackboardComp->SetValueAsVector(MoveToLocationKey.SelectedKeyName, ReservedCoverSpot->GetComponentLocation());
+			return EBTNodeResult::Succeeded;
+		}
+	}
+
 	// Find all cover actors (IPMCoverInterface) in search radius
 	TArray<AActor*> FoundCoverActors = FindCoverActors(Pawn, SearchCenter, SearchRadius);
 	if (FoundCoverActors.Num() == 0) return EBTNodeResult::Failed;

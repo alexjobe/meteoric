@@ -34,6 +34,7 @@ public:
 	bool IsOccupied() const { return Occupant != nullptr; }
 	bool Reserve(AActor* InActor, const float InReservationDuration = 10.f);
 	void CancelReservation();
+	bool RenewReservation(AActor* InActor, const float InReservationDuration = 10.f);
 	bool Occupy(AActor* InActor);
 	void Unoccupy();
 	AActor* GetReservation() const { return Reserver; }
@@ -77,4 +78,5 @@ private:
 
 	void ApplyCoverEffectToOccupant();
 	void RemoveCoverEffectFromOccupant();
+	void SetReservationTimer(const float InReservationDuration);
 };

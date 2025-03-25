@@ -22,6 +22,7 @@ public:
 	bool ReserveCoverSpot(class UPMCoverSpot* CoverSpot);
 	void ReleaseCoverSpots();
 	UPMCoverSpot* GetOccupiedCoverSpot() { return OccupiedCoverSpot; }
+	UPMCoverSpot* GetReservedCoverSpot() { return ReservedCoverSpot; }
 
 	//~ Begin UActorComponent interface
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

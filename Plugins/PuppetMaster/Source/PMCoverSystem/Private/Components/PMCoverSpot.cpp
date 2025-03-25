@@ -58,15 +58,7 @@ bool UPMCoverSpot::Reserve(AActor* InActor, const float InReservationDuration)
 		CoverSubsystem->AddReservedCoverSpot(this);
 	}
 
-	// Reserve this spot for the specified time
-	TWeakObjectPtr<UPMCoverSpot> WeakThis = this;
-	GetWorld()->GetTimerManager().SetTimer(ReservationTimerHandle, [WeakThis]()
-	{
-		if (WeakThis.IsValid())
-		{
-			WeakThis.Get()->CancelReservation();
-		}
-	}, InReservationDuration, false);
+	SetReservationTimer(InReservationDuration);
 
 	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
 
@@ -80,6 +72,7 @@ void UPMCoverSpot::CancelReservation()
 
 	const AActor* OldReserver = Reserver;
 	Reserver = nullptr;
+	GetWorld()->GetTimerManager().ClearTimer(ReservationTimerHandle);
 
 	if (UPMCoverSubsystem* CoverSubsystem = UPMCoverSubsystem::GetSubsystem(this); ensure(CoverSubsystem))
 	{
@@ -87,6 +80,17 @@ void UPMCoverSpot::CancelReservation()
 	}
 	
 	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
+}
+
+bool UPMCoverSpot::RenewReservation(AActor* InActor, const float InReservationDuration)
+{
+	if (!ensure(InActor) || InActor != Reserver) return false;
+	if (!GetOwner()->HasAuthority()) return false;
+	if (InActor == Occupant) return true;
+
+	GetWorld()->GetTimerManager().ClearTimer(ReservationTimerHandle);
+	SetReservationTimer(InReservationDuration);
+	return true;
 }
 
 bool UPMCoverSpot::Occupy(AActor* InActor)
@@ -155,4 +159,17 @@ void UPMCoverSpot::RemoveCoverEffectFromOccupant()
 	}
 
 	ActiveCoverEffectHandle.Reset();
+}
+
+void UPMCoverSpot::SetReservationTimer(const float InReservationDuration)
+{
+	// Reserve this spot for the specified time
+	TWeakObjectPtr<UPMCoverSpot> WeakThis = this;
+	GetWorld()->GetTimerManager().SetTimer(ReservationTimerHandle, [WeakThis]()
+	{
+		if (WeakThis.IsValid())
+		{
+			WeakThis.Get()->CancelReservation();
+		}
+	}, InReservationDuration, false);
 }

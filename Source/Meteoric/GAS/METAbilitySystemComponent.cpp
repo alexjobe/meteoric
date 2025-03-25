@@ -18,7 +18,7 @@ void UMETAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGameplay
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, 1, INDEX_NONE, InSourceObject);
 		if(const UMETGameplayAbility* MetAbility = Cast<UMETGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.DynamicAbilityTags.AddTag(MetAbility->GetInputTag());
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(MetAbility->GetInputTag());
 			GiveAbility(AbilitySpec);
 		}
 	}
@@ -52,7 +52,7 @@ FGameplayAbilitySpecHandle UMETAbilitySystemComponent::ActivateAbility(const FGa
 	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		if(AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if(AbilitySpec.Ability && AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			const UMETGameplayAbility* MetAbility = CastChecked<UMETGameplayAbility>(AbilitySpec.Ability);
 			bAbilityFound = true;
@@ -83,7 +83,7 @@ void UMETAbilitySystemComponent::Input_AbilityInputCompleted(const FGameplayTag&
 	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		if(AbilitySpec.Ability && AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		if(AbilitySpec.Ability && AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
 			AbilitySpec.InputPressed = false;
 			if (AbilitySpec.IsActive())
@@ -106,10 +106,11 @@ void UMETAbilitySystemComponent::AbilitySpecInputPressed(FGameplayAbilitySpec& S
 	// Copied from Lyra - needed for WaitInputPress ability task
 	// We don't support UGameplayAbility::bReplicateInputDirectly.
 	// Use replicated events instead so that the WaitInputPress ability task works.
-	if (Spec.IsActive())
+	if (const UGameplayAbility* Instance = Spec.GetPrimaryInstance(); Spec.IsActive())
 	{
 		// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+		const FGameplayAbilityActivationInfo ActivationInfo = Instance->GetCurrentActivationInfo();
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, ActivationInfo.GetActivationPredictionKey());
 	}
 }
 
@@ -120,9 +121,10 @@ void UMETAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySpec& 
 	// Copied from Lyra - needed for WaitInputPress ability task
 	// We don't support UGameplayAbility::bReplicateInputDirectly.
 	// Use replicated events instead so that the WaitInputRelease ability task works.
-	if (Spec.IsActive())
+	if (const UGameplayAbility* Instance = Spec.GetPrimaryInstance(); Spec.IsActive())
 	{
 		// Invoke the InputReleased event. This is not replicated here. If someone is listening, they may replicate the InputReleased event to the server.
-		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+		const FGameplayAbilityActivationInfo ActivationInfo = Instance->GetCurrentActivationInfo();
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle, ActivationInfo.GetActivationPredictionKey());
 	}
 }
