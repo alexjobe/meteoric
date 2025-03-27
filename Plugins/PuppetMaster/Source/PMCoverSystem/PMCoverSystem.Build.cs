@@ -12,7 +12,8 @@ public class PMCoverSystem : ModuleRules
                 "Core", 
                 "GameplayAbilities",
                 "AIModule",
-                "NavigationSystem"
+                "NavigationSystem", 
+                "StateTreeModule"
             }
         );
 

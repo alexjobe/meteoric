@@ -58,4 +58,7 @@ namespace METGameplayTags
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Combat_FindCover);
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Combat_FindAttackLocation);
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIState_Combat_Attack);
+
+	/* AI event tags */
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIEvent_TargetActorUpdated);
 }

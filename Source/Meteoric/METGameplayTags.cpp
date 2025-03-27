@@ -43,7 +43,7 @@ namespace METGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Pistol, "Weapon.Pistol", "Pistol weapon tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Rifle, "Weapon.Rifle", "Rifle weapon tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Shotgun, "Weapon.Shotgun", "Shotgun weapon tag");
-
+	
 	/* AI state tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Idle, "AIState.Idle", "Idle state tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Investigate, "AIState.Investigate", "Investigate state tag");
@@ -53,4 +53,7 @@ namespace METGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_FindCover, "AIState.Combat.FindCover", "Find cover state tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_FindAttackLocation, "AIState.Combat.FindAttackLocation", "Find attack location state tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Combat_Attack, "AIState.Combat.Attack", "Attack state tag");
+
+	/* AI event tags */
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIEvent_TargetActorUpdated, "AIEvent.TargetActorUpdated", "Target actor updated event");
 }

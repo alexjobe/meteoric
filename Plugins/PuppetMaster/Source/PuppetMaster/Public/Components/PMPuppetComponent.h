@@ -47,6 +47,9 @@ public:
 	AAIController* GetController() const { return Controller; }
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "StateTree|Events")
+	FGameplayTag TargetActorUpdatedEventTag;
+	
 	/*
 	 * Blackboard Values
 	 */
@@ -90,6 +93,9 @@ protected:
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<AAIController> Controller;
+
+	UPROPERTY(Transient)
+	TObjectPtr<class UStateTreeAIComponent> StateTreeAIComponent;
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UBlackboardComponent> BlackboardComponent;

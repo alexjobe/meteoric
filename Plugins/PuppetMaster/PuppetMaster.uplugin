@@ -32,6 +32,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "StateTree",
+			"Enabled": true
+		},
+		{
 			"Name": "GameplayBehaviors",
 			"Enabled": true
 		}

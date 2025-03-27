@@ -14,6 +14,7 @@
 UMETPuppetComponent::UMETPuppetComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	TargetActorUpdatedEventTag = METGameplayTags::AIEvent_TargetActorUpdated;
 }
 
 void UMETPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus)

@@ -29,7 +29,8 @@ public class PuppetMaster : ModuleRules
 				"AIModule",
 				"DeveloperSettings",
 				"GameplayTags",
-				"GameplayAbilities"
+				"GameplayAbilities", 
+				"StateTreeModule"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,7 +43,8 @@ public class PuppetMaster : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore", 
-				"GameplayBehaviorsModule"
+				"GameplayBehaviorsModule", 
+				"GameplayStateTreeModule"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

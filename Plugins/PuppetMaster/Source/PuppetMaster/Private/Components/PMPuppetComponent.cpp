@@ -8,6 +8,7 @@
 #include "AIController.h"
 #include "GameplayBehaviorsBlueprintFunctionLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/StateTreeAIComponent.h"
 #include "Logging/PuppetMasterLog.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig.h"
@@ -34,6 +35,7 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGa
 
 	PerceptionComponent = Controller->GetPerceptionComponent();
 	BlackboardComponent = Controller->GetBlackboardComponent();
+	StateTreeAIComponent = Controller->GetComponentByClass<UStateTreeAIComponent>();
 
 	SetState(InState);
 	SetIdealTargetDistance(MinIdealTargetDistance, MaxIdealTargetDistance);
@@ -74,6 +76,11 @@ void UPMPuppetComponent::SetTargetActor(AActor* const InActor)
 	{
 		TargetASC->RegisterGenericGameplayTagEvent().AddUObject(this, &ThisClass::TargetActor_OnGameplayTagEvent);
 	}
+
+	if (StateTreeAIComponent)
+	{
+		StateTreeAIComponent->SendStateTreeEvent(FStateTreeEvent(TargetActorUpdatedEventTag));
+	}
 }
 
 void UPMPuppetComponent::ClearTargetActor()
@@ -89,6 +96,11 @@ void UPMPuppetComponent::ClearTargetActor()
 	if (ensure(BlackboardComponent))
 	{
 		BlackboardComponent->SetValueAsObject(TargetActorKeyName, nullptr);
+	}
+
+	if (StateTreeAIComponent)
+	{
+		StateTreeAIComponent->SendStateTreeEvent(FStateTreeEvent(TargetActorUpdatedEventTag));
 	}
 }
 
