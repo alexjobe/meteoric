@@ -5,6 +5,7 @@
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/StateTreeAIComponent.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/AI/METAIController.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
@@ -52,6 +53,10 @@ void AMETAICharacter::PossessedBy(AController* NewController)
 	{
 		BlackboardComponent->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 		AIController->RunBehaviorTree(BehaviorTree);
+	}
+	else if (UStateTreeAIComponent* StateTreeAIComponent = AIController->GetStateTreeAIComponent())
+	{
+		StateTreeAIComponent->StartLogic();
 	}
 }
 

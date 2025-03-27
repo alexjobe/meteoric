@@ -6,6 +6,7 @@
 #include "METPuppetComponent.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/StateTreeAIComponent.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -25,6 +26,8 @@ AMETAIController::AMETAIController(const FObjectInitializer& ObjectInitializer)
 
 	PuppetComponent = CreateDefaultSubobject<UMETPuppetComponent>("PuppetComponent");
 	check(PuppetComponent)
+
+	StateTreeAIComponent = CreateDefaultSubobject<UStateTreeAIComponent>("StateTreeAIComponent");
 
 	if (UCrowdFollowingComponent* CrowdFollowingComponent = GetComponentByClass<UCrowdFollowingComponent>(); ensure(CrowdFollowingComponent))
 	{

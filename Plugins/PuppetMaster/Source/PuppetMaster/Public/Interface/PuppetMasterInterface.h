@@ -7,7 +7,7 @@
 #include "PuppetMasterInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE()
+UINTERFACE(MinimalAPI, BlueprintType, NotBlueprintable)
 class UPuppetMasterInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -22,5 +22,6 @@ class PUPPETMASTER_API IPuppetMasterInterface
 
 public:
 	/** Returns the puppet component to use for this actor. It may live on another actor, such as a Pawn using the Controller's component */
+	UFUNCTION(BlueprintCallable)
 	virtual class UPMPuppetComponent* GetPuppetComponent() const = 0;
 };

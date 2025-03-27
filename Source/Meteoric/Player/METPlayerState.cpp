@@ -19,8 +19,8 @@ AMETPlayerState::AMETPlayerState()
 	}
 
 	AttributeSet = CreateDefaultSubobject<UMETAttributeSet>("AttributeSet");
-
-	NetUpdateFrequency = 100.f;
+	
+	SetNetUpdateFrequency(100.f);
 }
 
 UAbilitySystemComponent* AMETPlayerState::GetAbilitySystemComponent() const

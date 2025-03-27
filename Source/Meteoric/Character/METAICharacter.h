@@ -28,6 +28,7 @@ public:
 	//~ End AMETCharacter interface
 
 	//~ Begin IPuppetMasterInterface interface
+	UFUNCTION(BlueprintCallable)
 	virtual UPMPuppetComponent* GetPuppetComponent() const override;
 	//~ End IPuppetMasterInterface interface
 

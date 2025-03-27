@@ -24,12 +24,18 @@ public:
 	//~ End IGenericTeamAgentInterface interface
 
 	//~ Begin IPuppetMasterInterface interface
+	UFUNCTION(BlueprintCallable)
 	virtual UPMPuppetComponent* GetPuppetComponent() const override;
 	//~ End IPuppetMasterInterface interface
+
+	class UStateTreeAIComponent* GetStateTreeAIComponent() const { return StateTreeAIComponent; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet")
 	TObjectPtr<class UMETPuppetComponent> PuppetComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "StateTreeAI", Category = "StateTree")
+	TObjectPtr<UStateTreeAIComponent> StateTreeAIComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Team")
 	FGameplayTag TeamTag;

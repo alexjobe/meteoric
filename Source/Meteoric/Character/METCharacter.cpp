@@ -64,7 +64,7 @@ void AMETCharacter::BeginPlay()
 	if (UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent()))
 	{
 		MovementComponent->NavAgentProps.bCanCrouch = true;
-		MovementComponent->CrouchedHalfHeight = 60.f;
+		MovementComponent->SetCrouchedHalfHeight(60.f);
 	}
 
 	if (HasAuthority())

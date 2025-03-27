@@ -16,6 +16,7 @@ public:
 	APMEQSTestingPawn();
 
 	//~ Begin IPuppetMasterInterface interface
+	UFUNCTION(BlueprintCallable)
 	virtual UPMPuppetComponent* GetPuppetComponent() const override { return PuppetComponent; };
 	//~ End IPuppetMasterInterface interface
 

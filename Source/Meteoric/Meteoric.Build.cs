@@ -24,7 +24,8 @@ public class Meteoric : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"PuppetMaster",
-			"PMCoverSystem"
+			"PMCoverSystem", 
+			"GameplayStateTreeModule"
 		});
 
 		// Uncomment if you are using Slate UI
