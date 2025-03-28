@@ -51,7 +51,7 @@ public:
 	 * @param InQuerier: Pawn looking for cover
 	 * @param bTestCoverSpotNavigable: Test if querier can reach cover spot -- potentially expensive
 	 */
-	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, APawn* InQuerier, const bool bTestCoverSpotNavigable = true);
+	class UPMCoverSpot* GetBestCoverSpot(const FVector& InTargetLocation, AActor* InQuerier, const bool bTestCoverSpotNavigable = true);
 
 	/*
 	 * Returns true if cover spots are available and number of current occupants is less than MaxOccupants, or if
@@ -71,7 +71,7 @@ private:
 	TSet<const AActor*> Reservations;
 
 	/* Test if querier can reach cover spot -- potentially expensive */
-	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, APawn* InQuerier);
+	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, AActor* InQuerier);
 
 	void CoverSpot_OnOccupantChanged(const AActor* NewOccupant, const AActor* OldOccupant);
 	void CoverSpot_OnReservationChanged(const AActor* NewReserver, const AActor* OldReserver);

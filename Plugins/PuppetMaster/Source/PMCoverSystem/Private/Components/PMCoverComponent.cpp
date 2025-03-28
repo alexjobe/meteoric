@@ -30,7 +30,7 @@ void UPMCoverComponent::BeginPlay()
 	}
 }
 
-UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, APawn* InQuerier, const bool bTestCoverSpotNavigable)
+UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocation, AActor* InQuerier, const bool bTestCoverSpotNavigable)
 {
 	UPMCoverSpot* BestCoverSpot = nullptr;
 	float BestCoverScore = 0.f;
@@ -66,7 +66,7 @@ bool UPMCoverComponent::IsCoverAvailable(const AActor* InQuerier) const
 	return Occupants.Contains(InQuerier) || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
 }
 
-UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, APawn* InQuerier)
+UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, AActor* InQuerier)
 {
 	const UNavigationSystemV1* NavSystem = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
 	if (!ensure(NavSystem) || !ensure(InCandidate) || !ensure(InQuerier)) return nullptr;
