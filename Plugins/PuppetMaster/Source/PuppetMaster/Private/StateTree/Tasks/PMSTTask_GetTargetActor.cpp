@@ -9,6 +9,11 @@
 #include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
 
+FPMSTTask_GetTargetActor::FPMSTTask_GetTargetActor()
+{
+	bShouldCallTick = false;
+}
+
 EStateTreeRunStatus FPMSTTask_GetTargetActor::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {
 	FInstanceDataType& InstanceData = Context.GetInstanceData(*this);

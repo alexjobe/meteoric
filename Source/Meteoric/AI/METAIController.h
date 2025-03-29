@@ -31,7 +31,7 @@ public:
 	class UStateTreeAIComponent* GetStateTreeAIComponent() const { return StateTreeAIComponent; }
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Puppet", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETPuppetComponent> PuppetComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "StateTreeAI", Category = "StateTree")

@@ -53,18 +53,19 @@ protected:
 	/*
 	 * Blackboard Values
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard",meta = (AllowPrivateAccess = "true"))
 	FGameplayTag StateTag;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Blackboard", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AActor> TargetActor;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard", meta = (AllowPrivateAccess = "true"))
 	float MinIdealTargetDistance;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Blackboard", meta = (AllowPrivateAccess = "true"))
 	float MaxIdealTargetDistance;
 	
+protected:	
 	/*
 	 * Blackboard Key Names
 	 */

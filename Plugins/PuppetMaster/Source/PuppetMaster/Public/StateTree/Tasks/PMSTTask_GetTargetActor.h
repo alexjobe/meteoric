@@ -6,9 +6,6 @@
 
 #include "PMSTTask_GetTargetActor.generated.h"
 
-/**
-* Returns the TargetActor from PMPuppetComponent
-*/
 USTRUCT()
 struct FPMGetTargetActorTaskInstanceData
 {
@@ -21,12 +18,17 @@ struct FPMGetTargetActorTaskInstanceData
 	TObjectPtr<AActor> TargetActor;
 };
 
+/**
+* Returns the TargetActor from PMPuppetComponent
+*/
 USTRUCT(meta = (DisplayName = "Get Target Actor", Category = "PuppetMaster"))
 struct FPMSTTask_GetTargetActor : public FStateTreeTaskCommonBase
 {
 	GENERATED_BODY()
 	
 	using FInstanceDataType = FPMGetTargetActorTaskInstanceData;
+
+	FPMSTTask_GetTargetActor();
 
 	//~ Begin FStateTreeTaskCommonBase interface
 	PUPPETMASTER_API virtual const UStruct* GetInstanceDataType() const override { return FInstanceDataType::StaticStruct(); }

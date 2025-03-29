@@ -6,9 +6,6 @@
 
 #include "PMSTTask_SetFocus.generated.h"
 
-/**
-* Set focus to provided target actor
-*/
 USTRUCT()
 struct FPMSetFocusTaskInstanceData
 {
@@ -21,12 +18,17 @@ struct FPMSetFocusTaskInstanceData
 	TObjectPtr<AActor> TargetActor;
 };
 
+/**
+* Set focus to provided target actor
+*/
 USTRUCT(meta = (DisplayName = "Set Focus", Category = "PuppetMaster"))
 struct FPMSTTask_SetFocus : public FStateTreeTaskCommonBase
 {
 	GENERATED_BODY()
 	
 	using FInstanceDataType = FPMSetFocusTaskInstanceData;
+
+	FPMSTTask_SetFocus();
 
 	//~ Begin FStateTreeTaskCommonBase interface
 	PUPPETMASTER_API virtual const UStruct* GetInstanceDataType() const override { return FInstanceDataType::StaticStruct(); }

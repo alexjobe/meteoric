@@ -7,6 +7,11 @@
 #include "StateTreeExecutionContext.h"
 #include "Logging/PuppetMasterLog.h"
 
+FPMSTTask_SetFocus::FPMSTTask_SetFocus()
+{
+	bShouldCallTick = false;
+}
+
 EStateTreeRunStatus FPMSTTask_SetFocus::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) const
 {
 	const FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
