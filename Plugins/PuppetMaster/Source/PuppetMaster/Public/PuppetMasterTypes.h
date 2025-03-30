@@ -11,3 +11,10 @@ enum class EPMAbilityActivationPolicy : uint8
 	OnInputStarted,
 	OnInputTriggered
 };
+
+UENUM(BlueprintType)
+enum class EPMAbilityCompletionPolicy : uint8
+{
+	Duration,
+	OnAbilityEnd
+};

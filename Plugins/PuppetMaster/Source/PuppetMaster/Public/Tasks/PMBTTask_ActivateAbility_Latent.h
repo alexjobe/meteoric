@@ -8,24 +8,17 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "PMBTTask_ActivateAbility_Latent.generated.h"
 
-UENUM(BlueprintType)
-enum class EPMTaskNodeCompletionPolicy : uint8
-{
-	Duration,
-	OnAbilityEnd
-};
-
 struct FBTActivateAbilityMemory
 {
 	float Duration;
 	float TimeStarted;
-	bool bAbilityStarted;
+	bool bAbilityActive;
 	FGameplayAbilitySpecHandle AbilitySpecHandle;
 
 	FBTActivateAbilityMemory()
 		: Duration(0.f)
 		, TimeStarted(0.f)
-		, bAbilityStarted(false)
+		, bAbilityActive(false)
 	{}
 };
 
@@ -61,11 +54,8 @@ public:
 	 * OnAbilityEnd -- The task node will end when the ability ends
 	 */
 	UPROPERTY(EditAnywhere, Category = "Node")
-	EPMTaskNodeCompletionPolicy CompletionPolicy;
+	EPMAbilityCompletionPolicy CompletionPolicy;
 
 	UPROPERTY(EditAnywhere, Category = "Node")
 	float Duration;
-
-protected:
-	PUPPETMASTER_API static bool IsAbilityActive(const FGameplayAbilitySpecHandle& InHandle, const AAIController& InController);
 };

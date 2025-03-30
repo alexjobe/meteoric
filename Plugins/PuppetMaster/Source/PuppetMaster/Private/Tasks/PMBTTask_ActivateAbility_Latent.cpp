@@ -3,16 +3,15 @@
 
 #include "Tasks/PMBTTask_ActivateAbility_Latent.h"
 
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "AIController.h"
 #include "Components/PMPuppetComponent.h"
 #include "Interface/PuppetMasterInterface.h"
 #include "Logging/PuppetMasterLog.h"
+#include "Utils/PuppetMasterUtils.h"
 
 UPMBTTask_ActivateAbility_Latent::UPMBTTask_ActivateAbility_Latent()
 	: ActivationPolicy(EPMAbilityActivationPolicy::OnInputStarted)
-	, CompletionPolicy(EPMTaskNodeCompletionPolicy::Duration)
+	, CompletionPolicy(EPMAbilityCompletionPolicy::Duration)
 	, Duration(5.f)
 {
 	NodeName = "ActivateAbility_Latent";
@@ -37,7 +36,7 @@ EBTNodeResult::Type UPMBTTask_ActivateAbility_Latent::ExecuteTask(UBehaviorTreeC
 	{
 		Memory->TimeStarted = GetWorld()->GetTimeSeconds();
 		Memory->Duration = Duration;
-		Memory->bAbilityStarted = false;
+		Memory->bAbilityActive = false;
 		Memory->AbilitySpecHandle = FGameplayAbilitySpecHandle();
 	}
 
@@ -92,9 +91,9 @@ void UPMBTTask_ActivateAbility_Latent::TickTask(UBehaviorTreeComponent& OwnerCom
 	const float TimeSeconds = GetWorld()->GetTimeSeconds();
 	const float ElapsedTime = TimeSeconds - Memory->TimeStarted;
 
-	if (CompletionPolicy == EPMTaskNodeCompletionPolicy::Duration && ElapsedTime >= Memory->Duration)
+	if (CompletionPolicy == EPMAbilityCompletionPolicy::Duration && ElapsedTime >= Memory->Duration)
 	{
-		if (Memory->bAbilityStarted)
+		if (Memory->bAbilityActive)
 		{
 			PuppetComponent->FinishAbilityByTag(AbilityTag);
 		}
@@ -111,7 +110,7 @@ void UPMBTTask_ActivateAbility_Latent::TickTask(UBehaviorTreeComponent& OwnerCom
 		return;
 	}
 
-	if (CompletionPolicy == EPMTaskNodeCompletionPolicy::OnAbilityEnd && Memory->bAbilityStarted)
+	if (CompletionPolicy == EPMAbilityCompletionPolicy::OnAbilityEnd && Memory->bAbilityActive)
 	{
 		if (!ensure(Memory->AbilitySpecHandle.IsValid()))
 		{
@@ -119,17 +118,17 @@ void UPMBTTask_ActivateAbility_Latent::TickTask(UBehaviorTreeComponent& OwnerCom
 			return;
 		}
 		
-		if (!IsAbilityActive(Memory->AbilitySpecHandle, *AIController))
+		if (!UPuppetMasterUtils::IsAbilityActive(Memory->AbilitySpecHandle, *AIController))
 		{
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 			return;
 		}
 	}
 	
-	if (ActivationPolicy == EPMAbilityActivationPolicy::OnInputTriggered || !Memory->bAbilityStarted)
+	if (ActivationPolicy == EPMAbilityActivationPolicy::OnInputTriggered || !Memory->bAbilityActive)
 	{
 		Memory->AbilitySpecHandle = PuppetComponent->ActivateAbilityByTag(AbilityTag, ActivationPolicy);
-		Memory->bAbilityStarted = true;
+		Memory->bAbilityActive = true;
 	}
 }
 
@@ -141,31 +140,4 @@ void UPMBTTask_ActivateAbility_Latent::InitializeMemory(UBehaviorTreeComponent& 
 void UPMBTTask_ActivateAbility_Latent::CleanupMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTMemoryClear::Type CleanupType) const
 {
 	CleanupNodeMemory<FBTActivateAbilityMemory>(NodeMemory, CleanupType);
-}
-
-bool UPMBTTask_ActivateAbility_Latent::IsAbilityActive(const FGameplayAbilitySpecHandle& InHandle, const AAIController& InController)
-{
-	const UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(&InController);
-	if (!ASC)
-	{
-		ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InController.GetPawn());
-	}
-	
-	if (ensure(ASC))
-	{
-		if (const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromHandle(InHandle))
-		{
-			if (AbilitySpec->IsActive())
-			{
-				return true;
-			}
-		}
-	}
-	else
-	{
-		const FString OwnerString = InController.GetName();;
-		UE_LOG(LogPuppetMaster, Error, TEXT("UPMBTTask_ActivateAbility_Latent::IsAbilityActive -- AbilitySystemComponent not found! Owner: %s"), *OwnerString);
-	}
-	
-	return false;
 }
