@@ -42,7 +42,7 @@ private:
 	TObjectPtr<UPMCoverSpot> ReservedCoverSpot;
 
 	UFUNCTION()
-	void ReservedCoverSpot_OnReservationChangedEvent(const AActor* NewReserver, const AActor* OldReserver);
+	void ReservedCoverSpot_OnReservationChangedEvent(const UPMCoverSpot* CoverSpot, const AActor* NewReserver, const AActor* OldReserver);
 
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

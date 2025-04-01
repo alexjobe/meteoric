@@ -117,9 +117,9 @@ void UPMCoverUserComponent::DrawCoverDebug(const bool bShouldDraw)
 }
 #endif
 
-void UPMCoverUserComponent::ReservedCoverSpot_OnReservationChangedEvent(const AActor* NewReserver, const AActor* OldReserver)
+void UPMCoverUserComponent::ReservedCoverSpot_OnReservationChangedEvent(const UPMCoverSpot* CoverSpot, const AActor* NewReserver, const AActor* OldReserver)
 {
-	if (ensure(ReservedCoverSpot) && GetOwner() != NewReserver)
+	if (ensure(ReservedCoverSpot) && ensure(ReservedCoverSpot == CoverSpot) && GetOwner() != NewReserver)
 	{
 		ReservedCoverSpot->OnReservationChangedEvent().RemoveAll(this);
 		ReservedCoverSpot = nullptr;

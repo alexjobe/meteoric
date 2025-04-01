@@ -60,7 +60,7 @@ bool UPMCoverSpot::Reserve(AActor* InActor, const float InReservationDuration)
 
 	SetReservationTimer(InReservationDuration);
 
-	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
+	ReservationChangedEvent.Broadcast(this, Reserver, OldReserver);
 
 	return true;
 }
@@ -79,7 +79,7 @@ void UPMCoverSpot::CancelReservation()
 		CoverSubsystem->RemoveReservedCoverSpot(this);
 	}
 	
-	ReservationChangedEvent.Broadcast(Reserver, OldReserver);
+	ReservationChangedEvent.Broadcast(this, Reserver, OldReserver);
 }
 
 bool UPMCoverSpot::RenewReservation(AActor* InActor, const float InReservationDuration)
@@ -111,7 +111,7 @@ bool UPMCoverSpot::Occupy(AActor* InActor)
 		CoverSubsystem->AddOccupiedCoverSpot(this);
 	}
 
-	OccupantChangedEvent.Broadcast(Occupant, OldOccupant);
+	OccupantChangedEvent.Broadcast(this, Occupant, OldOccupant);
 	
 	return true;
 }
@@ -131,7 +131,7 @@ void UPMCoverSpot::Unoccupy()
 		CoverSubsystem->RemoveOccupiedCoverSpot(this);
 	}
 
-	OccupantChangedEvent.Broadcast(Occupant, OldOccupant);
+	OccupantChangedEvent.Broadcast(this, Occupant, OldOccupant);
 }
 
 void UPMCoverSpot::ApplyCoverEffectToOccupant()

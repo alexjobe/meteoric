@@ -65,15 +65,15 @@ private:
 	TArray<UPMCoverSpot*> CoverSpots;
 
 	UPROPERTY(Transient)
-	TSet<const AActor*> Occupants;
+	TSet<const UPMCoverSpot*> OccupiedSpots;
 
 	UPROPERTY(Transient)
-	TSet<const AActor*> Reservations;
+	TSet<const UPMCoverSpot*> ReservedSpots;
 
 	/* Test if querier can reach cover spot -- potentially expensive */
 	UPMCoverSpot* ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, AActor* InQuerier);
 
-	void CoverSpot_OnOccupantChanged(const AActor* NewOccupant, const AActor* OldOccupant);
-	void CoverSpot_OnReservationChanged(const AActor* NewReserver, const AActor* OldReserver);
-	static void UpdateActorPropertySet(TSet<const AActor*>& InSet, const AActor* InNewActor, const AActor* InOldActor);
+	void CoverSpot_OnOccupantChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewOccupant, const AActor* InOldOccupant);
+	void CoverSpot_OnReservationChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewReserver, const AActor* InOldReserver);
+	static void UpdateCoverSpotSet(TSet<const UPMCoverSpot*>& InSet, const UPMCoverSpot* InCoverSpot, const AActor* InNewActor);
 };

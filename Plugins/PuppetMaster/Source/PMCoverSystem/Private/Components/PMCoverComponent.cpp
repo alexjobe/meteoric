@@ -25,7 +25,7 @@ void UPMCoverComponent::BeginPlay()
 	{
 		Spot->InitializeCoverSpot(CoverEffectClass, CoverEffectLevel);
 		Spot->SetValidCoverHalfAngle(ValidCoverHalfAngle);
-		Spot->OnOccupantChanged().AddUObject(this, &UPMCoverComponent::CoverSpot_OnOccupantChanged);
+		Spot->OnOccupantChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnOccupantChanged);
 		Spot->OnReservationChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnReservationChanged);
 	}
 }
@@ -60,10 +60,21 @@ UPMCoverSpot* UPMCoverComponent::GetBestCoverSpot(const FVector& InTargetLocatio
 bool UPMCoverComponent::IsCoverAvailable(const AActor* InQuerier) const
 {
 	if (!ensure(InQuerier)) return false;
-	const int32 ClaimedSpots = Occupants.Num() + Reservations.Num();
+	const int32 ClaimedSpots = OccupiedSpots.Num() + ReservedSpots.Num();
 	const int32 OpenSpots = CoverSpots.Num() - ClaimedSpots;
 	if (!ensure(OpenSpots >= 0)) return false;
-	return Occupants.Contains(InQuerier) || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
+
+	bool bQuerierIsOccupant = false;
+	for (const auto& Spot : OccupiedSpots)
+	{
+		if (ensure(Spot) && Spot->GetOccupant() == InQuerier)
+		{
+			bQuerierIsOccupant = true;
+			break;
+		}
+	}
+	
+	return bQuerierIsOccupant || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
 }
 
 UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, AActor* InQuerier)
@@ -98,24 +109,24 @@ UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandida
 	return nullptr;
 }
 
-void UPMCoverComponent::CoverSpot_OnOccupantChanged(const AActor* NewOccupant, const AActor* OldOccupant)
+void UPMCoverComponent::CoverSpot_OnOccupantChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewOccupant, const AActor* InOldOccupant)
 {
-	UpdateActorPropertySet(Occupants, NewOccupant, OldOccupant);
+	UpdateCoverSpotSet(OccupiedSpots, InCoverSpot, InNewOccupant);
 }
 
-void UPMCoverComponent::CoverSpot_OnReservationChanged(const AActor* NewReserver, const AActor* OldReserver)
+void UPMCoverComponent::CoverSpot_OnReservationChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewReserver, const AActor* InOldReserver)
 {
-	UpdateActorPropertySet(Reservations, NewReserver, OldReserver);
+	UpdateCoverSpotSet(ReservedSpots, InCoverSpot, InNewReserver);
 }
 
-void UPMCoverComponent::UpdateActorPropertySet(TSet<AActor const*>& InSet, const AActor* InNewActor, const AActor* InOldActor)
+void UPMCoverComponent::UpdateCoverSpotSet(TSet<const UPMCoverSpot*>& InSet, const UPMCoverSpot* InCoverSpot, const AActor* InNewActor)
 {
-	if (InOldActor != nullptr && InSet.Contains(InOldActor))
+	if (InNewActor == nullptr && InSet.Contains(InCoverSpot))
 	{
-		InSet.Remove(InOldActor);
+		InSet.Remove(InCoverSpot);
 	}
 	if (InNewActor != nullptr)
 	{
-		InSet.Emplace(InNewActor);
+		InSet.Emplace(InCoverSpot);
 	}
 }
