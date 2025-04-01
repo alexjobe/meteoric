@@ -33,5 +33,7 @@ bool FPMSTCond_HasLineOfSight::TestCondition(FStateTreeExecutionContext& Context
 
 	DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
 
-	return !World->LineTraceTestByChannel(TraceStart, TraceEnd, InstanceData.TraceChannel);
+	FHitResult HitResult;
+	World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, InstanceData.TraceChannel);
+	return !HitResult.IsValidBlockingHit();
 }
