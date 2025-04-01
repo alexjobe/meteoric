@@ -62,7 +62,7 @@ EStateTreeRunStatus FPMSTTask_ActivateAbility_Latent::Tick(FStateTreeExecutionCo
 
 	if (InstanceData.CompletionPolicy == EPMAbilityCompletionPolicy::OnAbilityEnd && InstanceData.bAbilityActive)
 	{
-		if (!ensure(InstanceData.AbilitySpecHandle.IsValid()))
+		if (!InstanceData.AbilitySpecHandle.IsValid())
 		{
 			return EStateTreeRunStatus::Stopped;
 		}
@@ -88,10 +88,10 @@ void FPMSTTask_ActivateAbility_Latent::ExitState(FStateTreeExecutionContext& Con
 	const IPuppetMasterInterface* PuppetMasterInterface = Cast<IPuppetMasterInterface>(InstanceData.AIController);
 	if (UPMPuppetComponent* PuppetComponent = PuppetMasterInterface ? PuppetMasterInterface->GetPuppetComponent() : nullptr; ensure(PuppetComponent))
 	{
-		UE_VLOG(Context.GetOwner(), LogPuppetMaster, Error, TEXT("FPMSTTask_ActivateAbility_Latent::ExitState -- Owner must implement IPuppetMasterInterface!"));
+		PuppetComponent->FinishAbilityByTag(InstanceData.AbilityTag);
 	}
 	else
 	{
-		PuppetComponent->FinishAbilityByTag(InstanceData.AbilityTag);
+		UE_VLOG(Context.GetOwner(), LogPuppetMaster, Error, TEXT("FPMSTTask_ActivateAbility_Latent::ExitState -- Owner must implement IPuppetMasterInterface!"));
 	}
 }

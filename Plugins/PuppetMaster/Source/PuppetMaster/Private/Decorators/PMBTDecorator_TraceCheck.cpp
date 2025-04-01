@@ -34,7 +34,7 @@ bool UPMBTDecorator_TraceCheck::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
 
-	return GetWorld()->LineTraceTestByChannel(TraceStart, TraceEnd, TraceChannel);;
+	return GetWorld()->LineTraceTestByChannel(TraceStart, TraceEnd, TraceChannel);
 }
 
 FString UPMBTDecorator_TraceCheck::GetStaticDescription() const

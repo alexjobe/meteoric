@@ -16,39 +16,28 @@ struct FPMFindCoverTaskInstanceData
 	TObjectPtr<class AAIController> AIController;
 
 	UPROPERTY(EditAnywhere, Category = Output)
-	FVector FoundCoverLocation;
+	FVector FoundCoverLocation = FVector::ZeroVector;
 	
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	FVector TargetLocation;
+	FVector TargetLocation = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	EPMCoverSearchMode SearchMode;
+	EPMCoverSearchMode SearchMode = EPMCoverSearchMode::LeastDistanceToQuerier;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	FVector SearchCenter;
+	FVector SearchCenter = FVector::ZeroVector;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	float SearchRadius;
+	float SearchRadius = 1000.f;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	float MinDistanceToTarget;
+	float MinDistanceToTarget = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	float MaxDistanceToTarget;
+	float MaxDistanceToTarget = 2000.f;
 
 	UPROPERTY(EditAnywhere, Category = Parameter)
-	bool bTestCoverSpotNavigable;
-
-	FPMFindCoverTaskInstanceData()
-		: FoundCoverLocation(FVector::ZeroVector)
-		, TargetLocation(FVector::ZeroVector)
-		, SearchMode(EPMCoverSearchMode::LeastDistanceToQuerier)
-		, SearchCenter(FVector::ZeroVector)
-		, SearchRadius(1000.f)
-		, MinDistanceToTarget(500.f)
-		, MaxDistanceToTarget(2000.f)
-		, bTestCoverSpotNavigable(true)
-	{}
+	bool bTestCoverSpotNavigable = true;
 };
 
 USTRUCT(meta = (DisplayName = "Find Cover", Category = "PuppetMaster|Cover"))
