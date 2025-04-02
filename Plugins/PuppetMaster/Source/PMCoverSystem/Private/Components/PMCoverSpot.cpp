@@ -17,10 +17,12 @@ UPMCoverSpot::UPMCoverSpot()
 	SetValidCoverHalfAngle(ValidCoverHalfAngle);
 }
 
-void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel)
+void UPMCoverSpot::InitializeCoverSpot(const TSubclassOf<UGameplayEffect>& InCoverEffectClass, const float InCoverEffectLevel,
+	const FIsCoverAvailableDelegate& InIsCoverAvailableDelegate)
 {
 	CoverEffectClass = InCoverEffectClass;
 	CoverEffectLevel = InCoverEffectLevel;
+	IsCoverAvailableDelegate = InIsCoverAvailableDelegate;
 }
 
 void UPMCoverSpot::SetValidCoverHalfAngle(const float InHalfAngle)
@@ -41,6 +43,10 @@ bool UPMCoverSpot::CanBeReserved(const AActor* InActor) const
 {
 	if (!ensure(InActor)) return false;
 	if (InActor == Occupant) return true;
+
+	const bool bIsCoverAvailable = IsCoverAvailableDelegate.IsBound() ? IsCoverAvailableDelegate.Execute(InActor) : false;
+	if (!bIsCoverAvailable) return false;
+	
 	return !IsReserved() && !IsOccupied();
 }
 
@@ -97,6 +103,9 @@ bool UPMCoverSpot::Occupy(AActor* InActor)
 {
 	if (IsOccupied()) return false;
 	if (!GetOwner()->HasAuthority()) return false;
+	
+	const bool bIsCoverAvailable = IsCoverAvailableDelegate.IsBound() ? IsCoverAvailableDelegate.Execute(InActor) : false;
+	if (!bIsCoverAvailable) return false;
 
 	const AActor* OldOccupant = Occupant;
 	Occupant = InActor;

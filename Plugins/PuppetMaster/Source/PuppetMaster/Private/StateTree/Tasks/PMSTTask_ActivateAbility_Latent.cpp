@@ -20,7 +20,8 @@ EStateTreeRunStatus FPMSTTask_ActivateAbility_Latent::EnterState(FStateTreeExecu
 		return EStateTreeRunStatus::Failed;
 	}
 
-	InstanceData.TimeStarted = World->GetTimeSeconds();
+	InstanceData.RemainingTime = FMath::FRandRange(
+			FMath::Max(0.0f, InstanceData.Duration - InstanceData.RandomDeviation), (InstanceData.Duration + InstanceData.RandomDeviation));
 
 	return EStateTreeRunStatus::Running;
 }
@@ -43,10 +44,9 @@ EStateTreeRunStatus FPMSTTask_ActivateAbility_Latent::Tick(FStateTreeExecutionCo
 		return EStateTreeRunStatus::Failed;
 	}
 
-	const float TimeSeconds = World->GetTimeSeconds();
-	const float ElapsedTime = TimeSeconds - InstanceData.TimeStarted;
+	InstanceData.RemainingTime -= DeltaTime;
 
-	if (InstanceData.CompletionPolicy == EPMAbilityCompletionPolicy::Duration && ElapsedTime >= InstanceData.Duration)
+	if (InstanceData.CompletionPolicy == EPMAbilityCompletionPolicy::Duration && InstanceData.RemainingTime <= 0.f)
 	{
 		if (InstanceData.bAbilityActive)
 		{

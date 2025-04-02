@@ -23,7 +23,9 @@ void UPMCoverComponent::BeginPlay()
 	GetOwner()->GetComponents(UPMCoverSpot::StaticClass(), CoverSpots);
 	for (const auto Spot : CoverSpots)
 	{
-		Spot->InitializeCoverSpot(CoverEffectClass, CoverEffectLevel);
+		FIsCoverAvailableDelegate IsCoverAvailableDelegate;
+		IsCoverAvailableDelegate.BindUObject(this, &UPMCoverComponent::IsCoverAvailable);
+		Spot->InitializeCoverSpot(CoverEffectClass, CoverEffectLevel, IsCoverAvailableDelegate);
 		Spot->SetValidCoverHalfAngle(ValidCoverHalfAngle);
 		Spot->OnOccupantChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnOccupantChanged);
 		Spot->OnReservationChangedEvent().AddUObject(this, &UPMCoverComponent::CoverSpot_OnReservationChanged);
@@ -63,18 +65,13 @@ bool UPMCoverComponent::IsCoverAvailable(const AActor* InQuerier) const
 	const int32 ClaimedSpots = OccupiedSpots.Num() + ReservedSpots.Num();
 	const int32 OpenSpots = CoverSpots.Num() - ClaimedSpots;
 	if (!ensure(OpenSpots >= 0)) return false;
-
-	bool bQuerierIsOccupant = false;
-	for (const auto& Spot : OccupiedSpots)
-	{
-		if (ensure(Spot) && Spot->GetOccupant() == InQuerier)
-		{
-			bQuerierIsOccupant = true;
-			break;
-		}
-	}
 	
-	return bQuerierIsOccupant || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
+	return IsClaimant(InQuerier) || (OpenSpots > 0 && ClaimedSpots < MaxOccupants);
+}
+
+bool UPMCoverComponent::IsClaimant(const AActor* InQuerier) const
+{
+	return Occupants.Contains(InQuerier) || Reservers.Contains(InQuerier);
 }
 
 UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandidate, TArray<TTuple<UPMCoverSpot*, float>>& InScoredSpots, AActor* InQuerier)
@@ -111,22 +108,57 @@ UPMCoverSpot* UPMCoverComponent::ChooseBestNavigableSpot(UPMCoverSpot* InCandida
 
 void UPMCoverComponent::CoverSpot_OnOccupantChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewOccupant, const AActor* InOldOccupant)
 {
+	if (!ensure(InCoverSpot)) return;
 	UpdateCoverSpotSet(OccupiedSpots, InCoverSpot, InNewOccupant);
+	UpdateClaimantSet(Occupants, OccupiedSpots, InNewOccupant, InOldOccupant);
+	
 }
 
 void UPMCoverComponent::CoverSpot_OnReservationChanged(const UPMCoverSpot* InCoverSpot, const AActor* InNewReserver, const AActor* InOldReserver)
 {
+	if (!ensure(InCoverSpot)) return;
 	UpdateCoverSpotSet(ReservedSpots, InCoverSpot, InNewReserver);
+	UpdateClaimantSet(Reservers, ReservedSpots, InNewReserver, InOldReserver);
 }
 
-void UPMCoverComponent::UpdateCoverSpotSet(TSet<const UPMCoverSpot*>& InSet, const UPMCoverSpot* InCoverSpot, const AActor* InNewActor)
+void UPMCoverComponent::UpdateCoverSpotSet(TSet<const UPMCoverSpot*>& CoverSpotSet, const UPMCoverSpot* CoverSpot, const AActor* NewClaimant)
 {
-	if (InNewActor == nullptr && InSet.Contains(InCoverSpot))
+	if (!ensure(CoverSpot)) return;
+	
+	if (NewClaimant == nullptr && CoverSpotSet.Contains(CoverSpot))
 	{
-		InSet.Remove(InCoverSpot);
+		CoverSpotSet.Remove(CoverSpot);
 	}
-	if (InNewActor != nullptr)
+	
+	if (NewClaimant != nullptr)
 	{
-		InSet.Emplace(InCoverSpot);
+		CoverSpotSet.Emplace(CoverSpot);
+	}
+}
+
+void UPMCoverComponent::UpdateClaimantSet(TSet<const AActor*>& ClaimantSet, TSet<const UPMCoverSpot*>& CoverSpotSet, const AActor* NewClaimant, const AActor* OldClaimant)
+{
+	// Check if old claimant is still a claimant. If not, remove from set.
+	if (NewClaimant == nullptr && OldClaimant != nullptr)
+	{
+		bool bClaimant = false;
+		for (const UPMCoverSpot* Spot : CoverSpotSet)
+		{
+			if (ensure(Spot); Spot->GetOccupant() == OldClaimant)
+			{
+				bClaimant = true;
+				break;
+			}
+		}
+		if (!bClaimant && ClaimantSet.Contains(OldClaimant))
+		{
+			ClaimantSet.Remove(OldClaimant);
+		}
+	}
+
+	// Add new claimant
+	if (NewClaimant != nullptr)
+	{
+		ClaimantSet.Emplace(NewClaimant);
 	}
 }

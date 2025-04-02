@@ -29,10 +29,16 @@ struct FPMLatentAbilityTaskInstanceData
 	UPROPERTY(EditAnywhere, Category = Parameter)
 	EPMAbilityCompletionPolicy CompletionPolicy = EPMAbilityCompletionPolicy::Duration;
 
+	/** Delay before the task ends. */
 	UPROPERTY(EditAnywhere, Category = Parameter)
 	float Duration = 5.f;
 
-	float TimeStarted = 0.f;
+	/** Adds random range to the Duration. */
+	UPROPERTY(EditAnywhere, Category = Parameter, meta = (ClampMin="0.0"))
+	float RandomDeviation = 0.f;
+
+	/** Internal countdown in seconds. */
+	float RemainingTime = 0.f;
 
 	bool bAbilityActive = false;
 

@@ -8,6 +8,7 @@
 #include "PMCoverSpot.generated.h"
 
 DECLARE_EVENT_ThreeParams(UPMCoverSpot, FOnCoverSpotChangedEvent, const class UPMCoverSpot* CoverSpot, const AActor* NewActor, const AActor* OldActor)
+DECLARE_DELEGATE_RetVal_OneParam(bool, FIsCoverAvailableDelegate, const AActor*)
 
 /*
  * Represents a single cover spot that can be occupied by actors with a PMCoverUserComponent. Intended to be attached to
@@ -20,8 +21,16 @@ class PMCOVERSYSTEM_API UPMCoverSpot : public USphereComponent
 
 public:
 	UPMCoverSpot();
+
+	/*
+	 * Initialize cover spot
+	 * @param InCoverEffectClass: Effect applied to actor using this cover
+	 * @param InCoverEffectLevel: CoverEffectClass level
+	 * @param InIsCoverAvailableDelegate: Delegate to check if cover spot can be claimed (owning cover object is not at max occupancy)
+	 */
+	void InitializeCoverSpot(const TSubclassOf<class UGameplayEffect>& InCoverEffectClass, float InCoverEffectLevel,
+		const FIsCoverAvailableDelegate& InIsCoverAvailableDelegate);
 	
-	void InitializeCoverSpot(const TSubclassOf<class UGameplayEffect>& InCoverEffectClass, float InCoverEffectLevel);
 	void SetValidCoverHalfAngle(const float InHalfAngle);
 
 	/*
@@ -47,10 +56,7 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<AActor> Occupant;
 
-	/* 
-	 * Actor that has reserved this spot - used to prevent multiple AI actors from attempting to move to the same spot
-	 * Reserving a spot is declaring intention to use it, but does not prevent other actors from occupying it
-	 */
+	/* Actor that has reserved this spot - used to prevent multiple AI actors from attempting to move to the same spot */
 	UPROPERTY(Transient)
 	TObjectPtr<AActor> Reserver;
 	
@@ -66,6 +72,9 @@ private:
 	FTimerHandle ReservationTimerHandle;
 	FOnCoverSpotChangedEvent ReservationChangedEvent;
 	FOnCoverSpotChangedEvent OccupantChangedEvent;
+
+	/* Delegate to check if cover spot can be claimed (owning cover object is not at max occupancy) */
+	FIsCoverAvailableDelegate IsCoverAvailableDelegate;
 
 	/*
 	 * Half angle of the cone with vertex at the cover spot, and axis along the cover spot's forward vector. Cover is
