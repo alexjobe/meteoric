@@ -56,6 +56,7 @@ void AMETAICharacter::PossessedBy(AController* NewController)
 	}
 	else if (UStateTreeAIComponent* StateTreeAIComponent = AIController->GetStateTreeAIComponent())
 	{
+		AIController->BrainComponent = StateTreeAIComponent;
 		StateTreeAIComponent->StartLogic();
 	}
 }

@@ -39,7 +39,9 @@ EStateTreeRunStatus FPMSTTask_LineOfSightCheck::Tick(FStateTreeExecutionContext&
 	DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 1.f);
 
 	FHitResult HitResult;
-	World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, InstanceData.TraceChannel);
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(MyPawn);
+	World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, InstanceData.TraceChannel, CollisionParams);
 	const bool bHasLineOfSight = !HitResult.IsValidBlockingHit();
 
 	return bHasLineOfSight ? EStateTreeRunStatus::Running : EStateTreeRunStatus::Failed;
