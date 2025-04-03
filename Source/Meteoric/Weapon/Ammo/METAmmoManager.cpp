@@ -10,6 +10,7 @@
 
 UMETAmmoManager::UMETAmmoManager()
 	: ReserveMaxAmmo(1000)
+	, bInfiniteAmmo(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -44,6 +45,8 @@ int32 UMETAmmoManager::AddReserveAmmo(UMETAmmoDataAsset* const InType, const int
 int32 UMETAmmoManager::TryConsumeReserveAmmo(UMETAmmoDataAsset* const InType, const int32 InConsumeCount)
 {
 	if (!ensure(InType) || !ensure(InType->WeaponTag.IsValid()) || !GetOwner()->HasAuthority()) return 0;
+	if (bInfiniteAmmo) return InConsumeCount;
+	
 	auto& [AmmoTypeToCount] = WeaponToReserveAmmo.FindOrAdd(InType->WeaponTag);
 	int32& AmmoCount = AmmoTypeToCount.FindOrAdd(InType);
 	

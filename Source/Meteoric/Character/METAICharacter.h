@@ -46,4 +46,8 @@ protected:
 	virtual void InitAbilityActorInfo() override;
 	virtual void Die() override;
 	//~ End AMETCharacter interface
+
+private:
+	UFUNCTION()
+	void AmmoManager_OnWeaponAmmoChanged(class UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo);
 };

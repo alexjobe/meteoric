@@ -61,4 +61,5 @@ namespace METGameplayTags
 
 	/* AI event tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIEvent_TargetActorUpdated);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(AIEvent_WeaponAmmoEmpty);
 }

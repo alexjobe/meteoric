@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 	int32 ReserveMaxAmmo;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	bool bInfiniteAmmo;
+
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	int32 GetReserveAmmoCount(UMETAmmoDataAsset* const InType);
 

@@ -18,7 +18,8 @@ public class Meteoric : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
-			"AIModule"
+			"AIModule",
+			"StateTreeModule"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]

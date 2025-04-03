@@ -10,6 +10,7 @@
 #include "Meteoric/AI/METAIController.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
+#include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 
 AMETAICharacter::AMETAICharacter()
 	: CorpseLifeSpan(10.f)
@@ -35,6 +36,11 @@ void AMETAICharacter::BeginPlay()
 	if (HasAuthority())
 	{
 		AddCharacterAbilities();
+	}
+
+	if (ensure(AmmoManager))
+	{
+		AmmoManager->OnWeaponAmmoChanged().AddUniqueDynamic(this, &AMETAICharacter::AmmoManager_OnWeaponAmmoChanged);
 	}
 }
 
@@ -103,4 +109,15 @@ void AMETAICharacter::Die()
 	Super::Die();
 	
 	SetLifeSpan(CorpseLifeSpan);
+}
+
+void AMETAICharacter::AmmoManager_OnWeaponAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
+{
+	if (AmmoCount < 1)
+	{
+		if (UStateTreeAIComponent* StateTreeAIComponent = AIController ? AIController->GetStateTreeAIComponent() : nullptr)
+		{
+			StateTreeAIComponent->SendStateTreeEvent(FStateTreeEvent(METGameplayTags::AIEvent_WeaponAmmoEmpty));
+		}
+	}
 }

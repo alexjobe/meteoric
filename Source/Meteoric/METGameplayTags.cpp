@@ -56,4 +56,5 @@ namespace METGameplayTags
 
 	/* AI event tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIEvent_TargetActorUpdated, "AIEvent.TargetActorUpdated", "Target actor updated event");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIEvent_WeaponAmmoEmpty, "AIEvent.WeaponAmmoEmpty", "Weapon ammo empty event");
 }

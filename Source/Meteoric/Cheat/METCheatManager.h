@@ -17,4 +17,7 @@ class METEORIC_API UMETCheatManager : public UCheatManager
 public:
 	UFUNCTION(Exec)
 	void DrawCoverDebug(const bool bShouldDraw) const;
+
+	UFUNCTION(Exec)
+	void InfiniteAmmo(const bool bInfiniteAmmo) const;
 };
