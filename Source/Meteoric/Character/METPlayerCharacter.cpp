@@ -52,10 +52,13 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 void AMETPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this); ensure(CrowdManager))
+
+	if (HasAuthority())
 	{
-		CrowdManager->RegisterAgent(this);
+		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this); ensure(CrowdManager))
+		{
+			CrowdManager->RegisterAgent(this);
+		}
 	}
 }
 

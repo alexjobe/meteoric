@@ -4,6 +4,7 @@
 #include "METAbilitySystemComponent.h"
 
 #include "Abilities/METGameplayAbility.h"
+#include "Meteoric/METGameplayTags.h"
 #include "Meteoric/METLogChannels.h"
 
 UMETAbilitySystemComponent::UMETAbilitySystemComponent()
@@ -47,7 +48,7 @@ FGameplayAbilitySpecHandle UMETAbilitySystemComponent::Input_AbilityInputTrigger
 FGameplayAbilitySpecHandle UMETAbilitySystemComponent::ActivateAbility(const FGameplayTag& InputTag, const EMETAbilityActivationPolicy& InActivationPolicy)
 {
 	FGameplayAbilitySpecHandle Handle;
-	if(!InputTag.IsValid()) return Handle;
+	if(!InputTag.IsValid() || HasMatchingGameplayTag(METGameplayTags::State_Dead)) return Handle;
 
 	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
@@ -70,7 +71,9 @@ FGameplayAbilitySpecHandle UMETAbilitySystemComponent::ActivateAbility(const FGa
 	}
 	if(!bAbilityFound)
 	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::ActivateAbility -- Unable to find ability with input tag %s!"), *InputTag.ToString())
+		const AActor* Owner = GetOwner();
+		const FString OwnerString = Owner? Owner->GetName() : TEXT("");
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::ActivateAbility -- Unable to find ability with input tag %s! Owner: %s"), *InputTag.ToString(), *OwnerString)
 	}
 	
 	return Handle;
@@ -78,7 +81,7 @@ FGameplayAbilitySpecHandle UMETAbilitySystemComponent::ActivateAbility(const FGa
 
 void UMETAbilitySystemComponent::Input_AbilityInputCompleted(const FGameplayTag& InputTag)
 {
-	if(!InputTag.IsValid()) return;
+	if(!InputTag.IsValid() || HasMatchingGameplayTag(METGameplayTags::State_Dead)) return;
 
 	bool bAbilityFound = false;
 	for(FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
@@ -95,7 +98,9 @@ void UMETAbilitySystemComponent::Input_AbilityInputCompleted(const FGameplayTag&
 	}
 	if(!bAbilityFound)
 	{
-		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputCompleted -- Unable to find ability with input tag %s"), *InputTag.ToString())
+		const AActor* Owner = GetOwner();
+		const FString OwnerString = Owner? Owner->GetName() : TEXT("");
+		UE_LOG(LogMETAbilitySystem, Warning, TEXT("UMETAbilitySystemComponent::Input_AbilityInputCompleted -- Unable to find ability with input tag %s! Owner: %s"), *InputTag.ToString(), *OwnerString)
 	}
 }
 

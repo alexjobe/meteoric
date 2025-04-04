@@ -137,57 +137,60 @@ void UMETWeaponManager::OnRep_Weapons(const TArray<AMETWeapon*>& InOldWeapons)
 	}
 }
 
-void UMETWeaponManager::PlayUnequipMontage()
+void UMETWeaponManager::PlayEquipMontage()
 {
-	UAnimMontage* UnequipMontage = PreviousWeapon ? PreviousWeapon->GetCharacterEquipWeaponMontage() : UnarmedCharacterEquipMontage.Get();
-	if (!ensure(UnequipMontage)) return;
+	UAnimMontage* EquipMontage = CurrentWeapon ? CurrentWeapon->GetCharacterEquipWeaponMontage() : UnarmedCharacterEquipMontage.Get();
+	if (!ensure(EquipMontage) || !ensure(OwningCharacter)) return;
 	
-	OwningCharacter->PlayAnimMontage(UnequipMontage, 1, FName("Unequip"));
-
-	const UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
-	if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(UnequipMontage) : nullptr)
+	OwningCharacter->PlayAnimMontage(EquipMontage, 1, FName("Equip"));
+	
+	const USkeletalMeshComponent* SkeletalMeshComponent = OwningCharacter->GetMesh();
+	const UAnimInstance* AnimInstance = SkeletalMeshComponent ? SkeletalMeshComponent->GetAnimInstance() : nullptr;
+	
+	if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(EquipMontage) : nullptr; ensure(MontageInstance))
 	{
-		MontageInstance->OnMontageBlendingOutStarted.BindLambda([this, MontageInstance](UAnimMontage*, bool)
-		{
-			MontageInstance->OnMontageBlendingOutStarted.Unbind();
-			MontageInstance->OnMontageEnded.Unbind();
-			PlayEquipMontage();
-		});
-
-		MontageInstance->OnMontageEnded.BindLambda([this, MontageInstance](UAnimMontage*, bool)
-		{
-			MontageInstance->OnMontageBlendingOutStarted.Unbind();
-			MontageInstance->OnMontageEnded.Unbind();
-			PlayEquipMontage();
-		});
+		MontageInstance->OnMontageBlendingOutStarted.BindUObject(this, &UMETWeaponManager::OnEquipMontageEnded);
+		MontageInstance->OnMontageEnded.BindUObject(this, &UMETWeaponManager::OnEquipMontageEnded);
 	}
 }
 
-void UMETWeaponManager::PlayEquipMontage()
+void UMETWeaponManager::PlayUnequipMontage()
 {
-	if (!ensure(CurrentWeapon)) return;
+	UAnimMontage* UnequipMontage = PreviousWeapon ? PreviousWeapon->GetCharacterEquipWeaponMontage() : UnarmedCharacterEquipMontage.Get();
+	if (!ensure(UnequipMontage) || !ensure(OwningCharacter)) return;
 	
-	OwningCharacter->PlayAnimMontage(CurrentWeapon->GetCharacterEquipWeaponMontage(), 1, FName("Equip"));
+	OwningCharacter->PlayAnimMontage(UnequipMontage, 1, FName("Unequip"));
 
-	if(const UAnimMontage* EquipMontage = CurrentWeapon->GetCharacterEquipWeaponMontage())
+	const USkeletalMeshComponent* SkeletalMeshComponent = OwningCharacter->GetMesh();
+	const UAnimInstance* AnimInstance = SkeletalMeshComponent ? SkeletalMeshComponent->GetAnimInstance() : nullptr;
+	
+	if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(UnequipMontage) : nullptr; ensure(MontageInstance))
 	{
-		const UAnimInstance* AnimInstance = OwningCharacter->GetMesh()->GetAnimInstance();
-		if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(EquipMontage) : nullptr)
-		{
-			MontageInstance->OnMontageBlendingOutStarted.BindLambda([this, MontageInstance](UAnimMontage*, bool)
-			{
-				MontageInstance->OnMontageBlendingOutStarted.Unbind();
-				MontageInstance->OnMontageEnded.Unbind();
-				FinishEquipWeapon();
-			});
+		MontageInstance->OnMontageBlendingOutStarted.BindUObject(this, &UMETWeaponManager::OnUnequipMontageEnded);
+		MontageInstance->OnMontageEnded.BindUObject(this, &UMETWeaponManager::OnUnequipMontageEnded);
+	}
+}
 
-			MontageInstance->OnMontageEnded.BindLambda([this, MontageInstance](UAnimMontage*, bool)
-			{
-				MontageInstance->OnMontageBlendingOutStarted.Unbind();
-				MontageInstance->OnMontageEnded.Unbind();
-				FinishEquipWeapon();
-			});
-		}
+void UMETWeaponManager::OnEquipMontageEnded(UAnimMontage* AnimMontage, bool bInterrupted)
+{
+	UnbindMontageCallbacks(OwningCharacter, AnimMontage);
+	FinishEquipWeapon();
+}
+
+void UMETWeaponManager::OnUnequipMontageEnded(UAnimMontage* AnimMontage, bool bInterrupted)
+{
+	UnbindMontageCallbacks(OwningCharacter, AnimMontage);
+	PlayEquipMontage();
+}
+
+void UMETWeaponManager::UnbindMontageCallbacks(const ACharacter* Character, const UAnimMontage* AnimMontage)
+{
+	const USkeletalMeshComponent* SkeletalMeshComponent = Character ? Character->GetMesh() : nullptr;
+	const UAnimInstance* AnimInstance = SkeletalMeshComponent ? SkeletalMeshComponent->GetAnimInstance() : nullptr;
+	if(FAnimMontageInstance* MontageInstance = AnimInstance ? AnimInstance->GetInstanceForMontage(AnimMontage) : nullptr)
+	{
+		MontageInstance->OnMontageBlendingOutStarted.Unbind();
+		MontageInstance->OnMontageEnded.Unbind();
 	}
 }
 

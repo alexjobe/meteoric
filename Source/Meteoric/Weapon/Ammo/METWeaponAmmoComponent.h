@@ -13,7 +13,7 @@ class METEORIC_API UMETWeaponAmmoComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", meta = (ClampMin = 0))
 	int32 MaxAmmo;
 	
 	UMETWeaponAmmoComponent();
@@ -30,6 +30,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	int32 GetMaxAmmo() const { return MaxAmmo; }
+
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	float GetAmmoPercentage() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	float GetImpactDamage() const;

@@ -31,7 +31,13 @@ EStateTreeRunStatus FPMSTTask_GetTargetActor::EnterState(FStateTreeExecutionCont
 		return EStateTreeRunStatus::Failed;
 	}
 
-	InstanceData.TargetActor = PuppetComponent->GetTargetActor();
-
+	AActor* TargetActor = PuppetComponent->GetTargetActor();
+	if (!TargetActor)
+	{
+		return EStateTreeRunStatus::Failed;
+	}
+	
+	InstanceData.TargetActor = TargetActor;
+	
 	return EStateTreeRunStatus::Running;
 }

@@ -51,6 +51,16 @@ void UMETWeaponAmmoComponent::CycleAmmo(const bool bInForward)
 	AmmoManager->WeaponAmmoTypeChanged(GetOwner(),CurrentAmmoType);
 }
 
+float UMETWeaponAmmoComponent::GetAmmoPercentage() const
+{
+	if (ensure(MaxAmmo > 0))
+	{
+		const float AmmoPercent = static_cast<float>(AmmoCount) / MaxAmmo * 100;
+		return AmmoPercent;
+	}
+	return 0.f;
+}
+
 float UMETWeaponAmmoComponent::GetImpactDamage() const
 {
 	if (CurrentAmmoType)

@@ -107,8 +107,12 @@ private:
 	UFUNCTION()
 	void OnRep_Weapons(const TArray<AMETWeapon*>& InOldWeapons);
 
-	void PlayUnequipMontage();
 	void PlayEquipMontage();
+	void PlayUnequipMontage();
+
+	void OnEquipMontageEnded(UAnimMontage* AnimMontage, bool bInterrupted);
+	void OnUnequipMontageEnded(UAnimMontage* AnimMontage, bool bInterrupted);
+	static void UnbindMontageCallbacks(const ACharacter* Character, const UAnimMontage* AnimMontage);
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
