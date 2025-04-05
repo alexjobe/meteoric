@@ -211,3 +211,16 @@ void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);
 	if(InteractionComponent) InteractionComponent->SetupPlayerInputComponent(PlayerInputComponent);
 }
+
+inline void AMETPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (HasAuthority())
+	{
+		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this); ensure(CrowdManager))
+		{
+			CrowdManager->UnregisterAgent(this);
+		}
+	}
+}
