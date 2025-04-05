@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(Exec)
 	void InfiniteAmmo(const bool bInfiniteAmmo) const;
+
+	UFUNCTION(Exec)
+	void FillReserveAmmo() const;
 };

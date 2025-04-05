@@ -218,7 +218,7 @@ inline void AMETPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 
 	if (HasAuthority())
 	{
-		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this); ensure(CrowdManager))
+		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this))
 		{
 			CrowdManager->UnregisterAgent(this);
 		}

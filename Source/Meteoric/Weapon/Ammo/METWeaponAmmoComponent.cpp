@@ -112,6 +112,15 @@ bool UMETWeaponAmmoComponent::TryConsumeAmmo(const int32 InConsumeCount)
 	return bConsumed;
 }
 
+void UMETWeaponAmmoComponent::FillReserveAmmo()
+{
+	if (!ensure(AmmoManager)) return;
+	for (TObjectPtr<UMETAmmoDataAsset>& AmmoType : AmmoTypes)
+	{
+		AmmoManager->AddReserveAmmo(AmmoType, AmmoManager->ReserveMaxAmmo);
+	}
+}
+
 void UMETWeaponAmmoComponent::OnWeaponEquipped(ACharacter* const InOwningCharacter)
 {
 	if (!ensure(InOwningCharacter)) return;

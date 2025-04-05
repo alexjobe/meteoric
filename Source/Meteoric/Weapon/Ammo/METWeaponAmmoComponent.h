@@ -49,6 +49,9 @@ public:
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);
 
+	UFUNCTION(BlueprintCallable, Category = "Ammo")
+	void FillReserveAmmo();
+
 	void OnWeaponEquipped(ACharacter* const InOwningCharacter);
 	void OnWeaponUnequipped();
 
