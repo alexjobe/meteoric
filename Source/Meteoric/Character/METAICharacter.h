@@ -45,6 +45,7 @@ protected:
 	//~ Begin AMETCharacter interface
 	virtual void InitAbilityActorInfo() override;
 	virtual void Die() override;
+	virtual void AttributeSet_OnAttributeDamageEvent(const float DamageAmount, const FGameplayEffectSpec& EffectSpec) override;
 	//~ End AMETCharacter interface
 
 private:

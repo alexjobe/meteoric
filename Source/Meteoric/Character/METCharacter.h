@@ -122,6 +122,8 @@ protected:
 	UFUNCTION()
 	void WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapons);
 
+	virtual void AttributeSet_OnAttributeDamageEvent(const float DamageAmount, const struct FGameplayEffectSpec& EffectSpec);
+
 	void BindAttributeChangedCallbacks();
 
 private:

@@ -26,6 +26,9 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	//~ End UAttributeSet interface
 
+	DECLARE_EVENT_TwoParams(UMETAttributeSet, FAttributeDamageEvent, const float, const FGameplayEffectSpec&);
+	FAttributeDamageEvent& OnAttributeDamageEvent() { return AttributeDamageEvent; }
+
 	/*
 	 * Primary Attributes
 	 */
@@ -82,5 +85,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_ArmorPiercing(const FGameplayAttributeData& InOldData) const;
-	
+
+	FAttributeDamageEvent AttributeDamageEvent;
 };

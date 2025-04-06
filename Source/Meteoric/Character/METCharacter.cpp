@@ -366,10 +366,16 @@ void AMETCharacter::WeaponManager_OnChangingWeaponsEvent(bool bInIsChangingWeapo
 	}
 }
 
+void AMETCharacter::AttributeSet_OnAttributeDamageEvent(const float DamageAmount, const FGameplayEffectSpec& EffectSpec)
+{
+	// Empty in base class
+}
+
 void AMETCharacter::BindAttributeChangedCallbacks()
 {
 	if (!ensure(AbilitySystemComponent) || !ensure(AttributeSet)) return;
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &ThisClass::HealthChanged);
+	AttributeSet->OnAttributeDamageEvent().AddUObject(this, &AMETCharacter::AttributeSet_OnAttributeDamageEvent);
 }
 
 void AMETCharacter::HealthChanged(const FOnAttributeChangeData& Data)

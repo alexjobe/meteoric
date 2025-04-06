@@ -16,8 +16,10 @@ public:
 
 protected:
 	//~ Begin UPMPuppetComponent interface
-	virtual void HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus) override;
+	virtual void HandleSense_Sight(AActor& InActor, const struct FAIStimulus& InStimulus) override;
 	virtual void HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus) override;
+	virtual void HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus) override;
+	virtual void HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus) override;
 	virtual FGameplayAbilitySpecHandle ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy = EPMAbilityActivationPolicy::OnInputStarted) override;
 	virtual void FinishAbilityByTag(const FGameplayTag& InTag) override;
 	virtual void TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int32 InCount) override;

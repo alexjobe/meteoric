@@ -82,9 +82,9 @@ protected:
 	FName MaxIdealTargetDistanceKeyName;
 
 	UFUNCTION()
-	virtual void PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, struct FAIStimulus InStimulus);
+	virtual void PerceptionComponent_OnTargetPerceptionInfoUpdated(const struct FActorPerceptionUpdateInfo& UpdateInfo);
 
-	virtual void HandleSense_Sight(AActor& InActor, const FAIStimulus& InStimulus);
+	virtual void HandleSense_Sight(AActor& InActor, const struct FAIStimulus& InStimulus);
 	virtual void HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus);
 	virtual void HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus);
 	virtual void HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus);

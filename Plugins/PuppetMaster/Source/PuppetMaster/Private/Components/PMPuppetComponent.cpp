@@ -42,7 +42,7 @@ void UPMPuppetComponent::InitializePuppet(AAIController* InController, const FGa
 
 	if (ensure(PerceptionComponent))
 	{
-		PerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::PerceptionComponent_OnTargetPerceptionUpdated);
+		PerceptionComponent->OnTargetPerceptionInfoUpdated.AddUniqueDynamic(this, &ThisClass::PerceptionComponent_OnTargetPerceptionInfoUpdated);
 	}
 	else
 	{
@@ -127,28 +127,31 @@ void UPMPuppetComponent::FinishAbilityByTag(const FGameplayTag& InTag)
 	// Empty in base class
 }
 
-void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus)
+void UPMPuppetComponent::PerceptionComponent_OnTargetPerceptionInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
-	if (!ensure(PerceptionComponent) || !ensure(InActor)) return;
+	if (!ensure(PerceptionComponent)) return;
+
+	AActor* PerceivedActor = UpdateInfo.Target.IsValid() ? UpdateInfo.Target.Get() : nullptr;
+	if (!PerceivedActor) return;
 	
-	const UAISenseConfig* SenseConfig = PerceptionComponent->GetSenseConfig(InStimulus.Type);
+	const UAISenseConfig* SenseConfig = PerceptionComponent->GetSenseConfig(UpdateInfo.Stimulus.Type);
 	if (!ensure(SenseConfig)) return;
 
 	if (SenseConfig->GetClass() == UAISenseConfig_Sight::StaticClass())
 	{
-		HandleSense_Sight(*InActor, InStimulus);
+		HandleSense_Sight(*PerceivedActor, UpdateInfo.Stimulus);
 	}
 	else if (SenseConfig->GetClass() == UAISenseConfig_Hearing::StaticClass())
 	{
-		HandleSense_Hearing(*InActor, InStimulus);
+		HandleSense_Hearing(*PerceivedActor, UpdateInfo.Stimulus);
 	}
 	else if (SenseConfig->GetClass() == UAISenseConfig_Damage::StaticClass())
 	{
-		HandleSense_Damage(*InActor, InStimulus);
+		HandleSense_Damage(*PerceivedActor, UpdateInfo.Stimulus);
 	}
 	else if (SenseConfig->GetClass() == UAISenseConfig_Touch::StaticClass())
 	{
-		HandleSense_Touch(*InActor, InStimulus);
+		HandleSense_Touch(*PerceivedActor, UpdateInfo.Stimulus);
 	}
 }
 

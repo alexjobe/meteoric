@@ -22,12 +22,24 @@ void UMETPuppetComponent::HandleSense_Sight(AActor& InActor, const FAIStimulus& 
 	if (!TargetActor)
 	{
 		SetTargetActor(&InActor);
-		SetState(METGameplayTags::AIState_Combat_FindCover);
 	}
 }
 
 void UMETPuppetComponent::HandleSense_Hearing(AActor& InActor, const FAIStimulus& InStimulus)
 {
+}
+
+void UMETPuppetComponent::HandleSense_Damage(AActor& InActor, const FAIStimulus& InStimulus)
+{
+	if (!TargetActor)
+	{
+		SetTargetActor(&InActor);
+	}
+}
+
+void UMETPuppetComponent::HandleSense_Touch(AActor& InActor, const FAIStimulus& InStimulus)
+{
+	
 }
 
 FGameplayAbilitySpecHandle UMETPuppetComponent::ActivateAbilityByTag(const FGameplayTag& InTag, const EPMAbilityActivationPolicy& InActivationPolicy)
@@ -69,7 +81,6 @@ void UMETPuppetComponent::TargetActor_OnGameplayTagEvent(FGameplayTag InTag, int
 {
 	if (InTag == METGameplayTags::State_Dead && InCount > 0)
 	{
-		SetState(METGameplayTags::State_Dead);
 		ClearTargetActor();
 	}
 }

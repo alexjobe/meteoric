@@ -11,6 +11,7 @@
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
+#include "Perception/AISense_Damage.h"
 
 AMETAICharacter::AMETAICharacter()
 	: CorpseLifeSpan(10.f)
@@ -109,6 +110,18 @@ void AMETAICharacter::Die()
 	Super::Die();
 	
 	SetLifeSpan(CorpseLifeSpan);
+}
+
+void AMETAICharacter::AttributeSet_OnAttributeDamageEvent(const float DamageAmount, const FGameplayEffectSpec& EffectSpec)
+{
+	Super::AttributeSet_OnAttributeDamageEvent(DamageAmount, EffectSpec);
+	
+	if (!ensure(AbilitySystemComponent) || AbilitySystemComponent->HasMatchingGameplayTag(METGameplayTags::State_Dead)) return;
+
+	if (AActor* SourceActor = EffectSpec.GetContext().GetEffectCauser())
+	{
+		UAISense_Damage::ReportDamageEvent(this, this, SourceActor, DamageAmount, SourceActor->GetActorLocation(), GetActorLocation());
+	}
 }
 
 void AMETAICharacter::AmmoManager_OnWeaponAmmoChanged(UMETAmmoDataAsset* const AmmoType, int32 AmmoCount, int32 MaxAmmo)
