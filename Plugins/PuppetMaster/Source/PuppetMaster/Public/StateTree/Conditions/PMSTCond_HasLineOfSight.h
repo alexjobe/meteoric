@@ -28,9 +28,6 @@ struct FPMHasLineOfSightInstanceData
 	float TargetHeightOffset = 0.f;
 };
 
-/**
-*
-*/
 USTRUCT(meta = (DisplayName = "Has Line of Sight", Category = "PuppetMaster"))
 struct FPMSTCond_HasLineOfSight : public FStateTreeConditionCommonBase
 {

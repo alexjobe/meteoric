@@ -16,7 +16,7 @@ EStateTreeRunStatus FPMSTTask_CoverCheck::EnterState(FStateTreeExecutionContext&
 
 EStateTreeRunStatus FPMSTTask_CoverCheck::Tick(FStateTreeExecutionContext& Context, const float DeltaTime) const
 {
-	FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
+	const FInstanceDataType& InstanceData = Context.GetInstanceData(*this);
 	
 	const APawn* Pawn = InstanceData.AIController ? InstanceData.AIController->GetPawn() : nullptr;
 	UPMCoverUserComponent* CoverUserComponent = Pawn ? Pawn->FindComponentByClass<UPMCoverUserComponent>() : nullptr;
@@ -27,11 +27,8 @@ EStateTreeRunStatus FPMSTTask_CoverCheck::Tick(FStateTreeExecutionContext& Conte
 		return EStateTreeRunStatus::Failed;
 	}
 
-	bool bValidCover = false;
-	if (const UPMCoverSpot* CoverSpot = CoverUserComponent->GetOccupiedCoverSpot())
-	{
-		bValidCover = CoverSpot->IsValidCover(InstanceData.TargetLocation);
-	}
+	const UPMCoverSpot* CoverSpot = CoverUserComponent->GetOccupiedCoverSpot();
+	const bool bValidCover = CoverSpot ? CoverSpot->IsValidCover(InstanceData.TargetLocation) : false;
 
 	return bValidCover ? EStateTreeRunStatus::Running : EStateTreeRunStatus::Failed;
 }
