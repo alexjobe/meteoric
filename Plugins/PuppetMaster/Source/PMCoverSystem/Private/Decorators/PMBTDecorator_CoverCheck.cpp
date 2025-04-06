@@ -69,7 +69,7 @@ bool UPMBTDecorator_CoverCheck::CalculateRawConditionValue(UBehaviorTreeComponen
 
 	if (const UPMCoverSpot* CoverSpot = CoverUserComponent->GetOccupiedCoverSpot())
 	{
-		return CoverSpot->GetCoverScore(TargetLocation) > 0.f;
+		return CoverSpot->IsValidCover(TargetLocation);
 	}
 
 	return false;

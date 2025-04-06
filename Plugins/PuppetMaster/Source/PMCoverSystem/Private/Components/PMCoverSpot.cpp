@@ -31,12 +31,17 @@ void UPMCoverSpot::SetValidCoverHalfAngle(const float InHalfAngle)
 	MinCoverScore = FMath::Cos(FMath::DegreesToRadians(ValidCoverHalfAngle));
 }
 
+bool UPMCoverSpot::IsValidCover(const FVector& InTargetLocation) const
+{
+	return GetCoverScore(InTargetLocation) >= MinCoverScore;
+}
+
 float UPMCoverSpot::GetCoverScore(const FVector& InTargetLocation) const
 {
 	FVector DirectionToTarget = InTargetLocation - GetComponentLocation();
 	DirectionToTarget.Normalize();
 	const float Score = FVector::DotProduct(GetForwardVector(), DirectionToTarget);
-	return Score > MinCoverScore ? Score : 0.f;
+	return Score >= MinCoverScore ? Score : 0.f;
 }
 
 bool UPMCoverSpot::CanBeReserved(const AActor* InActor) const

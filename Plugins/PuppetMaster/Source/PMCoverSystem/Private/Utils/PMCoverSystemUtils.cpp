@@ -63,7 +63,7 @@ UPMCoverSpot* UPMCoverSystemUtils::FindCover(const FPMFindCoverParams& Params)
 	// situations where the agent briefly steps out of cover to attack, then returns to cover
 	if (UPMCoverSpot* ReservedCoverSpot = CoverUserComponent->GetReservedCoverSpot())
 	{
-		if (ReservedCoverSpot->GetCoverScore(Params.TargetLocation) > 0 && ReservedCoverSpot->RenewReservation(Params.ContextActor))
+		if (ReservedCoverSpot->IsValidCover(Params.TargetLocation) && ReservedCoverSpot->RenewReservation(Params.ContextActor))
 		{
 			return ReservedCoverSpot;
 		}

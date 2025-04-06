@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "StateTreeExecutionContext.h"
 #include "Components/PMCoverSpot.h"
+#include "Logging/PMCoverSystemLog.h"
 #include "Utils/PMCoverSystemUtils.h"
 
 FPMSTTask_FindCover::FPMSTTask_FindCover()
@@ -19,7 +20,7 @@ EStateTreeRunStatus FPMSTTask_FindCover::EnterState(FStateTreeExecutionContext& 
 	APawn* Pawn = InstanceData.AIController ? InstanceData.AIController->GetPawn() : nullptr;
 	if (!Pawn)
 	{
-		UE_VLOG(Context.GetOwner(), LogStateTree, Error, TEXT("FPMSTTask_FindCover failed -- pawn not found!"));
+		UE_VLOG(Context.GetOwner(), LogCoverSystem, Error, TEXT("FPMSTTask_FindCover failed -- pawn not found!"));
 		return EStateTreeRunStatus::Failed;
 	}
 

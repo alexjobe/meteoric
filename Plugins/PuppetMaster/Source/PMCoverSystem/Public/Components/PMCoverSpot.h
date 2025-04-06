@@ -37,6 +37,7 @@ public:
 	 * Cover score is the dot product between the cover spot's forward vector and the direction vector from the cover
 	 * spot to the target location
 	 */
+	bool IsValidCover(const FVector& InTargetLocation) const;
 	float GetCoverScore(const FVector& InTargetLocation) const;
 	bool CanBeReserved(const AActor* InActor) const;
 	bool IsReserved() const { return Reserver != nullptr; }
