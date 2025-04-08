@@ -181,6 +181,8 @@ void AMETPlayerCharacter::Die()
 		{
 			GameMode->PlayerDied(GetController());
 		}
+
+		UnregisterCrowdAgent();
 	}
 }
 
@@ -190,6 +192,17 @@ void AMETPlayerCharacter::ResetControlRotation() const
 	if (PlayerController && PlayerController->IsLocalController())
 	{
 		PlayerController->SetControlRotation(GetActorRotation());
+	}
+}
+
+void AMETPlayerCharacter::UnregisterCrowdAgent()
+{
+	if (HasAuthority())
+	{
+		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this))
+		{
+			CrowdManager->UnregisterAgent(this);
+		}
 	}
 }
 
@@ -215,12 +228,5 @@ void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 inline void AMETPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-
-	if (HasAuthority())
-	{
-		if(UCrowdManager* CrowdManager = UCrowdManager::GetCurrent(this))
-		{
-			CrowdManager->UnregisterAgent(this);
-		}
-	}
+	UnregisterCrowdAgent();
 }

@@ -80,4 +80,7 @@ protected:
 	//~ End AMETCharacter interface
 	
 	void ResetControlRotation() const;
+	
+private:
+	void UnregisterCrowdAgent();
 };

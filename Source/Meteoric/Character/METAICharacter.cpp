@@ -11,6 +11,7 @@
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/GAS/METAttributeSet.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AISense_Damage.h"
 
 AMETAICharacter::AMETAICharacter()
@@ -105,6 +106,11 @@ void AMETAICharacter::Die()
 	if (UBrainComponent* BrainComponent = AIController ? AIController->GetBrainComponent() : nullptr; ensure(BrainComponent))
 	{
 		BrainComponent->StopLogic(FString("Dead"));
+	}
+	
+	if(UCrowdFollowingComponent* CrowdFollowingComponent = AIController ? AIController->GetComponentByClass<UCrowdFollowingComponent>() : nullptr; ensure(CrowdFollowingComponent))
+	{
+		CrowdFollowingComponent->SetCrowdSimulationState(ECrowdSimulationState::Disabled);
 	}
 	
 	Super::Die();

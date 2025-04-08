@@ -264,10 +264,22 @@ FGenericTeamId AMETCharacter::GetGenericTeamId() const
 void AMETCharacter::Die()
 {
 	RemoveCharacterAbilities();
+
+	if (UCapsuleComponent* Capsule = GetCapsuleComponent(); ensure(Capsule))
+	{
+		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 	
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetCharacterMovement()->GravityScale = 0.f;
-	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+	if (USkeletalMeshComponent* MeshComponent = GetMesh(); ensure(MeshComponent))
+	{
+		MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement(); ensure(MovementComponent))
+	{
+		MovementComponent->GravityScale = 0.f;
+		MovementComponent->Velocity = FVector::ZeroVector;
+	}
 	
 	AimRotation = FRotator::ZeroRotator;
 	ActorAimRotationDelta = FRotator::ZeroRotator;
