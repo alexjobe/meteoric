@@ -23,7 +23,10 @@ public:
 	//~ End UAnimInstance interface
 
 	UFUNCTION(BlueprintGetter)
-	UAnimSequence* GetIdleWeaponAnim() const { return IdleWeaponAnim; }
+	UAnimSequence* GetCurrentIdleAnim() const { return CurrentIdleAnim; }
+
+	UFUNCTION(BlueprintGetter)
+	UAnimSequence* GetPreviousIdleAnim() const { return PreviousIdleAnim; }
 
 protected:
 	UPROPERTY(Transient)
@@ -35,8 +38,17 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimSequence> IdleWeaponAnim;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	TObjectPtr<UAnimSequence> CurrentIdleAnim;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	TObjectPtr<UAnimSequence> PreviousIdleAnim;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	float IdleBlendAlpha;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	float IdleBlendDuration;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	FVector Velocity;

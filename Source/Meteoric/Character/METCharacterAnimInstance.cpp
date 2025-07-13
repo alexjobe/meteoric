@@ -11,17 +11,22 @@
 #include "Meteoric/Weapon/Handling/METWeaponSwayComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
-	: Direction(0.f)
+	: IdleBlendAlpha(1.f)
+	, Velocity(0.f)
+	, Direction(0.f)
 	, GroundSpeed(0.f)
 	, bShouldMove(false)
 	, bIsFalling(false)
 	, bIsCrouched(false)
 	, CrouchBlendTime(0.2f)
+	, ActorControlRotationDelta(0.f)
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
+	, WeaponSwayRotation(0.f)
 	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
+	, IdleBlendDuration(0.25f)
 {
 }
 
@@ -53,6 +58,11 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	SetRightHandToCameraRoot();
 	SetLeftHandToRightHand();
 	UpdateRecoilOffset();
+
+	if (IdleBlendAlpha < 1.f && IdleBlendDuration > 0.f)
+	{
+		IdleBlendAlpha = FMath::Clamp(IdleBlendAlpha + DeltaSeconds / IdleBlendDuration, 0.f, 1.f);
+	}
 
 	if(Character->IsAiming())
 	{
@@ -186,7 +196,9 @@ void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* 
 	
 	if(CurrentWeapon)
 	{
-		IdleWeaponAnim = CurrentWeapon->GetCharacterIdleWeaponAnim();
+		PreviousIdleAnim = CurrentIdleAnim;
+		CurrentIdleAnim = CurrentWeapon->GetCharacterIdleWeaponAnim();
+		IdleBlendAlpha = PreviousIdleAnim ? 0.f : 1.f;
 		SightCameraOffset = CurrentWeapon->SightCameraOffset;
 		AimDownSightsSpeed = CurrentWeapon->AimDownSightsSpeed;
 		RightHandToSight = CurrentWeapon->RightHandToSight;
