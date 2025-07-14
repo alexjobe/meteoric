@@ -217,16 +217,29 @@ void AMETCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AMETCharacter::FireWeapon(const bool bInHeld)
+void AMETCharacter::StartFireWeapon(const bool bInHeld)
 {
 	if(AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
 	{
-		CurrentWeapon->Fire(bInHeld);
+		CurrentWeapon->StartFire(bInHeld);
 	}
 
 	if(HasAuthority())
 	{
-		Multicast_FireWeapon(bInHeld);
+		Multicast_StartFireWeapon(bInHeld);
+	}
+}
+
+void AMETCharacter::FinishFireWeapon(const bool bInHeld) const
+{
+	if(const AMETWeapon* const CurrentWeapon = WeaponManager->GetCurrentWeapon())
+	{
+		CurrentWeapon->FinishFire(bInHeld);
+	}
+
+	if(HasAuthority())
+	{
+		Multicast_FinishFireWeapon(bInHeld);
 	}
 }
 
@@ -307,12 +320,21 @@ void AMETCharacter::Die()
 	}
 }
 
-void AMETCharacter::Multicast_FireWeapon_Implementation(bool bInHeld)
+void AMETCharacter::Multicast_StartFireWeapon_Implementation(const bool bInHeld)
 {
 	const ENetRole LocalRole = GetLocalRole();
 	if (LocalRole == ROLE_SimulatedProxy)
 	{
-		FireWeapon(bInHeld);
+		StartFireWeapon(bInHeld);
+	}
+}
+
+void AMETCharacter::Multicast_FinishFireWeapon_Implementation(const bool bInHeld) const
+{
+	const ENetRole LocalRole = GetLocalRole();
+	if (LocalRole == ROLE_SimulatedProxy)
+	{
+		FinishFireWeapon(bInHeld);
 	}
 }
 

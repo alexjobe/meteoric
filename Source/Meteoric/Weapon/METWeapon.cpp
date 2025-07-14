@@ -5,19 +5,19 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "Projectile/METProjectileWeaponComponent.h"
-#include "Handling/METRecoilComponent.h"
-#include "Handling/METWeaponSwayComponent.h"
 #include "Ammo/METWeaponAmmoComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "Handling/METRecoilComponent.h"
 #include "Handling/METWeaponSpreadComponent.h"
+#include "Handling/METWeaponSwayComponent.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/Animation/METAnimationUtils.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 #include "Meteoric/Interaction/METInteractableComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Projectile/METProjectileWeaponComponent.h"
 
 AMETWeapon::AMETWeapon()
 	: SightCameraOffset(30.f)
@@ -155,7 +155,7 @@ void AMETWeapon::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AMETWeapon::Fire(bool bInHeld)
+void AMETWeapon::StartFire(const bool bInHeld)
 {
 	if(!bCanFire) return;
 	if(bInHeld && FiringMode != EWeaponFiringMode::Automatic) return;
@@ -170,7 +170,10 @@ void AMETWeapon::Fire(bool bInHeld)
 		OwningCharacter->PlayAnimMontage(AnimationSettings.CharacterFireMontage);
 		UMETAnimationUtils::PlayAnimMontage(Mesh, AnimationSettings.WeaponFireMontage);
 	}
+}
 
+void AMETWeapon::FinishFire(const bool bInHeld) const
+{
 	if(ensure(RecoilComponent))
 	{
 		RecoilComponent->OnWeaponFired();

@@ -19,6 +19,8 @@ UMETRecoilComponent::UMETRecoilComponent()
 	, RecoilForce_Pitch(100.f)
 	, FiringMode(EWeaponFiringMode::SingleShot)
 	, FireActionStartTime(0.f)
+	, CurrentRecoilCurvePos(0.f)
+	, LastRecoilCurvePos(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }

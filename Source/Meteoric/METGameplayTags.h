@@ -43,6 +43,7 @@ namespace METGameplayTags
 
 	/* Event tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventTag_FireCooldown);
+	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(EventTag_FireAnimNotify);
 
 	/* Weapon tags */
 	METEORIC_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Pistol);

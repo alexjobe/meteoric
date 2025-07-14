@@ -38,6 +38,7 @@ namespace METGameplayTags
 
 	/* Event tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventTag_FireCooldown, "EventTag.FireCooldown", "Fire cooldown event");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(EventTag_FireAnimNotify, "EventTag.FireAnimNotify", "Fire animation notify event");
 
 	/* Weapon tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Pistol, "Weapon.Pistol", "Pistol weapon tag");

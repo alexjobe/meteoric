@@ -19,13 +19,17 @@ public:
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-	void FireWeapon();
+	
+	void StartFireWeapon();
 	void SpawnProjectiles() const;
 	struct FMETSpawnProjectileParams CreateProjectileSpawnParams() const;
 
+	bool BindWaitFireAnimNotifyTask();
 	bool BindWaitFireCooldownEventTask();
 	bool BindWaitInputReleaseTask();
+
+	UFUNCTION()
+	void OnFireAnimNotify(FGameplayEventData Payload);
 
 	UFUNCTION()
 	void OnFireCooldown(FGameplayEventData Payload);

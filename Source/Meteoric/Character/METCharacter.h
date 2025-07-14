@@ -7,6 +7,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "METCharacterTypes.h"
 #include "GameFramework/Character.h"
+#include "Meteoric/Weapon/Projectile/METProjectileWeaponComponent.h"
 #include "METCharacter.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMETCharacter, Log, All);
@@ -48,7 +49,9 @@ public:
 	bool CanFireWeapon() const;
 
 	UFUNCTION(BlueprintCallable)
-	void FireWeapon(const bool bInHeld);
+	void StartFireWeapon(const bool bInHeld);
+
+	void FinishFireWeapon(const bool bInHeld) const;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAimDownSightsEvent, bool, bIsAiming);
 	FAimDownSightsEvent& OnAimDownSights() { return AimDownSightsEvent; }
@@ -113,8 +116,11 @@ protected:
 
 	virtual void Die();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_FireWeapon(bool bInHeld);
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_StartFireWeapon(const bool bInHeld);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_FinishFireWeapon(const bool bInHeld) const;
 
 	UFUNCTION()
 	void OnRep_IsAiming();

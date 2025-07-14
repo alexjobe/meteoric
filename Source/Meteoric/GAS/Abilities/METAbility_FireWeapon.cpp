@@ -33,22 +33,19 @@ void UMETAbility_FireWeapon::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 		return;
 	}
 
-	if (ActivationPolicy == EMETAbilityActivationPolicy::OnInputStarted)
-	{
-		FireWeapon();
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return;
-	}
-
 	/* Automatic weapon */
-	if (BindWaitFireCooldownEventTask())
+	if (ActivationPolicy == EMETAbilityActivationPolicy::OnInputTriggered)
 	{
-		FireWeapon();
+		BindWaitFireCooldownEventTask();
 		BindWaitInputReleaseTask();
 	}
+
+	BindWaitFireAnimNotifyTask();
+
+	StartFireWeapon();
 }
 
-void UMETAbility_FireWeapon::FireWeapon()
+void UMETAbility_FireWeapon::StartFireWeapon()
 {
 	AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
 	if (!ensure(MetCharacter) || !MetCharacter->CanFireWeapon())
@@ -58,12 +55,7 @@ void UMETAbility_FireWeapon::FireWeapon()
 	}
 
 	const bool bHeld = ActivationPolicy == EMETAbilityActivationPolicy::OnInputTriggered;
-	MetCharacter->FireWeapon(bHeld);
-
-	if (GetAvatarActorFromActorInfo()->HasAuthority())
-	{
-		SpawnProjectiles();
-	}
+	MetCharacter->StartFireWeapon(bHeld);
 }
 
 void UMETAbility_FireWeapon::SpawnProjectiles() const
@@ -107,6 +99,22 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 	return SpawnParams;
 }
 
+bool UMETAbility_FireWeapon::BindWaitFireAnimNotifyTask()
+{
+	if (const auto WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, METGameplayTags::EventTag_FireAnimNotify))
+	{
+		WaitGameplayEventTask->EventReceived.AddUniqueDynamic(this, &ThisClass::OnFireAnimNotify);
+		WaitGameplayEventTask->ReadyForActivation();
+	}
+	else
+	{
+		UE_LOG(LogMETAbilitySystem, Error, TEXT("UMETAbility_FireWeapon: Failed to bind WaitGameplayEventTask"))
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		return false;
+	}
+	return true;
+}
+
 bool UMETAbility_FireWeapon::BindWaitFireCooldownEventTask()
 {
 	if (const auto WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, METGameplayTags::EventTag_FireCooldown))
@@ -139,9 +147,30 @@ bool UMETAbility_FireWeapon::BindWaitInputReleaseTask()
 	return true;
 }
 
+void UMETAbility_FireWeapon::OnFireAnimNotify(FGameplayEventData Payload)
+{
+	const bool bHasAuthority = GetAvatarActorFromActorInfo()->HasAuthority();
+	if (bHasAuthority)
+	{
+		SpawnProjectiles();
+	}
+
+	const bool bHeld = ActivationPolicy == EMETAbilityActivationPolicy::OnInputTriggered;
+	if (const AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo(); ensure(MetCharacter))
+	{
+		MetCharacter->FinishFireWeapon(bHeld);
+	}
+
+	/* Single shot weapon */
+	if (ActivationPolicy == EMETAbilityActivationPolicy::OnInputStarted && bHasAuthority)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}
+}
+
 void UMETAbility_FireWeapon::OnFireCooldown(FGameplayEventData Payload)
 {
-	FireWeapon();
+	StartFireWeapon();
 }
 
 void UMETAbility_FireWeapon::OnInputReleased(float TimeHeld)

@@ -65,7 +65,8 @@ private:
 public:
 	void SetWeaponDroppedState(bool bInDropped);
 
-	void Fire(bool bInHeld);
+	void StartFire(const bool bInHeld);
+	void FinishFire(const bool bInHeld) const;
 	bool CanFire() const;
 
 	float GetFiringRate() const { return FiringRate >= 0.f ? FiringRate : 0.f; }
@@ -79,7 +80,9 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReloadSignature, bool, bIsReloading);
 	FOnReloadSignature& OnReload() { return OnReloadEvent; }
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	ACharacter* GetOwningCharacter() { return OwningCharacter; }
+	
 	USkeletalMeshComponent* GetMesh() const { return Mesh; }
 	class UMETRecoilComponent* GetRecoilComponent() const { return RecoilComponent; }
 	class UMETWeaponSwayComponent* GetWeaponSwayComponent() const { return WeaponSwayComponent; }
