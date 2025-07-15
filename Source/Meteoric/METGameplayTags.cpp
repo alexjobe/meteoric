@@ -44,6 +44,7 @@ namespace METGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Pistol, "Weapon.Pistol", "Pistol weapon tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Rifle, "Weapon.Rifle", "Rifle weapon tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_Shotgun, "Weapon.Shotgun", "Shotgun weapon tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_RocketLauncher, "Weapon.RocketLauncher", "Rocket launcher weapon tag");
 	
 	/* AI state tags */
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(AIState_Idle, "AIState.Idle", "Idle state tag");
