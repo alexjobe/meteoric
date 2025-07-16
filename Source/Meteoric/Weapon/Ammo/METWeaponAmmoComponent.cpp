@@ -3,7 +3,6 @@
 
 #include "METWeaponAmmoComponent.h"
 
-#include "METAmmoDataAsset.h"
 #include "METAmmoManager.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
@@ -61,38 +60,20 @@ float UMETWeaponAmmoComponent::GetAmmoPercentage() const
 	return 0.f;
 }
 
-float UMETWeaponAmmoComponent::GetImpactDamage() const
+const FMETAmmoDamageConfig* UMETWeaponAmmoComponent::GetImpactDamageConfig() const
 {
 	if (CurrentAmmoType)
 	{
-		return CurrentAmmoType->ImpactDamage;
-	}
-	return 0.f;
-}
-
-float UMETWeaponAmmoComponent::GetDelayedDamage() const
-{
-	if (CurrentAmmoType)
-	{
-		return CurrentAmmoType->DelayedDamage;
-	}
-	return 0.f;
-}
-
-TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetImpactDamageEffectClass() const
-{
-	if (CurrentAmmoType)
-	{
-		return CurrentAmmoType->ImpactDamageEffectClass;
+		return &CurrentAmmoType->ImpactDamageConfig;
 	}
 	return nullptr;
 }
 
-TSubclassOf<UGameplayEffect> UMETWeaponAmmoComponent::GetDelayedDamageEffectClass() const
+const FMETAmmoDamageConfig* UMETWeaponAmmoComponent::GetDelayedDamageConfig() const
 {
 	if (CurrentAmmoType)
 	{
-		return CurrentAmmoType->DelayedDamageEffectClass;
+		return &CurrentAmmoType->DelayedDamageConfig;
 	}
 	return nullptr;
 }

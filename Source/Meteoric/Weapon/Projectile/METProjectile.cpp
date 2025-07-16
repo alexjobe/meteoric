@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
 
@@ -58,23 +59,63 @@ void AMETProjectile::CollisionComponent_OnComponentBeginOverlap(UPrimitiveCompon
 
 	bCollided = true;
 	
-	if (ImpactDamageEffectHandle.IsValid())
+	if (ImpactDamageHandle.IsValid())
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor))
+		UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactDamageHandle.EffectHandle, SweepResult);
+
+		if (ImpactDamageHandle.bExplosive)
 		{
-			UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactDamageEffectHandle, SweepResult);
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*ImpactDamageEffectHandle.Data.Get());
+			Explode(ImpactDamageHandle);
+		}
+		else
+		{
+			ApplyDamageEffect(*OtherActor, ImpactDamageHandle.EffectHandle);
 		}
 	}
 
-	if (DelayedDamageEffectHandle.IsValid())
+	if (DelayedDamageHandle.IsValid())
 	{
-		UMETAbilitySystemUtils::AddHitResultToEffectSpec(DelayedDamageEffectHandle, SweepResult);
+		UMETAbilitySystemUtils::AddHitResultToEffectSpec(DelayedDamageHandle.EffectHandle, SweepResult);
 		StartDelayedDamageTimer(OtherActor, OtherComp, SweepResult);
 	}
 	else
 	{
 		Destroy();
+	}
+}
+
+void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage) const
+{
+	const FVector ExplosionLocation = GetActorLocation();
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	const TArray<AActor*> ActorsToIgnore;
+	TArray<AActor*> HitActors;
+
+	UKismetSystemLibrary::SphereOverlapActors(this, ExplosionLocation, InDamage.ExplosionRadius,
+		ObjectTypes, nullptr, ActorsToIgnore, HitActors);
+
+	DrawDebugSphere(GetWorld(), ExplosionLocation, InDamage.ExplosionRadius,
+		16, FColor::Red, false, 2.f, 0, 2.f);
+	
+	for (const auto& Actor : HitActors)
+	{
+		if (ensure(Actor))
+		{
+			ApplyDamageEffect(*Actor, InDamage.EffectHandle);
+		}
+	}
+}
+
+void AMETProjectile::ApplyDamageEffect(const AActor& InActor, const FGameplayEffectSpecHandle& InEffectHandle)
+{
+	if (ensure(InEffectHandle.IsValid()))
+	{
+		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(&InActor))
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*InEffectHandle.Data.Get());
+		}
 	}
 }
 
@@ -90,12 +131,15 @@ void AMETProjectile::StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveCom
 
 void AMETProjectile::ApplyDelayedDamage(AActor* InOtherActor)
 {
-	if (ensure(DelayedDamageEffectHandle.IsValid()) && ensure(IsValid(InOtherActor)))
+	if (!ensure(IsValid(InOtherActor))) return;
+
+	if (DelayedDamageHandle.bExplosive)
 	{
-		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(InOtherActor))
-		{
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*DelayedDamageEffectHandle.Data.Get());
-		}
+		Explode(DelayedDamageHandle);
+	}
+	else
+	{
+		ApplyDamageEffect(*InOtherActor, DelayedDamageHandle.EffectHandle);
 	}
 
 	Destroy();

@@ -12,6 +12,7 @@
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	: IdleBlendAlpha(1.f)
+	, IdleBlendDuration(0.25f)
 	, Velocity(0.f)
 	, Direction(0.f)
 	, GroundSpeed(0.f)
@@ -26,7 +27,6 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, WeaponSwayRotation(0.f)
 	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
-	, IdleBlendDuration(0.25f)
 {
 }
 

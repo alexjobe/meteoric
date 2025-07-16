@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "METAmmoDataAsset.h"
 #include "Components/ActorComponent.h"
 #include "METWeaponAmmoComponent.generated.h"
 
@@ -34,17 +35,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	float GetAmmoPercentage() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	float GetImpactDamage() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	float GetDelayedDamage() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	TSubclassOf<class UGameplayEffect> GetImpactDamageEffectClass() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Ammo")
-	TSubclassOf<UGameplayEffect> GetDelayedDamageEffectClass() const;
+	const FMETAmmoDamageConfig* GetImpactDamageConfig() const;
+	const FMETAmmoDamageConfig* GetDelayedDamageConfig() const;
 
 	// Try to consume ammo, and return true if successful
 	bool TryConsumeAmmo(const int32 InConsumeCount = 1);

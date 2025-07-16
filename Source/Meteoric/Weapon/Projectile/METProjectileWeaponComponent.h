@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
+#include "METProjectileTypes.h"
 #include "Components/ActorComponent.h"
 #include "METProjectileWeaponComponent.generated.h"
 
@@ -18,8 +18,8 @@ struct FMETSpawnProjectileParams
 	UPROPERTY(Transient)
 	APawn* Instigator;
 
-	FGameplayEffectSpecHandle ImpactDamageEffectHandle;
-	FGameplayEffectSpecHandle DelayedDamageEffectHandle;
+	FMETProjectileDamageHandle ImpactDamageHandle;
+	FMETProjectileDamageHandle DelayedDamageHandle;
 
 	FMETSpawnProjectileParams()
 		: Owner(nullptr)

@@ -48,8 +48,8 @@ void UMETProjectileWeaponComponent::SpawnProjectile(const FMETSpawnProjectilePar
 
 	if (ensure(Projectile))
 	{
-		Projectile->ImpactDamageEffectHandle = Params.ImpactDamageEffectHandle;
-		Projectile->DelayedDamageEffectHandle = Params.DelayedDamageEffectHandle;
+		Projectile->ImpactDamageHandle = Params.ImpactDamageHandle;
+		Projectile->DelayedDamageHandle = Params.DelayedDamageHandle;
 		Projectile->FinishSpawning(SpawnTransform);
 		Projectile->Fire(SpawnTransform.GetRotation().Vector());
 	}

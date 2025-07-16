@@ -84,16 +84,28 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 	AMETCharacter* MetCharacter = GetMetCharacterFromActorInfo();
 	const AMETWeapon* Weapon = MetCharacter ? MetCharacter->GetWeapon() : nullptr;
 	const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
-	
-	const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = AmmoComponent ? AmmoComponent->GetImpactDamageEffectClass() : nullptr;
-	const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = AmmoComponent ? AmmoComponent->GetDelayedDamageEffectClass() : nullptr;
 
-	if (ensure(ImpactDamageEffectClass))
+	const FMETAmmoDamageConfig* ImpactDamageConfig = AmmoComponent ? AmmoComponent->GetImpactDamageConfig() : nullptr;
+	const FMETAmmoDamageConfig* DelayedDamageConfig = AmmoComponent ? AmmoComponent->GetDelayedDamageConfig() : nullptr;
+	
+	const TSubclassOf<UGameplayEffect> ImpactDamageEffectClass = ImpactDamageConfig ? ImpactDamageConfig->DamageEffectClass : nullptr;
+	const TSubclassOf<UGameplayEffect> DelayedDamageEffectClass = DelayedDamageConfig ? DelayedDamageConfig->DamageEffectClass : nullptr;
+
+	SpawnParams.Owner = GetOwningActorFromActorInfo();
+	SpawnParams.Instigator = MetCharacter;
+
+	if (ImpactDamageEffectClass)
 	{
-		SpawnParams.Owner = GetOwningActorFromActorInfo();
-		SpawnParams.Instigator = MetCharacter;
-		SpawnParams.ImpactDamageEffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, AmmoComponent->GetImpactDamage());
-		SpawnParams.DelayedDamageEffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, AmmoComponent->GetDelayedDamage());
+		SpawnParams.ImpactDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, ImpactDamageConfig->Damage);
+		SpawnParams.ImpactDamageHandle.bExplosive = ImpactDamageConfig->bExplosive;
+		SpawnParams.ImpactDamageHandle.ExplosionRadius = ImpactDamageConfig->ExplosionRadius;
+	}
+
+	if (DelayedDamageEffectClass)
+	{
+		SpawnParams.DelayedDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, DelayedDamageConfig->Damage);
+		SpawnParams.DelayedDamageHandle.bExplosive = DelayedDamageConfig->bExplosive;
+		SpawnParams.DelayedDamageHandle.ExplosionRadius = DelayedDamageConfig->ExplosionRadius;
 	}
 
 	return SpawnParams;

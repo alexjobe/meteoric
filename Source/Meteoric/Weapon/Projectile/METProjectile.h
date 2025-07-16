@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
+#include "METProjectileTypes.h"
 #include "GameFramework/Actor.h"
 #include "METProjectile.generated.h"
 
@@ -28,9 +29,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float DamageDelay;
-	
-	FGameplayEffectSpecHandle ImpactDamageEffectHandle;
-	FGameplayEffectSpecHandle DelayedDamageEffectHandle;
+
+	FMETProjectileDamageHandle ImpactDamageHandle;
+	FMETProjectileDamageHandle DelayedDamageHandle;
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,8 +39,12 @@ protected:
 	UFUNCTION()
 	void CollisionComponent_OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void Explode(const FMETProjectileDamageHandle& InDamage) const;
+
 private:
 	FTimerHandle DamageTimerHandle;
+
+	static void ApplyDamageEffect(const AActor& InActor, const FGameplayEffectSpecHandle& InEffectHandle);
 	
 	void StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveComponent* InOtherComponent, const FHitResult& InHitResult);
 

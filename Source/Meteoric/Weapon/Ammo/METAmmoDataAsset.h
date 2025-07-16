@@ -7,6 +7,35 @@
 #include "Engine/DataAsset.h"
 #include "METAmmoDataAsset.generated.h"
 
+USTRUCT(BlueprintType)
+struct FMETAmmoDamageConfig
+{
+	GENERATED_BODY()
+
+	/* Gameplay Effect applied to target */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> DamageEffectClass;
+
+	/* Damage magnitude */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	float Damage;
+
+	/* If true, damage will be applied to all targets in a sphere */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	bool bExplosive;
+
+	/* Radius of sphere explosion (if applicable) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	float ExplosionRadius;
+
+	FMETAmmoDamageConfig()
+		: DamageEffectClass(nullptr)
+		, Damage(0.f)
+		, bExplosive(false)
+		, ExplosionRadius(0.f)
+	{}
+};
+
 /**
  * 
  */
@@ -16,26 +45,23 @@ class METEORIC_API UMETAmmoDataAsset : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UMETAmmoDataAsset();
-
+	/* Ammo name */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo")
 	FName Name;
-	
+
+	/* Gameplay Tag of the associated weapon */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	FGameplayTag WeaponTag;
 
+	/* Gameplay Effect applied to owner when ammo is equipped */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<class UGameplayEffect> EquippedEffectClass;
+	TSubclassOf<UGameplayEffect> EquippedEffectClass;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> ImpactDamageEffectClass;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Effects")
-	TSubclassOf<UGameplayEffect> DelayedDamageEffectClass;
-
+	/* Damage applied on impact */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
-	float ImpactDamage;
+	FMETAmmoDamageConfig ImpactDamageConfig;
 
+	/* Damage applied after a duration */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
-	float DelayedDamage;
+	FMETAmmoDamageConfig DelayedDamageConfig;
 };
