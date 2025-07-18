@@ -12,14 +12,15 @@ public class Meteoric : ModuleRules
 		{
 			"Core", 
 			"CoreUObject", 
-			"Engine", 
+			"Engine",
 			"InputCore", 
 			"EnhancedInput", 
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
 			"AIModule",
-			"StateTreeModule"
+			"StateTreeModule",
+			"PhysicsCore"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]

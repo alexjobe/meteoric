@@ -10,8 +10,8 @@
 
 UMETProjectileWeaponComponent::UMETProjectileWeaponComponent()
 	: NumProjectiles(1)
-	, SpawnTraceDistance(200.f)
 	, bPerformSpawnTraceTest(true)
+	, SpawnTraceDistance(200.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;

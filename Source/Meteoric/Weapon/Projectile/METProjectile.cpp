@@ -8,11 +8,13 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/METLogChannels.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
+#include "Sound/SoundCue.h"
 
 AMETProjectile::AMETProjectile()
 	: LifeSpan(10.f)
@@ -65,15 +67,7 @@ void AMETProjectile::TriggerImpact(const FHitResult& InHitResult)
 	if (ImpactDamageHandle.IsValid())
 	{
 		UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactDamageHandle.EffectHandle, InHitResult);
-
-		if (ImpactDamageHandle.bExplosive)
-		{
-			Explode(ImpactDamageHandle, InHitResult.ImpactPoint);
-		}
-		else
-		{
-			ApplyDamageEffect(*HitActor, ImpactDamageHandle.EffectHandle);
-		}
+		Impact(ImpactDamageHandle, InHitResult, HitActor);
 	}
 
 	if (DelayedDamageHandle.IsValid())
@@ -91,6 +85,12 @@ void AMETProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
+
+	if (InAirLoopSound)
+	{
+		UGameplayStatics::SpawnSoundAttached(InAirLoopSound, GetRootComponent(), NAME_None, FVector(ForceInit),
+			FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true);
+	}
 }
 
 void AMETProjectile::CollisionComponent_OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -136,6 +136,23 @@ void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage, const F
 	}
 }
 
+void AMETProjectile::Impact(const FMETProjectileDamageHandle& InDamageHandle, const FHitResult& InHitResult, const AActor* HitActor)
+{
+	if (!HitActor) return;
+	
+	if (InDamageHandle.bExplosive)
+	{
+		Explode(InDamageHandle, InHitResult.ImpactPoint);
+	}
+	else
+	{
+		ApplyDamageEffect(*HitActor, InDamageHandle.EffectHandle);
+	}
+
+	const EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(InHitResult.PhysMaterial.Get());
+	Multicast_PlayImpactFX(InHitResult.ImpactPoint, InHitResult.ImpactNormal, SurfaceType);
+}
+
 bool AMETProjectile::ApplyDamageEffect(const AActor& InActor, const FGameplayEffectSpecHandle& InEffectHandle)
 {
 	if (ensure(InEffectHandle.IsValid()))
@@ -162,22 +179,15 @@ void AMETProjectile::StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveCom
 	AttachToComponent(InOtherComponent, FAttachmentTransformRules::KeepWorldTransform, InHitResult.BoneName);
 
 	FTimerDelegate DamageTimerDelegate;
-	DamageTimerDelegate.BindUFunction(this, FName("ApplyDelayedDamage"), InOtherActor, InHitResult.ImpactPoint);
+	DamageTimerDelegate.BindUFunction(this, FName("ApplyDelayedDamage"), InOtherActor, InHitResult);
 	GetWorldTimerManager().SetTimer(DamageTimerHandle, DamageTimerDelegate, DamageDelay, false);
 }
 
-void AMETProjectile::ApplyDelayedDamage(const AActor* InOtherActor, const FVector& InLocation)
+void AMETProjectile::ApplyDelayedDamage(const AActor* InActor, const FHitResult& InHitResult)
 {
-	if (!ensure(IsValid(InOtherActor))) return;
+	if (!ensure(IsValid(InActor))) return;
 
-	if (DelayedDamageHandle.bExplosive)
-	{
-		Explode(DelayedDamageHandle, InLocation);
-	}
-	else
-	{
-		ApplyDamageEffect(*InOtherActor, DelayedDamageHandle.EffectHandle);
-	}
+	Impact(DelayedDamageHandle, InHitResult, InActor);
 
 	Destroy();
 }
@@ -208,5 +218,18 @@ void AMETProjectile::ApplyRocketJumpImpulse(const AActor* InActor, const FVector
 		const float KnockbackStrength = 1000.f * ForceScale;*/
 
 		MovementComponent->AddImpulse(FinalImpulseDirection * RocketJumpForce, true);
+	}
+}
+
+void AMETProjectile::Multicast_PlayImpactFX_Implementation(FVector_NetQuantize ImpactPoint, FVector_NetQuantizeNormal ImpactNormal, EPhysicalSurface SurfaceType)
+{
+	if (ImpactVfx)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVfx, ImpactPoint, ImpactNormal.Rotation());
+	}
+
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, ImpactPoint, ImpactNormal.Rotation());
 	}
 }

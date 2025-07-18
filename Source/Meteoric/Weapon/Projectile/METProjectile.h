@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
 #include "METProjectileTypes.h"
+#include "Chaos/ChaosEngineInterface.h"
+#include "Engine/EngineTypes.h"
 #include "GameFramework/Actor.h"
 #include "METProjectile.generated.h"
 
@@ -44,6 +46,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile|RocketJump", meta = (ClampMin = 0, ClampMax = 1))
 	float RocketJumpVerticalBias;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
+	TObjectPtr<class UParticleSystem> ImpactVfx;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
+	TObjectPtr<class USoundCue> ImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
+	TObjectPtr<class USoundCue> InAirLoopSound;
+
 	/* Damage applied on impact */
 	FMETProjectileDamageHandle ImpactDamageHandle;
 
@@ -60,8 +71,13 @@ protected:
 
 	void Explode(const FMETProjectileDamageHandle& InDamage, const FVector& InLocation) const;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayImpactFX(FVector_NetQuantize ImpactPoint, FVector_NetQuantizeNormal ImpactNormal, EPhysicalSurface SurfaceType);
+
 private:
 	FTimerHandle DamageTimerHandle;
+
+	void Impact(const FMETProjectileDamageHandle& InDamageHandle, const FHitResult& InHitResult, const AActor* HitActor);
 
 	// Returns true if target dies
 	static bool ApplyDamageEffect(const AActor& InActor, const FGameplayEffectSpecHandle& InEffectHandle);
@@ -69,7 +85,7 @@ private:
 	void StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveComponent* InOtherComponent, const FHitResult& InHitResult);
 
 	UFUNCTION()
-	void ApplyDelayedDamage(const AActor* InOtherActor, const FVector& InLocation);
+	void ApplyDelayedDamage(const AActor* InActor, const FHitResult& InHitResult);
 
 	void ApplyRocketJumpImpulse(const AActor* InActor, const FVector& InLocation, float InExplosionRadius) const;
 

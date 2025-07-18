@@ -116,10 +116,10 @@ protected:
 
 	virtual void Die();
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_StartFireWeapon(const bool bInHeld);
 
-	UFUNCTION(NetMulticast, Unreliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FinishFireWeapon(const bool bInHeld) const;
 
 	UFUNCTION()
