@@ -99,6 +99,7 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 		SpawnParams.ImpactDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, ImpactDamageConfig->Damage);
 		SpawnParams.ImpactDamageHandle.bExplosive = ImpactDamageConfig->bExplosive;
 		SpawnParams.ImpactDamageHandle.ExplosionRadius = ImpactDamageConfig->ExplosionRadius;
+		SpawnParams.ImpactDamageHandle.bApplyRocketJumpImpulse = ImpactDamageConfig->bApplyRocketJumpImpulse;
 	}
 
 	if (DelayedDamageEffectClass)
@@ -106,6 +107,7 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 		SpawnParams.DelayedDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, DelayedDamageConfig->Damage);
 		SpawnParams.DelayedDamageHandle.bExplosive = DelayedDamageConfig->bExplosive;
 		SpawnParams.DelayedDamageHandle.ExplosionRadius = DelayedDamageConfig->ExplosionRadius;
+		SpawnParams.DelayedDamageHandle.bApplyRocketJumpImpulse = DelayedDamageConfig->bApplyRocketJumpImpulse;
 	}
 
 	return SpawnParams;

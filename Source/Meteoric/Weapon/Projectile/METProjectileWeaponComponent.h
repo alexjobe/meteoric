@@ -39,6 +39,16 @@ class METEORIC_API UMETProjectileWeaponComponent : public UActorComponent
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"), Category = "Projectile", meta = (ClampMin = 0))
 	int32 NumProjectiles;
 
+	/* If true, will perform a line trace a short distance along the projectile's projected path before spawning.
+	 * If a hit is found, the impact will trigger immediately on spawn. 
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"), Category = "Projectile")
+	bool bPerformSpawnTraceTest;
+
+	/* How far ahead of projectile spawn (muzzle) to trace for impact */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"), Category = "Projectile", meta = (ClampMin = 0))
+	float SpawnTraceDistance;
+
 public:	
 	UMETProjectileWeaponComponent();
 
@@ -46,7 +56,7 @@ public:
 	virtual void InitializeComponent() override;
 	//~ End UActorComponent interface
 
-	void FireProjectiles(const TArray<FMETSpawnProjectileParams>& Params) const;
+	void FireProjectiles(const TArray<FMETSpawnProjectileParams>& InParams) const;
 
 	/* Number of projectiles fired per shot */
 	int32 GetNumProjectiles() const { return NumProjectiles; }
@@ -55,5 +65,7 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<class UMETWeaponSpreadComponent> WeaponSpreadComponent;
 	
-	void SpawnProjectile(const FMETSpawnProjectileParams& Params) const;
+	void SpawnProjectile(const FMETSpawnProjectileParams& InParams) const;
+
+	bool SpawnTraceTest(const FMETSpawnProjectileParams& InParams, const FTransform& InSpawnTransform, FHitResult& OutHitResult) const;
 };

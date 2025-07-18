@@ -14,11 +14,13 @@ struct FMETProjectileDamageHandle
 	FGameplayEffectSpecHandle EffectHandle;
 	bool bExplosive;
 	float ExplosionRadius;
+	bool bApplyRocketJumpImpulse;
 
 	FMETProjectileDamageHandle()
 		: EffectHandle(nullptr)
 		, bExplosive(false)
 		, ExplosionRadius(150.f)
+		, bApplyRocketJumpImpulse(false)
 	{}
 
 	bool IsValid() const { return EffectHandle.IsValid(); }

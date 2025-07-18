@@ -28,11 +28,16 @@ struct FMETAmmoDamageConfig
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
 	float ExplosionRadius;
 
+	/* If true, explosion applies rocket jump impulse to instigator */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	bool bApplyRocketJumpImpulse;
+
 	FMETAmmoDamageConfig()
 		: DamageEffectClass(nullptr)
 		, Damage(0.f)
 		, bExplosive(false)
 		, ExplosionRadius(0.f)
+		, bApplyRocketJumpImpulse(false)
 	{}
 };
 
