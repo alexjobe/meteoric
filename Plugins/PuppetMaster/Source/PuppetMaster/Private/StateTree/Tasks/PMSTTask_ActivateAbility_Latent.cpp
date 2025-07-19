@@ -79,7 +79,7 @@ FText FPMSTTask_ActivateAbility_Latent::GetDescription(const FGuid& ID, FStateTr
 	const FInstanceDataType* InstanceData = InstanceDataView.GetPtr<FInstanceDataType>();
 	check(InstanceData);
 
-	FText AbilityTagText = BindingLookup.GetBindingSourceDisplayName(FStateTreePropertyPath(ID, GET_MEMBER_NAME_CHECKED(FInstanceDataType, AbilityTag)), Formatting);
+	FText AbilityTagText = BindingLookup.GetBindingSourceDisplayName(FPropertyBindingPath(ID, GET_MEMBER_NAME_CHECKED(FInstanceDataType, AbilityTag)), Formatting);
 	if (AbilityTagText.IsEmpty())
 	{
 		AbilityTagText = FText::FromString(InstanceData->AbilityTag.ToString());
