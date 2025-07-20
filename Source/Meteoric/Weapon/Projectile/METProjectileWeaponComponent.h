@@ -24,6 +24,29 @@ struct FMETSpawnProjectileParams
 	FMETSpawnProjectileParams()
 		: Owner(nullptr)
 		, Instigator(nullptr)
+	{
+		ImpactDamageHandle.DamageTiming = EDamageTiming::Impact;
+		DelayedDamageHandle.DamageTiming = EDamageTiming::Delayed;
+	}
+};
+
+USTRUCT()
+struct FMETProjectileSpawnHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(Transient)
+	class AMETProjectile* Projectile;
+
+	FTransform SpawnTransform;
+
+	bool bTraceHit;
+	
+	FHitResult TraceHitResult;
+
+	FMETProjectileSpawnHandle()
+		: Projectile(nullptr)
+		, bTraceHit(false)
 	{}
 };
 
@@ -64,8 +87,10 @@ public:
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<class UMETWeaponSpreadComponent> WeaponSpreadComponent;
-	
-	void SpawnProjectile(const FMETSpawnProjectileParams& InParams) const;
+
+	void SpawnProjectile(const FMETSpawnProjectileParams& InParams, FMETProjectileSpawnHandle& OutHandle) const;
+
+	static void FireProjectile(const FMETProjectileSpawnHandle& InHandle);
 
 	bool SpawnTraceTest(const FMETSpawnProjectileParams& InParams, const FTransform& InSpawnTransform, FHitResult& OutHitResult) const;
 };

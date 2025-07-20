@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
@@ -22,6 +23,7 @@ AMETProjectile::AMETProjectile()
 	, RocketJumpForce(1000.f)
 	, RocketJumpMovementInfluence(0.3f)
 	, RocketJumpVerticalBias(0.3f)
+	, GroupedProjectileSearchRadius(300.f)
 	, bOnlyCollideOnSweep(true)
 	, bCollided(false)
 {
@@ -109,15 +111,24 @@ void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage, const F
 		return;
 	}
 
+	const EDamageTiming DamageTiming = InDamage.DamageTiming;
+
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 	const TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> HitActors;
+	
+	float ExplosionRadius = InDamage.ExplosionRadius;
+	TArray<TStrongObjectPtr<AMETProjectile>> ContributingProjectiles;
 
-	UKismetSystemLibrary::SphereOverlapActors(this, InLocation, InDamage.ExplosionRadius,
+	/* If a shot contains multiple explosive projectiles (ex. shotgun), all nearby grouped projectiles contribute to a
+	 * single explosion. The final explosion radius is the sum of all contributing projectiles' explosion radii. */
+	const bool bClusteredExplosion = ComputeClusteredExplosionContribution(InLocation, DamageTiming, ContributingProjectiles, ExplosionRadius);
+
+	UKismetSystemLibrary::SphereOverlapActors(this, InLocation, ExplosionRadius,
 		ObjectTypes, nullptr, ActorsToIgnore, HitActors);
 
-	DrawDebugSphere(GetWorld(), InLocation, InDamage.ExplosionRadius,
+	DrawDebugSphere(GetWorld(), InLocation, ExplosionRadius,
 		16, FColor::Red, false, 2.f, 0, 2.f);
 
 	DrawDebugSphere(GetWorld(), InLocation, 2.f,
@@ -127,11 +138,24 @@ void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage, const F
 	{
 		if (!ensure(Actor)) continue;
 
-		const bool bDied = ApplyDamageEffect(*Actor, InDamage.EffectHandle);
+		bool bDied = ApplyDamageEffect(*Actor, InDamage.DamageTiming);
+		if (!bDied && bClusteredExplosion)
+		{
+			bDied = ApplyClusteredDamage(*Actor, ContributingProjectiles, InDamage.DamageTiming);
+		}
 
 		if (InDamage.bApplyRocketJumpImpulse && !bDied && Actor == GetInstigator())
 		{
-			ApplyRocketJumpImpulse(Actor, InLocation, InDamage.ExplosionRadius);
+			ApplyRocketJumpImpulse(Actor, InLocation, ExplosionRadius);
+		}
+	}
+
+	// After applying cluster damage to all actors in explosion radius, destroy all contributing projectiles
+	for (const auto& StrongProjectile : ContributingProjectiles)
+	{
+		if (AMETProjectile* Projectile = StrongProjectile.Get())
+		{
+			Projectile->Destroy();
 		}
 	}
 }
@@ -146,20 +170,21 @@ void AMETProjectile::Impact(const FMETProjectileDamageHandle& InDamageHandle, co
 	}
 	else
 	{
-		ApplyDamageEffect(*HitActor, InDamageHandle.EffectHandle);
+		ApplyDamageEffect(*HitActor, InDamageHandle.DamageTiming);
 	}
 
 	const EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(InHitResult.PhysMaterial.Get());
 	Multicast_PlayImpactFX(InHitResult.ImpactPoint, InHitResult.ImpactNormal, SurfaceType);
 }
 
-bool AMETProjectile::ApplyDamageEffect(const AActor& InActor, const FGameplayEffectSpecHandle& InEffectHandle)
+bool AMETProjectile::ApplyDamageEffect(const AActor& InActor, const EDamageTiming& InDamageTiming) const
 {
-	if (ensure(InEffectHandle.IsValid()))
+	const FGameplayEffectSpecHandle& EffectHandle = InDamageTiming == EDamageTiming::Impact ? ImpactDamageHandle.EffectHandle : DelayedDamageHandle.EffectHandle;
+	if (ensure(EffectHandle.IsValid()))
 	{
 		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(&InActor))
 		{
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*InEffectHandle.Data.Get());
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectHandle.Data.Get());
 			return AbilitySystemComponent->HasMatchingGameplayTag(METGameplayTags::State_Dead);
 		}
 	}
@@ -218,7 +243,48 @@ void AMETProjectile::ApplyRocketJumpImpulse(const AActor* InActor, const FVector
 		const float KnockbackStrength = 1000.f * ForceScale;*/
 
 		MovementComponent->AddImpulse(FinalImpulseDirection * RocketJumpForce, true);
+
+		//DrawDebugSphere(GetWorld(), InLocation, InExplosionRadius, 16, FColor::Magenta, false, 2.f, 0, 2.f);
 	}
+}
+
+bool AMETProjectile::ComputeClusteredExplosionContribution(const FVector& InExplosionOrigin, const EDamageTiming& InDamageTiming, TArray<TStrongObjectPtr<AMETProjectile>>& OutContributingProjectiles, float& OutExplosionRadius) const
+{
+	bool bClusteredExplosion = false;
+	if (GroupedProjectiles.Num() > 1)
+	{
+		for (auto& WeakProjectile : GroupedProjectiles)
+		{
+			auto StrongProjectile = WeakProjectile.Pin();
+			if (AMETProjectile* Projectile = StrongProjectile.Get(); Projectile != nullptr && Projectile != this && !Projectile->bCollided)
+			{
+				if (FVector::DistSquared(Projectile->GetActorLocation(), InExplosionOrigin) < FMath::Square(GroupedProjectileSearchRadius))
+				{
+					bClusteredExplosion = true;
+					Projectile->bCollided = true;
+					OutContributingProjectiles.Push(StrongProjectile);
+					OutExplosionRadius += InDamageTiming == EDamageTiming::Impact
+															? Projectile->ImpactDamageHandle.ExplosionRadius
+															: Projectile->DelayedDamageHandle.ExplosionRadius;
+				}
+			}
+		}
+	}
+	return bClusteredExplosion;
+}
+
+bool AMETProjectile::ApplyClusteredDamage(const AActor& InActor, TArray<TStrongObjectPtr<AMETProjectile>>& InContributingProjectiles, const EDamageTiming& InDamageTiming)
+{
+	bool bDied = false;
+	for (const auto& StrongProjectile : InContributingProjectiles)
+	{
+		if (const AMETProjectile* Projectile = StrongProjectile.Get(); ensure(Projectile))
+		{
+			bDied = Projectile->ApplyDamageEffect(InActor, InDamageTiming);
+		}
+		if (bDied) break;
+	}
+	return bDied;
 }
 
 void AMETProjectile::Multicast_PlayImpactFX_Implementation(FVector_NetQuantize ImpactPoint, FVector_NetQuantizeNormal ImpactNormal, EPhysicalSurface SurfaceType)

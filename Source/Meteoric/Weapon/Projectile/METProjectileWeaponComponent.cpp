@@ -28,34 +28,53 @@ void UMETProjectileWeaponComponent::FireProjectiles(const TArray<FMETSpawnProjec
 {
 	if (!ensure(InParams.Num() == NumProjectiles)) return;
 
-	for (int Projectile = 0; Projectile < NumProjectiles; ++Projectile)
+	TArray<FMETProjectileSpawnHandle> SpawnHandles;
+	SpawnHandles.SetNum(NumProjectiles);
+	TArray<TWeakObjectPtr<AMETProjectile>> GroupedProjectiles;
+
+	for (int Index = 0; Index < NumProjectiles; ++Index)
 	{
-		SpawnProjectile(InParams[Projectile]);
+		SpawnProjectile(InParams[Index], SpawnHandles[Index]);
+		if (AMETProjectile* Projectile = SpawnHandles[Index].Projectile; ensure(Projectile))
+		{
+			GroupedProjectiles.Push(Projectile);
+		}
+	}
+
+	for (int Index = 0; Index < NumProjectiles; ++Index)
+	{
+		if (AMETProjectile* Projectile = SpawnHandles[Index].Projectile; ensure(Projectile))
+		{
+			Projectile->GroupedProjectiles = GroupedProjectiles;
+		}
+	}
+
+	for (int Index = 0; Index < NumProjectiles; ++Index)
+	{
+		FireProjectile(SpawnHandles[Index]);
 	}
 	
 	WeaponSpreadComponent->OnWeaponFired();
 }
 
-void UMETProjectileWeaponComponent::SpawnProjectile(const FMETSpawnProjectileParams& InParams) const
+void UMETProjectileWeaponComponent::SpawnProjectile(const FMETSpawnProjectileParams& InParams, FMETProjectileSpawnHandle& OutHandle) const
 {
 	if (!ensure(WeaponSpreadComponent) || !ensure(ProjectileClass)) return;
 
-	FTransform SpawnTransform = WeaponSpreadComponent->GetProjectileSpawnTransform();
-
-	bool bTraceHit = false;
-	FHitResult TraceHitResult;
+	OutHandle.SpawnTransform = WeaponSpreadComponent->GetProjectileSpawnTransform();
+	
 	if (bPerformSpawnTraceTest)
 	{
-		bTraceHit = SpawnTraceTest(InParams, SpawnTransform, TraceHitResult);
-		if (bTraceHit)
+		OutHandle.bTraceHit = SpawnTraceTest(InParams, OutHandle.SpawnTransform, OutHandle.TraceHitResult);
+		if (OutHandle.bTraceHit)
 		{
-			SpawnTransform.SetLocation(TraceHitResult.Location);
+			OutHandle.SpawnTransform.SetLocation(OutHandle.TraceHitResult.Location);
 		}
 	}
 	
 	AMETProjectile* Projectile = GetWorld()->SpawnActorDeferred<AMETProjectile>(
 		ProjectileClass,
-		SpawnTransform,
+		OutHandle.SpawnTransform,
 		InParams.Owner,
 		InParams.Instigator,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
@@ -66,16 +85,24 @@ void UMETProjectileWeaponComponent::SpawnProjectile(const FMETSpawnProjectilePar
 		Projectile->ImpactDamageHandle = InParams.ImpactDamageHandle;
 		Projectile->DelayedDamageHandle = InParams.DelayedDamageHandle;
 		Projectile->bOnlyCollideOnSweep = bPerformSpawnTraceTest;
-		Projectile->FinishSpawning(SpawnTransform);
+		Projectile->FinishSpawning(OutHandle.SpawnTransform);
+	}
 
-		if (bTraceHit)
-		{
-			Projectile->TriggerImpact(TraceHitResult);
-		}
-		else
-		{
-			Projectile->Fire(SpawnTransform.GetRotation().Vector());
-		}
+	OutHandle.Projectile = Projectile;
+}
+
+void UMETProjectileWeaponComponent::FireProjectile(const FMETProjectileSpawnHandle& InHandle)
+{
+	AMETProjectile* Projectile = InHandle.Projectile;
+	if (!ensure(Projectile)) return;
+		
+	if (InHandle.bTraceHit)
+	{
+		Projectile->TriggerImpact(InHandle.TraceHitResult);
+	}
+	else
+	{
+		Projectile->Fire(InHandle.SpawnTransform.GetRotation().Vector());
 	}
 }
 

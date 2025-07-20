@@ -6,6 +6,12 @@
 #include "GameplayEffectTypes.h"
 #include "METProjectileTypes.generated.h"
 
+enum class EDamageTiming : uint8
+{
+	Impact,
+	Delayed
+};
+
 USTRUCT()
 struct FMETProjectileDamageHandle
 {
@@ -15,12 +21,14 @@ struct FMETProjectileDamageHandle
 	bool bExplosive;
 	float ExplosionRadius;
 	bool bApplyRocketJumpImpulse;
+	EDamageTiming DamageTiming;
 
 	FMETProjectileDamageHandle()
 		: EffectHandle(nullptr)
 		, bExplosive(false)
-		, ExplosionRadius(150.f)
+		, ExplosionRadius(0.f)
 		, bApplyRocketJumpImpulse(false)
+		, DamageTiming(EDamageTiming::Impact)
 	{}
 
 	bool IsValid() const { return EffectHandle.IsValid(); }
