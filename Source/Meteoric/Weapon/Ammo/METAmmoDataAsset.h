@@ -5,7 +5,32 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+#include "Meteoric/Weapon/Projectile/METProjectileTypes.h"
 #include "METAmmoDataAsset.generated.h"
+
+USTRUCT(BlueprintType)
+struct FMETProjectileExplosionSettings
+{
+	GENERATED_BODY()
+	
+	/* If true, damage will be applied to all targets in a sphere */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	bool bExplosive;
+
+	/* Radius of sphere explosion (if applicable) */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	float ExplosionRadius;
+
+	/* If true, explosion applies rocket jump impulse to instigator */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
+	bool bApplyRocketJumpImpulse;
+
+	FMETProjectileExplosionSettings()
+		: bExplosive(false)
+		, ExplosionRadius(0.f)
+		, bApplyRocketJumpImpulse(false)
+	{}
+};
 
 USTRUCT(BlueprintType)
 struct FMETAmmoDamageConfig
@@ -20,24 +45,18 @@ struct FMETAmmoDamageConfig
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	float Damage;
 
-	/* If true, damage will be applied to all targets in a sphere */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
-	bool bExplosive;
+	FMETProjectileExplosionSettings ExplosionSettings;
 
-	/* Radius of sphere explosion (if applicable) */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
-	float ExplosionRadius;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|FX")
+	FMETProjectileFXSettings FXSettings;
 
-	/* If true, explosion applies rocket jump impulse to instigator */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Explosion")
-	bool bApplyRocketJumpImpulse;
+	UParticleSystem* GetVFX(const EPhysicalSurface& SurfaceType) const;
+	USoundCue* GetSFX(const EPhysicalSurface& SurfaceType) const;
 
 	FMETAmmoDamageConfig()
 		: DamageEffectClass(nullptr)
 		, Damage(0.f)
-		, bExplosive(false)
-		, ExplosionRadius(0.f)
-		, bApplyRocketJumpImpulse(false)
 	{}
 };
 

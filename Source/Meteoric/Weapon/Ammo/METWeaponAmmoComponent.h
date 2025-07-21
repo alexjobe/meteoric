@@ -35,6 +35,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ammo")
 	float GetAmmoPercentage() const;
 
+	UMETAmmoDataAsset* GetCurrentAmmoType() const { return CurrentAmmoType; }
+
 	const FMETAmmoDamageConfig* GetImpactDamageConfig() const;
 	const FMETAmmoDamageConfig* GetDelayedDamageConfig() const;
 

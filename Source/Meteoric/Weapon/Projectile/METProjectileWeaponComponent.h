@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "METProjectileTypes.h"
+#include "GameplayEffectTypes.h"
 #include "Components/ActorComponent.h"
+#include "Meteoric/Weapon/Ammo/METAmmoDataAsset.h"
 #include "METProjectileWeaponComponent.generated.h"
 
 USTRUCT()
@@ -13,20 +14,22 @@ struct FMETSpawnProjectileParams
 	GENERATED_BODY()
 
 	UPROPERTY(Transient)
-	AActor* Owner;
+	TObjectPtr<AActor> Owner;
 
 	UPROPERTY(Transient)
-	APawn* Instigator;
+	TObjectPtr<APawn> Instigator;
 
-	FMETProjectileDamageHandle ImpactDamageHandle;
-	FMETProjectileDamageHandle DelayedDamageHandle;
+	UPROPERTY(Transient)
+	TObjectPtr<UMETAmmoDataAsset> AmmoType;
+
+	FGameplayEffectSpecHandle ImpactEffectHandle;
+	FGameplayEffectSpecHandle DelayedEffectHandle;
 
 	FMETSpawnProjectileParams()
 		: Owner(nullptr)
 		, Instigator(nullptr)
+		, AmmoType(nullptr)
 	{
-		ImpactDamageHandle.DamageTiming = EDamageTiming::Impact;
-		DelayedDamageHandle.DamageTiming = EDamageTiming::Delayed;
 	}
 };
 

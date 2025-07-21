@@ -3,11 +3,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "METProjectileTypes.h"
 #include "Chaos/ChaosEngineInterface.h"
 #include "Engine/EngineTypes.h"
 #include "GameFramework/Actor.h"
 #include "METProjectile.generated.h"
+
+USTRUCT()
+struct FMETDamageFXData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector_NetQuantize ImpactPoint;
+
+	UPROPERTY()
+	FVector_NetQuantizeNormal ImpactNormal;
+
+	UPROPERTY()
+	TEnumAsByte<EPhysicalSurface> SurfaceType;
+
+	UPROPERTY()
+	EMETDamageTiming DamageTiming;
+};
 
 UCLASS()
 class METEORIC_API AMETProjectile : public AActor
@@ -25,6 +44,8 @@ public:
 
 	void Fire(const FVector& InDirection) const;
 	void TriggerImpact(const FHitResult& InHitResult);
+	
+	struct FMETAmmoDamageConfig* GetDamageConfig(const EMETDamageTiming& InDamageTiming) const;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	float LifeSpan;
@@ -51,19 +72,16 @@ public:
 	float GroupedProjectileSearchRadius;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
-	TObjectPtr<class UParticleSystem> ImpactVfx;
+	TObjectPtr<USoundCue> InAirLoopSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
-	TObjectPtr<class USoundCue> ImpactSound;
+	UPROPERTY(Transient, Replicated)
+	TObjectPtr<class UMETAmmoDataAsset> AmmoType;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile|FX")
-	TObjectPtr<class USoundCue> InAirLoopSound;
+	/* Damage effect applied on impact */
+	FGameplayEffectSpecHandle ImpactEffectHandle;
 
-	/* Damage applied on impact */
-	FMETProjectileDamageHandle ImpactDamageHandle;
-
-	/* Damage applied after a duration */
-	FMETProjectileDamageHandle DelayedDamageHandle;
+	/* Damage effect applied after a duration */
+	FGameplayEffectSpecHandle DelayedEffectHandle;
 
 	bool bOnlyCollideOnSweep;
 
@@ -75,16 +93,21 @@ protected:
 	UFUNCTION()
 	void CollisionComponent_OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	void Explode(const FMETProjectileDamageHandle& InDamage, const FVector& InLocation) const;
+	void Explode(const struct FMETAmmoDamageConfig& InDamageConfig, const FVector& InLocation, const EMETDamageTiming& InDamageTiming) const;
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_PlayImpactFX(FVector_NetQuantize ImpactPoint, FVector_NetQuantizeNormal ImpactNormal, EPhysicalSurface SurfaceType);
+	void Multicast_PlayDamageFX(const FMETDamageFXData& InData);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_PlayGroupedDamageFX(const TArray<FMETDamageFXData>& InDataArray) const;
+
+	void PlayDamageFX(const FMETDamageFXData& InData) const;
 
 private:
-	void Impact(const FMETProjectileDamageHandle& InDamageHandle, const FHitResult& InHitResult, const AActor* HitActor);
+	void ExecuteDamage(const FHitResult& InHitResult, const AActor* HitActor, const EMETDamageTiming& InDamageTiming);
 
 	/* Returns true if target dies */
-	bool ApplyDamageEffect(const AActor& InActor, const EDamageTiming& InDamageTiming) const;
+	bool ApplyDamageEffect(const AActor& InActor, const EMETDamageTiming& InDamageTiming) const;
 	
 	void StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveComponent* InOtherComponent, const FHitResult& InHitResult);
 
@@ -95,11 +118,14 @@ private:
 
 	/* If a shot contains multiple explosive projectiles (ex. shotgun), all nearby grouped projectiles contribute to a
 	 * single explosion. The final explosion radius is the sum of all contributing projectiles' explosion radii. */
-	bool ComputeClusteredExplosionContribution(const FVector& InExplosionOrigin, const EDamageTiming& InDamageTiming, TArray<TStrongObjectPtr<AMETProjectile>>& OutContributingProjectiles, float& OutExplosionRadius) const;
+	bool ComputeClusteredExplosionContribution(const FVector& InExplosionOrigin, const EMETDamageTiming& InDamageTiming, TArray<TStrongObjectPtr<AMETProjectile>>& OutContributingProjectiles, float& OutExplosionRadius) const;
 
-	static bool ApplyClusteredDamage(const AActor& InActor, TArray<TStrongObjectPtr<AMETProjectile>>& InContributingProjectiles, const EDamageTiming& InDamageTiming);
+	static bool ApplyClusteredDamage(const AActor& InActor, TArray<TStrongObjectPtr<AMETProjectile>>& InContributingProjectiles, const EMETDamageTiming& InDamageTiming);
 
 	FTimerHandle DamageTimerHandle;
 
 	bool bCollided;
+
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

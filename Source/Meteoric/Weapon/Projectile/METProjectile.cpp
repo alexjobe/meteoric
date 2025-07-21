@@ -9,12 +9,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Meteoric/Meteoric.h"
 #include "Meteoric/METGameplayTags.h"
 #include "Meteoric/METLogChannels.h"
 #include "Meteoric/GAS/METAbilitySystemUtils.h"
+#include "Meteoric/Weapon/Ammo/METAmmoDataAsset.h"
+#include "Net/UnrealNetwork.h"
 #include "Sound/SoundCue.h"
 
 AMETProjectile::AMETProjectile()
@@ -65,22 +66,31 @@ void AMETProjectile::TriggerImpact(const FHitResult& InHitResult)
 	if (bCollided) return;
 
 	bCollided = true;
-	
-	if (ImpactDamageHandle.IsValid())
+
+	if (ImpactEffectHandle.IsValid())
 	{
-		UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactDamageHandle.EffectHandle, InHitResult);
-		Impact(ImpactDamageHandle, InHitResult, HitActor);
+		UMETAbilitySystemUtils::AddHitResultToEffectSpec(ImpactEffectHandle, InHitResult);
+		ExecuteDamage(InHitResult, HitActor, EMETDamageTiming::Impact);
 	}
 
-	if (DelayedDamageHandle.IsValid())
+	if (DelayedEffectHandle.IsValid())
 	{
-		UMETAbilitySystemUtils::AddHitResultToEffectSpec(DelayedDamageHandle.EffectHandle, InHitResult);
+		UMETAbilitySystemUtils::AddHitResultToEffectSpec(DelayedEffectHandle, InHitResult);
 		StartDelayedDamageTimer(HitActor, InHitResult.GetComponent(), InHitResult);
 	}
 	else
 	{
 		Destroy();
 	}
+}
+
+FMETAmmoDamageConfig* AMETProjectile::GetDamageConfig(const EMETDamageTiming& InDamageTiming) const
+{
+	if (ensure(AmmoType))
+	{
+		return InDamageTiming == EMETDamageTiming::Impact ? &AmmoType->ImpactDamageConfig : &AmmoType->DelayedDamageConfig;
+	}
+	return nullptr;
 }
 
 void AMETProjectile::BeginPlay()
@@ -103,27 +113,25 @@ void AMETProjectile::CollisionComponent_OnComponentBeginOverlap(UPrimitiveCompon
 	}
 }
 
-void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage, const FVector& InLocation) const
+void AMETProjectile::Explode(const FMETAmmoDamageConfig& InDamageConfig, const FVector& InLocation, const EMETDamageTiming& InDamageTiming) const
 {
-	if (InDamage.ExplosionRadius <= 0.f)
+	if (InDamageConfig.ExplosionSettings.ExplosionRadius <= 0.f)
 	{
 		UE_LOG(LogMET, Warning, TEXT("AMETProjectile::Explode - Explosion radius should be greater than zero"));
 		return;
 	}
-
-	const EDamageTiming DamageTiming = InDamage.DamageTiming;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 	const TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> HitActors;
 	
-	float ExplosionRadius = InDamage.ExplosionRadius;
+	float ExplosionRadius = InDamageConfig.ExplosionSettings.ExplosionRadius;
 	TArray<TStrongObjectPtr<AMETProjectile>> ContributingProjectiles;
 
 	/* If a shot contains multiple explosive projectiles (ex. shotgun), all nearby grouped projectiles contribute to a
 	 * single explosion. The final explosion radius is the sum of all contributing projectiles' explosion radii. */
-	const bool bClusteredExplosion = ComputeClusteredExplosionContribution(InLocation, DamageTiming, ContributingProjectiles, ExplosionRadius);
+	const bool bClusteredExplosion = ComputeClusteredExplosionContribution(InLocation, InDamageTiming, ContributingProjectiles, ExplosionRadius);
 
 	UKismetSystemLibrary::SphereOverlapActors(this, InLocation, ExplosionRadius,
 		ObjectTypes, nullptr, ActorsToIgnore, HitActors);
@@ -138,48 +146,60 @@ void AMETProjectile::Explode(const FMETProjectileDamageHandle& InDamage, const F
 	{
 		if (!ensure(Actor)) continue;
 
-		bool bDied = ApplyDamageEffect(*Actor, InDamage.DamageTiming);
+		bool bDied = ApplyDamageEffect(*Actor, InDamageTiming);
 		if (!bDied && bClusteredExplosion)
 		{
-			bDied = ApplyClusteredDamage(*Actor, ContributingProjectiles, InDamage.DamageTiming);
+			bDied = ApplyClusteredDamage(*Actor, ContributingProjectiles, InDamageTiming);
 		}
 
-		if (InDamage.bApplyRocketJumpImpulse && !bDied && Actor == GetInstigator())
+		if (InDamageConfig.ExplosionSettings.bApplyRocketJumpImpulse && !bDied && Actor == GetInstigator())
 		{
 			ApplyRocketJumpImpulse(Actor, InLocation, ExplosionRadius);
 		}
 	}
 
+	TArray<FMETDamageFXData> GroupedFXData;
+	FMETDamageFXData FXData { InLocation, FVector::ZeroVector, SurfaceType_Default, InDamageTiming };
+	GroupedFXData.Push(FXData);
+	
 	// After applying cluster damage to all actors in explosion radius, destroy all contributing projectiles
 	for (const auto& StrongProjectile : ContributingProjectiles)
 	{
 		if (AMETProjectile* Projectile = StrongProjectile.Get())
 		{
+			FXData =  { Projectile->GetActorLocation(), FVector::ZeroVector, SurfaceType_Default, InDamageTiming };
+			GroupedFXData.Push(FXData);
 			Projectile->Destroy();
 		}
 	}
+
+	// Play all damage FX with a single RPC
+	Multicast_PlayGroupedDamageFX(GroupedFXData);
 }
 
-void AMETProjectile::Impact(const FMETProjectileDamageHandle& InDamageHandle, const FHitResult& InHitResult, const AActor* HitActor)
+void AMETProjectile::ExecuteDamage(const FHitResult& InHitResult, const AActor* HitActor, const EMETDamageTiming& InDamageTiming)
 {
 	if (!HitActor) return;
+
+	const FMETAmmoDamageConfig* DamageConfig = GetDamageConfig(InDamageTiming);
+	if (!ensure(DamageConfig)) return;
 	
-	if (InDamageHandle.bExplosive)
+	if (DamageConfig->ExplosionSettings.bExplosive)
 	{
-		Explode(InDamageHandle, InHitResult.ImpactPoint);
-	}
-	else
-	{
-		ApplyDamageEffect(*HitActor, InDamageHandle.DamageTiming);
+		Explode(*DamageConfig, InHitResult.ImpactPoint, InDamageTiming);
+		return;
 	}
 
+	ApplyDamageEffect(*HitActor, InDamageTiming);
+	
 	const EPhysicalSurface SurfaceType = UPhysicalMaterial::DetermineSurfaceType(InHitResult.PhysMaterial.Get());
-	Multicast_PlayImpactFX(InHitResult.ImpactPoint, InHitResult.ImpactNormal, SurfaceType);
+	const FMETDamageFXData FXData { InHitResult.ImpactPoint, InHitResult.ImpactNormal, SurfaceType, InDamageTiming };
+	Multicast_PlayDamageFX(FXData);
 }
 
-bool AMETProjectile::ApplyDamageEffect(const AActor& InActor, const EDamageTiming& InDamageTiming) const
+bool AMETProjectile::ApplyDamageEffect(const AActor& InActor, const EMETDamageTiming& InDamageTiming) const
 {
-	const FGameplayEffectSpecHandle& EffectHandle = InDamageTiming == EDamageTiming::Impact ? ImpactDamageHandle.EffectHandle : DelayedDamageHandle.EffectHandle;
+	const FGameplayEffectSpecHandle& EffectHandle = InDamageTiming == EMETDamageTiming::Impact ? ImpactEffectHandle : DelayedEffectHandle;
 	if (ensure(EffectHandle.IsValid()))
 	{
 		if (UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(&InActor))
@@ -211,9 +231,7 @@ void AMETProjectile::StartDelayedDamageTimer(AActor* InOtherActor, UPrimitiveCom
 void AMETProjectile::ApplyDelayedDamage(const AActor* InActor, const FHitResult& InHitResult)
 {
 	if (!ensure(IsValid(InActor))) return;
-
-	Impact(DelayedDamageHandle, InHitResult, InActor);
-
+	ExecuteDamage(InHitResult, InActor, EMETDamageTiming::Delayed);
 	Destroy();
 }
 
@@ -248,7 +266,7 @@ void AMETProjectile::ApplyRocketJumpImpulse(const AActor* InActor, const FVector
 	}
 }
 
-bool AMETProjectile::ComputeClusteredExplosionContribution(const FVector& InExplosionOrigin, const EDamageTiming& InDamageTiming, TArray<TStrongObjectPtr<AMETProjectile>>& OutContributingProjectiles, float& OutExplosionRadius) const
+bool AMETProjectile::ComputeClusteredExplosionContribution(const FVector& InExplosionOrigin, const EMETDamageTiming& InDamageTiming, TArray<TStrongObjectPtr<AMETProjectile>>& OutContributingProjectiles, float& OutExplosionRadius) const
 {
 	bool bClusteredExplosion = false;
 	if (GroupedProjectiles.Num() > 1)
@@ -258,14 +276,13 @@ bool AMETProjectile::ComputeClusteredExplosionContribution(const FVector& InExpl
 			auto StrongProjectile = WeakProjectile.Pin();
 			if (AMETProjectile* Projectile = StrongProjectile.Get(); Projectile != nullptr && Projectile != this && !Projectile->bCollided)
 			{
-				if (FVector::DistSquared(Projectile->GetActorLocation(), InExplosionOrigin) < FMath::Square(GroupedProjectileSearchRadius))
+				const FMETAmmoDamageConfig* DamageConfig = Projectile->GetDamageConfig(InDamageTiming);
+				if (FVector::DistSquared(Projectile->GetActorLocation(), InExplosionOrigin) < FMath::Square(GroupedProjectileSearchRadius) && ensure(DamageConfig))
 				{
 					bClusteredExplosion = true;
 					Projectile->bCollided = true;
 					OutContributingProjectiles.Push(StrongProjectile);
-					OutExplosionRadius += InDamageTiming == EDamageTiming::Impact
-															? Projectile->ImpactDamageHandle.ExplosionRadius
-															: Projectile->DelayedDamageHandle.ExplosionRadius;
+					OutExplosionRadius += DamageConfig->ExplosionSettings.ExplosionRadius;
 				}
 			}
 		}
@@ -273,7 +290,7 @@ bool AMETProjectile::ComputeClusteredExplosionContribution(const FVector& InExpl
 	return bClusteredExplosion;
 }
 
-bool AMETProjectile::ApplyClusteredDamage(const AActor& InActor, TArray<TStrongObjectPtr<AMETProjectile>>& InContributingProjectiles, const EDamageTiming& InDamageTiming)
+bool AMETProjectile::ApplyClusteredDamage(const AActor& InActor, TArray<TStrongObjectPtr<AMETProjectile>>& InContributingProjectiles, const EMETDamageTiming& InDamageTiming)
 {
 	bool bDied = false;
 	for (const auto& StrongProjectile : InContributingProjectiles)
@@ -287,15 +304,38 @@ bool AMETProjectile::ApplyClusteredDamage(const AActor& InActor, TArray<TStrongO
 	return bDied;
 }
 
-void AMETProjectile::Multicast_PlayImpactFX_Implementation(FVector_NetQuantize ImpactPoint, FVector_NetQuantizeNormal ImpactNormal, EPhysicalSurface SurfaceType)
+void AMETProjectile::Multicast_PlayDamageFX_Implementation(const FMETDamageFXData& InData)
 {
-	if (ImpactVfx)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVfx, ImpactPoint, ImpactNormal.Rotation());
-	}
+	PlayDamageFX(InData);
+}
 
-	if (ImpactSound)
+void AMETProjectile::Multicast_PlayGroupedDamageFX_Implementation(const TArray<FMETDamageFXData>& InDataArray) const
+{
+	for (const auto& FXData : InDataArray)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, ImpactPoint, ImpactNormal.Rotation());
+		PlayDamageFX(FXData);
 	}
+}
+
+void AMETProjectile::PlayDamageFX(const FMETDamageFXData& InData) const
+{
+	const FMETAmmoDamageConfig* DamageConfig = GetDamageConfig(InData.DamageTiming);
+	if (!ensure(DamageConfig)) return;
+	
+	if (UParticleSystem* ImpactVfx = DamageConfig->GetVFX(InData.SurfaceType))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVfx, InData.ImpactPoint, InData.ImpactNormal.Rotation());
+	}
+	
+	if (USoundCue* ImpactSound = DamageConfig->GetSFX(InData.SurfaceType))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, InData.ImpactPoint, InData.ImpactNormal.Rotation());
+	}
+}
+
+void AMETProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(AMETProjectile, AmmoType)
 }

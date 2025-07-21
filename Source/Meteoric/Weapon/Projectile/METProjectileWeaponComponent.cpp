@@ -32,6 +32,7 @@ void UMETProjectileWeaponComponent::FireProjectiles(const TArray<FMETSpawnProjec
 	SpawnHandles.SetNum(NumProjectiles);
 	TArray<TWeakObjectPtr<AMETProjectile>> GroupedProjectiles;
 
+	/* Spawn all projectiles in a shot before firing, so we can initialize the grouped projectiles array */
 	for (int Index = 0; Index < NumProjectiles; ++Index)
 	{
 		SpawnProjectile(InParams[Index], SpawnHandles[Index]);
@@ -41,6 +42,7 @@ void UMETProjectileWeaponComponent::FireProjectiles(const TArray<FMETSpawnProjec
 		}
 	}
 
+	/* Each projectile has a copy of the grouped projectiles array, to keep track of which projectiles are in the same shot */
 	for (int Index = 0; Index < NumProjectiles; ++Index)
 	{
 		if (AMETProjectile* Projectile = SpawnHandles[Index].Projectile; ensure(Projectile))
@@ -49,6 +51,7 @@ void UMETProjectileWeaponComponent::FireProjectiles(const TArray<FMETSpawnProjec
 		}
 	}
 
+	/* Once all projectiles are initialized, fire them all at once */
 	for (int Index = 0; Index < NumProjectiles; ++Index)
 	{
 		FireProjectile(SpawnHandles[Index]);
@@ -82,8 +85,9 @@ void UMETProjectileWeaponComponent::SpawnProjectile(const FMETSpawnProjectilePar
 
 	if (ensure(Projectile))
 	{
-		Projectile->ImpactDamageHandle = InParams.ImpactDamageHandle;
-		Projectile->DelayedDamageHandle = InParams.DelayedDamageHandle;
+		Projectile->AmmoType = InParams.AmmoType;
+		Projectile->ImpactEffectHandle = InParams.ImpactEffectHandle;
+		Projectile->DelayedEffectHandle = InParams.DelayedEffectHandle;
 		Projectile->bOnlyCollideOnSweep = bPerformSpawnTraceTest;
 		Projectile->FinishSpawning(OutHandle.SpawnTransform);
 	}

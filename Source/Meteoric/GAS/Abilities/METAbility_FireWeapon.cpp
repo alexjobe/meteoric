@@ -85,6 +85,8 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 	const AMETWeapon* Weapon = MetCharacter ? MetCharacter->GetWeapon() : nullptr;
 	const UMETWeaponAmmoComponent* AmmoComponent = Weapon ? Weapon->GetAmmoComponent() : nullptr;
 
+	UMETAmmoDataAsset* AmmoType = AmmoComponent ? AmmoComponent->GetCurrentAmmoType() : nullptr;
+
 	const FMETAmmoDamageConfig* ImpactDamageConfig = AmmoComponent ? AmmoComponent->GetImpactDamageConfig() : nullptr;
 	const FMETAmmoDamageConfig* DelayedDamageConfig = AmmoComponent ? AmmoComponent->GetDelayedDamageConfig() : nullptr;
 	
@@ -93,21 +95,16 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 
 	SpawnParams.Owner = GetOwningActorFromActorInfo();
 	SpawnParams.Instigator = MetCharacter;
+	SpawnParams.AmmoType = AmmoType;
 
 	if (ImpactDamageEffectClass)
 	{
-		SpawnParams.ImpactDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, ImpactDamageConfig->Damage);
-		SpawnParams.ImpactDamageHandle.bExplosive = ImpactDamageConfig->bExplosive;
-		SpawnParams.ImpactDamageHandle.ExplosionRadius = ImpactDamageConfig->ExplosionRadius;
-		SpawnParams.ImpactDamageHandle.bApplyRocketJumpImpulse = ImpactDamageConfig->bApplyRocketJumpImpulse;
+		SpawnParams.ImpactEffectHandle = MakeDamageEffectSpecHandle(ImpactDamageEffectClass, ImpactDamageConfig->Damage);
 	}
 
 	if (DelayedDamageEffectClass)
 	{
-		SpawnParams.DelayedDamageHandle.EffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, DelayedDamageConfig->Damage);
-		SpawnParams.DelayedDamageHandle.bExplosive = DelayedDamageConfig->bExplosive;
-		SpawnParams.DelayedDamageHandle.ExplosionRadius = DelayedDamageConfig->ExplosionRadius;
-		SpawnParams.DelayedDamageHandle.bApplyRocketJumpImpulse = DelayedDamageConfig->bApplyRocketJumpImpulse;
+		SpawnParams.DelayedEffectHandle = MakeDamageEffectSpecHandle(DelayedDamageEffectClass, DelayedDamageConfig->Damage);
 	}
 
 	return SpawnParams;
