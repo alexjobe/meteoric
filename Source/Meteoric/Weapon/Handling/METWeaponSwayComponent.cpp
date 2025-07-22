@@ -6,15 +6,20 @@
 #include "GameFramework/Character.h"
 
 UMETWeaponSwayComponent::UMETWeaponSwayComponent()
-	: SwayRateRoll_Default(2.0f)
-	, SwayRateYaw_Default(1.0f)
-	, SwayRatePitch_Default(1.5f)
-	, SwayRateRoll_Aim(0.7f)
-	, SwayRateYaw_Aim(0.2f)
-	, SwayRatePitch_Aim(0.7f)
+	: RotationSwaySpeed(20.f)
+	, PositionSwaySpeed(20.f)
+	, RotationInterpToZeroSpeed(12.f)
+	, PositionInterpToZeroSpeed(12.f)
 	, bIsAiming(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	
+	DefaultSwaySettings.MaxSwayRoll = 2.0f;
+	DefaultSwaySettings.MaxSwayYaw = 1.0f;
+	DefaultSwaySettings.MaxSwayPitch = 1.5f;
+	
+	AimSwaySettings.MaxSwayPitch = 0.7f;
+	AimSwaySettings.MaxSwayLateral = 0.15f;
 }
 
 void UMETWeaponSwayComponent::UpdateWeaponSway(const float InDeltaTime)
@@ -24,37 +29,61 @@ void UMETWeaponSwayComponent::UpdateWeaponSway(const float InDeltaTime)
 	const FRotator ControlRotation = OwningCharacter->GetControlRotation();
 	if(PreviousControlRotation.IsSet())
 	{
-		FRotator Delta = PreviousControlRotation.GetValue() - ControlRotation;
-		Delta.Normalize();
+		FRotator ControlRotationDelta = PreviousControlRotation.GetValue() - ControlRotation;
+		ControlRotationDelta.Normalize();
 
-		TargetWeaponSway = FMath::InterpSinInOut(TargetWeaponSway, FRotator::ZeroRotator, InDeltaTime * 12.f);
+		FRotator CurrentWeaponSwayRotation = CurrentWeaponSway.Rotator();
+		FRotator TargetWeaponSwayRotation  = TargetWeaponSway.Rotator();
+		FVector CurrentWeaponSwayPosition  = CurrentWeaponSway.GetLocation();
+		FVector TargetWeaponSwayPosition   = TargetWeaponSway.GetLocation();
+		
+		TargetWeaponSwayRotation = FMath::InterpSinInOut(TargetWeaponSwayRotation, FRotator::ZeroRotator, InDeltaTime * RotationInterpToZeroSpeed);
+		TargetWeaponSwayPosition = FMath::InterpSinInOut(TargetWeaponSwayPosition, FVector::ZeroVector, InDeltaTime * PositionInterpToZeroSpeed);
 
-		const float SwayRateRoll  =	bIsAiming ? SwayRateRoll_Aim  : SwayRateRoll_Default;
-		const float SwayRateYaw   =	bIsAiming ? SwayRateYaw_Aim   : SwayRateYaw_Default;
-		const float SwayRatePitch = bIsAiming ? SwayRatePitch_Aim : SwayRatePitch_Default;
+		const float MaxSwayRoll     = bIsAiming ? AimSwaySettings.MaxSwayRoll     : DefaultSwaySettings.MaxSwayRoll;
+		const float MaxSwayYaw      = bIsAiming ? AimSwaySettings.MaxSwayYaw      : DefaultSwaySettings.MaxSwayYaw;
+		const float MaxSwayPitch    = bIsAiming ? AimSwaySettings.MaxSwayPitch    : DefaultSwaySettings.MaxSwayPitch;
+		const float MaxSwayLateral	= bIsAiming ? AimSwaySettings.MaxSwayLateral  : DefaultSwaySettings.MaxSwayLateral;
+		const float MaxSwayVertical = bIsAiming ? AimSwaySettings.MaxSwayVertical : DefaultSwaySettings.MaxSwayVertical;
 
-		if(FMath::Abs(Delta.Yaw) > FMath::Abs(Delta.Pitch))
+		if(FMath::Abs(ControlRotationDelta.Yaw) > FMath::Abs(ControlRotationDelta.Pitch))
 		{
-			TargetWeaponSway.Pitch -= Delta.Yaw;
-			TargetWeaponSway.Pitch = FMath::Clamp(TargetWeaponSway.Pitch, -SwayRateRoll, SwayRateRoll);
+			TargetWeaponSwayRotation.Pitch -= ControlRotationDelta.Yaw;
+			TargetWeaponSwayRotation.Pitch = FMath::Clamp(TargetWeaponSwayRotation.Pitch, -MaxSwayRoll, MaxSwayRoll);
 
-			TargetWeaponSway.Yaw += Delta.Yaw;
-			TargetWeaponSway.Yaw = FMath::Clamp(TargetWeaponSway.Yaw , -SwayRateYaw, SwayRateYaw);
+			TargetWeaponSwayRotation.Yaw += ControlRotationDelta.Yaw;
+			TargetWeaponSwayRotation.Yaw = FMath::Clamp(TargetWeaponSwayRotation.Yaw , -MaxSwayYaw, MaxSwayYaw);
+
+			TargetWeaponSwayPosition.X -= ControlRotationDelta.Yaw;
+			TargetWeaponSwayPosition.X = FMath::Clamp(TargetWeaponSwayPosition.X, -MaxSwayLateral, MaxSwayLateral);
 		}
 		else
 		{
-			TargetWeaponSway.Roll -= Delta.Pitch;
-			TargetWeaponSway.Roll = FMath::Clamp(TargetWeaponSway.Roll , -SwayRatePitch, SwayRatePitch);
+			TargetWeaponSwayRotation.Roll -= ControlRotationDelta.Pitch;
+			TargetWeaponSwayRotation.Roll = FMath::Clamp(TargetWeaponSwayRotation.Roll , -MaxSwayPitch, MaxSwayPitch);
+
+			TargetWeaponSwayPosition.Z -= ControlRotationDelta.Pitch;
+			TargetWeaponSwayPosition.Z = FMath::Clamp(TargetWeaponSwayPosition.Z, -MaxSwayVertical, MaxSwayVertical);
 		}
 
-		if(CurrentWeaponSway != TargetWeaponSway)
+		if(CurrentWeaponSwayRotation != TargetWeaponSwayRotation)
 		{
-			CurrentWeaponSway = FMath::InterpSinInOut(CurrentWeaponSway, TargetWeaponSway, InDeltaTime * 20.f);
+			CurrentWeaponSwayRotation = FMath::InterpSinInOut(CurrentWeaponSwayRotation, TargetWeaponSwayRotation, InDeltaTime * RotationSwaySpeed);
 		}
+
+		if (CurrentWeaponSwayPosition != TargetWeaponSwayPosition)
+		{
+			CurrentWeaponSwayPosition = FMath::InterpSinInOut(CurrentWeaponSwayPosition, TargetWeaponSwayPosition, InDeltaTime * PositionSwaySpeed);
+		}
+
+		CurrentWeaponSway.SetRotation(CurrentWeaponSwayRotation.Quaternion());
+		TargetWeaponSway.SetRotation(TargetWeaponSwayRotation.Quaternion());
+		CurrentWeaponSway.SetLocation(CurrentWeaponSwayPosition);
+		TargetWeaponSway.SetLocation(TargetWeaponSwayPosition);
 
 		/*GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Blue, FString::Printf(TEXT("ControlRotationDelta: %s"), *ControlRotation.ToString()));
-		GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString::Printf(TEXT("Weapon Sway: %s"), *WeaponSway.ToString()));
-		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("Delta: %s"), *Delta.ToString()));*/
+		GEngine->AddOnScreenDebugMessage(2, 5.f, FColor::Blue, FString::Printf(TEXT("Current Weapon Sway: %s"), *CurrentWeaponSway.ToString()));
+		GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("Delta: %s"), *ControlRotationDelta.ToString()));*/
 	}
 
 	PreviousControlRotation = ControlRotation;
@@ -69,15 +98,15 @@ void UMETWeaponSwayComponent::OnWeaponEquipped(ACharacter* const InOwningCharact
 void UMETWeaponSwayComponent::OnAimDownSights(const bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;
-	CurrentWeaponSway = FRotator::ZeroRotator;
-	TargetWeaponSway = FRotator::ZeroRotator;
+	CurrentWeaponSway = FTransform::Identity;
+	TargetWeaponSway = FTransform::Identity;
 }
 
 void UMETWeaponSwayComponent::Reset()
 {
 	OwningCharacter = nullptr;
 	PreviousControlRotation = FRotator::ZeroRotator;
-	CurrentWeaponSway = FRotator::ZeroRotator;
-	TargetWeaponSway = FRotator::ZeroRotator;
+	CurrentWeaponSway = FTransform::Identity;
+	TargetWeaponSway = FTransform::Identity;
 	bIsAiming = false;
 }

@@ -24,7 +24,6 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
-	, WeaponSwayRotation(0.f)
 	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
 {
@@ -111,11 +110,11 @@ void UMETCharacterAnimInstance::UpdateWeaponSway()
 {
 	if(CurrentWeapon)
 	{
-		WeaponSwayRotation = CurrentWeapon->GetWeaponSwayComponent()->GetWeaponSway();
+		WeaponSway = CurrentWeapon->GetWeaponSwayComponent()->GetWeaponSway();
 	}
 	else
 	{
-		WeaponSwayRotation = FRotator::ZeroRotator;
+		WeaponSway = FTransform::Identity;
 	}
 }
 
@@ -188,7 +187,7 @@ void UMETCharacterAnimInstance::WeaponManager_OnWeaponEquippedEvent(AMETWeapon* 
 	CurrentWeapon = InWeapon;
 	
 	RecoilOffset = FTransform::Identity;
-	WeaponSwayRotation = FRotator::ZeroRotator;
+	WeaponSway = FTransform::Identity;
 	RightHandToSight = FTransform::Identity;
 	SightToCameraRoot = FTransform::Identity;
 	RightHandToCameraRoot = FTransform::Identity;

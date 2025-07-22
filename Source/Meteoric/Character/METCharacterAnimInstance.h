@@ -84,7 +84,7 @@ protected:
 	float AimAlpha;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon Sway")
-	FRotator WeaponSwayRotation;
+	FTransform WeaponSway;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
 	FName CameraRootBone;

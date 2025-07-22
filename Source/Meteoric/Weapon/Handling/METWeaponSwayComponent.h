@@ -6,6 +6,34 @@
 #include "Components/ActorComponent.h"
 #include "METWeaponSwayComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FMETSwaySettings
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway", meta = (ClampMin = 0, ClampMax = 90))
+	float MaxSwayRoll;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway", meta = (ClampMin = 0, ClampMax = 90))
+	float MaxSwayYaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway", meta = (ClampMin = 0, ClampMax = 90))
+	float MaxSwayPitch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway", meta = (ClampMin = 0))
+	float MaxSwayLateral;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway", meta = (ClampMin = 0))
+	float MaxSwayVertical;
+
+	FMETSwaySettings()
+		: MaxSwayRoll(0.0f)
+		, MaxSwayYaw(0.f)
+		, MaxSwayPitch(0.f)
+		, MaxSwayLateral(0.f)
+		, MaxSwayVertical(0.f)
+	{}
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class METEORIC_API UMETWeaponSwayComponent : public UActorComponent
@@ -14,22 +42,22 @@ class METEORIC_API UMETWeaponSwayComponent : public UActorComponent
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRateRoll_Default;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRateYaw_Default;
+	FMETSwaySettings DefaultSwaySettings;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRatePitch_Default;
+	FMETSwaySettings AimSwaySettings;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRateRoll_Aim;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRateYaw_Aim;
+	float RotationSwaySpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
-	float SwayRatePitch_Aim;
+	float PositionSwaySpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
+	float RotationInterpToZeroSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Sway")
+	float PositionInterpToZeroSpeed;
 	
 	UMETWeaponSwayComponent();
 	
@@ -39,16 +67,16 @@ public:
 	void OnAimDownSights(const bool bInIsAiming);
 
 	void Reset();
-
-	FRotator GetWeaponSway() const { return CurrentWeaponSway; }
+	
+	FTransform GetWeaponSway() const { return CurrentWeaponSway; }
 
 private:
 	UPROPERTY(Transient)
 	TObjectPtr<ACharacter> OwningCharacter;
 	
 	TOptional<FRotator> PreviousControlRotation;
-	FRotator TargetWeaponSway;
-	FRotator CurrentWeaponSway;
+	FTransform TargetWeaponSway;
+	FTransform CurrentWeaponSway;
 
 	bool bIsAiming;
 };
