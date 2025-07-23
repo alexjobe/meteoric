@@ -5,6 +5,7 @@
 
 #include "METCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Meteoric/Animation/METFootstepComponent.h"
 #include "Meteoric/Weapon/Handling/METRecoilComponent.h"
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
@@ -24,6 +25,7 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, SightCameraOffset(30.f)
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
+	, FootstepOffset(0.f)
 	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
 {
@@ -35,6 +37,7 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 	if(!Character) return;
 	
 	MovementComponent = Character->GetCharacterMovement();
+	FootstepComponent = Character->FindComponentByClass<UMETFootstepComponent>();
 
 	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
 	{
@@ -79,6 +82,11 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	else
 	{
 		LeftHandAttachAlpha = FMath::InterpSinInOut(LeftHandAttachAlpha, 0.f, AimDownSightsSpeed * DeltaSeconds);
+	}
+
+	if (FootstepComponent)
+	{
+		FootstepOffset = FootstepComponent->GetFootstepOffset();
 	}
 
 	UpdateWeaponSway();

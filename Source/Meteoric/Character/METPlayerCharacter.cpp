@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Meteoric/METGameplayTags.h"
+#include "Meteoric/Animation/METFootstepComponent.h"
 #include "Meteoric/GameMode/METGameModeBase.h"
 #include "Meteoric/GAS/METAbilitySystemComponent.h"
 #include "Meteoric/Interaction/METInteractionComponent.h"
@@ -40,6 +41,7 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 	MainCamera->bUsePawnControlRotation = false;
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
+	FootstepComponent = CreateDefaultSubobject<UMETFootstepComponent>(TEXT("FootstepComponent"));
 
 	if (ensure(CoverUserComponent))
 	{
@@ -59,6 +61,17 @@ void AMETPlayerCharacter::BeginPlay()
 		{
 			CrowdManager->RegisterAgent(this);
 		}
+	}
+}
+
+void AMETPlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (FootstepComponent)
+	{
+		const bool bCanStep = !GetCharacterMovement()->IsFalling() && !IsDead();
+		FootstepComponent->UpdateFootstep(DeltaTime, GetVelocity(), bCanStep);
 	}
 }
 

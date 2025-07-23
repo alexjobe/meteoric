@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<class UCharacterMovementComponent> MovementComponent;
 
+	UPROPERTY(Transient)
+	TObjectPtr<class UMETFootstepComponent> FootstepComponent;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	TObjectPtr<UAnimSequence> CurrentIdleAnim;
 
@@ -85,6 +88,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon Sway")
 	FTransform WeaponSway;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Footstep")
+	FVector FootstepOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
 	FName CameraRootBone;
