@@ -42,7 +42,9 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 	FootstepComponent = CreateDefaultSubobject<UMETFootstepComponent>(TEXT("FootstepComponent"));
-
+	
+	OnAimDownSights().AddUniqueDynamic(FootstepComponent, &UMETFootstepComponent::OnAimDownSights);
+	
 	if (ensure(CoverUserComponent))
 	{
 		CoverUserComponent->bShouldHoldSpot = false;
