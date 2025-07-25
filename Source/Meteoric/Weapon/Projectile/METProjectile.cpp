@@ -136,11 +136,13 @@ void AMETProjectile::Explode(const FMETAmmoDamageConfig& InDamageConfig, const F
 	UKismetSystemLibrary::SphereOverlapActors(this, InLocation, ExplosionRadius,
 		ObjectTypes, nullptr, ActorsToIgnore, HitActors);
 
-	DrawDebugSphere(GetWorld(), InLocation, ExplosionRadius,
-		16, FColor::Red, false, 2.f, 0, 2.f);
-
-	DrawDebugSphere(GetWorld(), InLocation, 2.f,
-		16, FColor::Green, false, 2.f, 0, 2.f);
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	if (CVarDrawProjectileDebug.GetValueOnAnyThread() == 1)
+	{
+		DrawDebugSphere(GetWorld(), InLocation, ExplosionRadius, 16, FColor::Red, false, 2.f, 0, 2.f);
+		DrawDebugSphere(GetWorld(), InLocation, 2.f, 16, FColor::Green, false, 2.f, 0, 2.f);
+	}
+#endif
 	
 	for (const auto& Actor : HitActors)
 	{
@@ -250,10 +252,23 @@ void AMETProjectile::ApplyRocketJumpImpulse(const AActor* InActor, const FVector
 		
 		const FVector MovementDirection = MovementComponent->Velocity.GetSafeNormal();
 		FVector FinalImpulseDirection = (ExplosionToPlayer * (1.0f - RocketJumpMovementInfluence)) + (MovementDirection * RocketJumpMovementInfluence);
-		DrawDebugDirectionalArrow(GetWorld(), InLocation, InLocation + FinalImpulseDirection * 100.f, 2.f, FColor::Cyan, false, 5.f, 0, 2.f);
+		
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+		if (CVarDrawProjectileDebug.GetValueOnAnyThread() == 1)
+		{
+			DrawDebugDirectionalArrow(GetWorld(), InLocation, InLocation + FinalImpulseDirection * 100.f, 2.f, FColor::Cyan, false, 5.f, 0, 2.f);
+		}
+#endif
+		
 		FinalImpulseDirection.Z += RocketJumpVerticalBias;
 		FinalImpulseDirection.Normalize();
-		DrawDebugDirectionalArrow(GetWorld(), InLocation, InLocation + FinalImpulseDirection * 100.f, 2.f, FColor::Green, false, 5.f, 0, 2.f);
+
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+		if (CVarDrawProjectileDebug.GetValueOnAnyThread() == 1)
+		{
+			DrawDebugDirectionalArrow(GetWorld(), InLocation, InLocation + FinalImpulseDirection * 100.f, 2.f, FColor::Green, false, 5.f, 0, 2.f);
+		}
+#endif
 
 		/*const float DistanceSquared = FVector::DistSquared(InLocation, InActor->GetActorLocation());
 		const float RadiusSquared = FMath::Square(InExplosionRadius);

@@ -42,6 +42,8 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 	FootstepComponent = CreateDefaultSubobject<UMETFootstepComponent>(TEXT("FootstepComponent"));
+
+	GetCharacterMovement()->AirControl = 0.2f;
 	
 	OnAimDownSights().AddUniqueDynamic(FootstepComponent, &UMETFootstepComponent::OnAimDownSights);
 	
@@ -72,8 +74,9 @@ void AMETPlayerCharacter::Tick(float DeltaTime)
 
 	if (FootstepComponent)
 	{
+		const FVector RelativeVelocity = GetActorTransform().InverseTransformVector(GetVelocity());
 		const bool bCanStep = !GetCharacterMovement()->IsFalling() && !IsDead();
-		FootstepComponent->UpdateFootstep(DeltaTime, GetVelocity(), bCanStep);
+		FootstepComponent->UpdateFootstep(DeltaTime, RelativeVelocity, bCanStep);
 	}
 }
 

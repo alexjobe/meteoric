@@ -10,6 +10,12 @@
 #include "GameFramework/Actor.h"
 #include "METProjectile.generated.h"
 
+static TAutoConsoleVariable<int32> CVarDrawProjectileDebug(
+	TEXT("METProjectile.DrawProjectileDebug"),
+	0,
+	TEXT("If 1, draws projectile debug information")
+);
+
 USTRUCT()
 struct FMETDamageFXData
 {

@@ -20,6 +20,8 @@ void UMETFootstepComponent::UpdateFootstep(const float InDeltaTime, const FVecto
 {
 	const FMETFootstepSettings& Settings = bIsAiming ? AimSettings : DefaultSettings;
 	const float PlayerSpeed = InPlayerVelocity.Size();
+	const float HorizontalDirectionModifier = InPlayerVelocity.Y < 0.f ? -1.f : 1.f;
+	const float ForwardDirectionModifier = InPlayerVelocity.X < 0.f ? -1.f : 1.f;
 
 	if (bInCanStep && PlayerSpeed >= Settings.MinSpeedForStep)
 	{
@@ -28,7 +30,7 @@ void UMETFootstepComponent::UpdateFootstep(const float InDeltaTime, const FVecto
 
 		const float StepCycleSpeed = FMath::Lerp(Settings.SlowCycleSpeed, Settings.FastCycleSpeed, SpeedAlpha);
 		
-		FootstepTime += InDeltaTime * StepCycleSpeed * PlayerSpeed * 0.01f;
+		FootstepTime += InDeltaTime * StepCycleSpeed * PlayerSpeed * 0.01f; // Scale step cycle by player speed
 
 		const float VerticalAmplitude = Settings.MaxVerticalAmplitude * FootstepTimeAlpha;
 		const float HorizontalAmplitude = Settings.MaxHorizontalAmplitude * FootstepTimeAlpha;
@@ -38,9 +40,9 @@ void UMETFootstepComponent::UpdateFootstep(const float InDeltaTime, const FVecto
 		TargetFootstepOffset.Z = FMath::Sin(Cycle * 2.f) * VerticalAmplitude;
 
 		const float PhaseOffsetRadians = FMath::DegreesToRadians(Settings.HorizontalPhaseOffset);
-		TargetFootstepOffset.X = FMath::Sin(Cycle + PhaseOffsetRadians) * HorizontalAmplitude;
+		TargetFootstepOffset.X = FMath::Sin(Cycle + PhaseOffsetRadians) * HorizontalAmplitude * HorizontalDirectionModifier;
 		
-		TargetFootstepOffset.Y = FMath::Cos(Cycle + PhaseOffsetRadians) * ForwardAmplitude;
+		TargetFootstepOffset.Y = FMath::Cos(Cycle + PhaseOffsetRadians) * ForwardAmplitude * ForwardDirectionModifier;
 	}
 	else
 	{
@@ -54,8 +56,10 @@ void UMETFootstepComponent::UpdateFootstep(const float InDeltaTime, const FVecto
 	{
 		FootstepOffset = FMath::InterpSinInOut(FootstepOffset, TargetFootstepOffset, InDeltaTime * Settings.InterpToTargetOffsetSpeed);
 	}
-
-	GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("FootstepOffset: %s"), *FootstepOffset.ToString()));
+	
+	//GEngine->AddOnScreenDebugMessage(3, 5.f, FColor::Blue, FString::Printf(TEXT("FootstepOffset: %s"), *FootstepOffset.ToString()));
+	//GEngine->AddOnScreenDebugMessage(4, 5.f, FColor::Blue, FString::Printf(TEXT("TargetFootstepOffset: %s"), *TargetFootstepOffset.ToString()));
+	//GEngine->AddOnScreenDebugMessage(5, 5.f, FColor::Blue, FString::Printf(TEXT("Velocity: %s"), *InPlayerVelocity.ToString()));
 }
 
 void UMETFootstepComponent::OnAimDownSights(const bool bInIsAiming)

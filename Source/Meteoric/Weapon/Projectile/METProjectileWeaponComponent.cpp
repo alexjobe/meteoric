@@ -116,9 +116,17 @@ bool UMETProjectileWeaponComponent::SpawnTraceTest(const FMETSpawnProjectilePara
 	const FVector TraceEnd = TraceStart + InSpawnTransform.GetRotation().Vector() * SpawnTraceDistance;
 	const TArray<AActor*> ActorsToIgnore = { GetOwner(), InParams.Instigator };
 
+	EDrawDebugTrace::Type DebugTrace = EDrawDebugTrace::None;
+#if !UE_BUILD_TEST && !UE_BUILD_SHIPPING
+	if (CVarDrawProjectileDebug.GetValueOnAnyThread() == 1)
+	{
+		DebugTrace = EDrawDebugTrace::ForDuration;
+	}
+#endif
+
 	const bool bTraceHit = UKismetSystemLibrary::LineTraceSingle(
 	  this, TraceStart, TraceEnd, UEngineTypes::ConvertToTraceType(ECC_Projectile),
-	  false, ActorsToIgnore, EDrawDebugTrace::ForDuration, OutHitResult, true
+	  false, ActorsToIgnore, DebugTrace, OutHitResult, true
 	);
 
 	return bTraceHit;
