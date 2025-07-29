@@ -112,6 +112,7 @@ FMETSpawnProjectileParams UMETAbility_FireWeapon::CreateProjectileSpawnParams() 
 
 bool UMETAbility_FireWeapon::BindWaitFireAnimNotifyTask()
 {
+	// TODO: Handle case where notify is never received
 	if (const auto WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, METGameplayTags::EventTag_FireAnimNotify))
 	{
 		WaitGameplayEventTask->EventReceived.AddUniqueDynamic(this, &ThisClass::OnFireAnimNotify);

@@ -32,7 +32,7 @@ bool UPMBTDecorator_TraceCheck::CalculateRawConditionValue(UBehaviorTreeComponen
 	const FVector TraceStart = MyPawn->GetNavAgentLocation() + FVector(0, 0, QuerierHeightOffset);
 	const FVector TraceEnd = TargetPawn->GetNavAgentLocation() + FVector(0, 0, TargetHeightOffset);
 
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
+	//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
 
 	return GetWorld()->LineTraceTestByChannel(TraceStart, TraceEnd, TraceChannel);
 }

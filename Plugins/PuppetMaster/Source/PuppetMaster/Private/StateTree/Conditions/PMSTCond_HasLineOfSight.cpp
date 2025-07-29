@@ -31,7 +31,7 @@ bool FPMSTCond_HasLineOfSight::TestCondition(FStateTreeExecutionContext& Context
 	const FVector TraceStart = MyPawn->GetNavAgentLocation() + FVector(0, 0, InstanceData.QuerierHeightOffset);
 	const FVector TraceEnd = TargetLocation + FVector(0, 0, InstanceData.TargetHeightOffset);
 
-	DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
+	//DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 2.f, 0, 1.f);
 
 	FHitResult HitResult;
 	World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, InstanceData.TraceChannel);

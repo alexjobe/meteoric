@@ -20,7 +20,6 @@ UMETWeaponManager::UMETWeaponManager()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
-	Weapons.Init(nullptr, MaxWeapons);
 	SetIsReplicatedByDefault(true);
 }
 
@@ -32,6 +31,7 @@ void UMETWeaponManager::InitializeComponent()
 	{
 		InteractionComponent->OnInteractEvent().AddUniqueDynamic(this, &UMETWeaponManager::InteractionComponent_OnInteractEvent);
 	}
+	Weapons.Init(nullptr, MaxWeapons);
 }
 
 void UMETWeaponManager::BeginPlay()
