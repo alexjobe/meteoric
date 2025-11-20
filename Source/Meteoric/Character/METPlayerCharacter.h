@@ -24,8 +24,11 @@ class METEORIC_API AMETPlayerCharacter : public AMETCharacter, public ICrowdAgen
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractionComponent> InteractionComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Footstep", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETFootstepComponent> FootstepComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UMCWallRunComponent> WallRunComponent;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivateAccess = "true"))

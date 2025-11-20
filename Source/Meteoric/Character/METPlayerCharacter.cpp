@@ -19,6 +19,7 @@
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Ammo/METAmmoManager.h"
 #include "Navigation/CrowdManager.h"
+#include "WallRunning/MCWallRunComponent.h"
 
 
 static TAutoConsoleVariable<int32> CVarInvinciblePlayer(
@@ -42,6 +43,7 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 	FootstepComponent = CreateDefaultSubobject<UMETFootstepComponent>(TEXT("FootstepComponent"));
+	WallRunComponent = CreateDefaultSubobject<UMCWallRunComponent>(TEXT("WallRunComponent"));
 
 	GetCharacterMovement()->AirControl = 0.2f;
 	
@@ -237,10 +239,11 @@ void AMETPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMETPlayerCharacter::Look);
-	}
 
-	if(WeaponManager) WeaponManager->SetupPlayerInputComponent(PlayerInputComponent);
-	if(InteractionComponent) InteractionComponent->SetupPlayerInputComponent(PlayerInputComponent);
+		if (WeaponManager) WeaponManager->SetupPlayerInputComponent(EnhancedInputComponent);
+		if (InteractionComponent) InteractionComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+		if (WallRunComponent) WallRunComponent->SetupPlayerInputComponent(EnhancedInputComponent);
+	}
 }
 
 inline void AMETPlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

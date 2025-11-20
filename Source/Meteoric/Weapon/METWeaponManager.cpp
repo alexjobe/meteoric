@@ -352,9 +352,9 @@ void UMETWeaponManager::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 	DOREPLIFETIME(UMETWeaponManager, CurrentWeaponSlot)
 }
 
-void UMETWeaponManager::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void UMETWeaponManager::SetupPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent)
 {
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(CycleWeaponAction, ETriggerEvent::Started, this, &UMETWeaponManager::CycleWeaponInput);
 	}

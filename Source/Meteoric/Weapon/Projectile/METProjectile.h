@@ -28,10 +28,10 @@ struct FMETDamageFXData
 	FVector_NetQuantizeNormal ImpactNormal;
 
 	UPROPERTY()
-	TEnumAsByte<EPhysicalSurface> SurfaceType;
+	TEnumAsByte<EPhysicalSurface> SurfaceType = SurfaceType_Default;
 
 	UPROPERTY()
-	EMETDamageTiming DamageTiming;
+	EMETDamageTiming DamageTiming = EMETDamageTiming::Impact;
 };
 
 UCLASS()

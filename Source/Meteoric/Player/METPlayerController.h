@@ -36,8 +36,7 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	//~ End UGenericTeamAgentInterface interface
-
-protected:
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Team")
 	FGameplayTag TeamTag;
 

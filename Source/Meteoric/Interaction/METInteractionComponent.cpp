@@ -83,9 +83,9 @@ void UMETInteractionComponent::InteractInput()
 	}
 }
 
-void UMETInteractionComponent::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void UMETInteractionComponent::SetupPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent)
 {
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &UMETInteractionComponent::InteractInput);
 	}

@@ -62,6 +62,6 @@ private:
 	void InteractInput();
 
 public:
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+	void SetupPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent);
 	
 };

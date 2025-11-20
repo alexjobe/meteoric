@@ -27,7 +27,8 @@ public class Meteoric : ModuleRules
 		{
 			"PuppetMaster",
 			"PMCoverSystem", 
-			"GameplayStateTreeModule"
+			"GameplayStateTreeModule",
+			"MoveCore"
 		});
 
 		// Uncomment if you are using Slate UI

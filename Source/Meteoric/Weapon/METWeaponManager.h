@@ -116,5 +116,5 @@ private:
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
+	void SetupPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent);
 };
