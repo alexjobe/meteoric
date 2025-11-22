@@ -11,6 +11,9 @@
 UMCWallRunComponent::UMCWallRunComponent()
 	: WallRunGravityScale(0)
 	, WallRunAirControl(1.f)
+	, WallRunLean(20.f)
+	, WallRunLeanSpeed(10.f)
+	, WallRunCooldown(0.5f)
 	, TimeToFallOff(0.5f)
 	, LineTraceDistance(200.f)
 	, LineTraceChannel(ECC_Visibility)
@@ -22,6 +25,7 @@ UMCWallRunComponent::UMCWallRunComponent()
 	, RightInput(0)
 	, DefaultGravityScale(0)
 	, DefaultAirControl(0)
+	, WallRunCooldownRemaining(0)
 	, ElapsedFallOffTime(0)
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -50,14 +54,22 @@ void UMCWallRunComponent::BeginPlay()
 void UMCWallRunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (bIsWallRunning) WallRunUpdate(DeltaTime);
-
+	if (WallRunCooldownRemaining > 0)
+	{
+		WallRunCooldownRemaining = FMath::Max(WallRunCooldownRemaining - DeltaTime, 0.f);
+	}
+	if (bIsWallRunning)
+	{
+		WallRunUpdate(DeltaTime);
+	}
+	CharacterLeanUpdate(DeltaTime);
 }
 
 void UMCWallRunComponent::OwningCharacter_OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!MovementComponent) return;
-	if (bIsWallRunning || !MovementComponent->IsFalling()) return; // Make sure we are not grounded or already wall running
+	// Make sure we are not grounded or already wall running
+	if (bIsWallRunning || !MovementComponent->IsFalling() || WallRunCooldownRemaining > 0) return;
 
 	if (CanWallRunOnSurface(Hit.ImpactNormal))
 	{
@@ -209,10 +221,54 @@ void UMCWallRunComponent::EndWallRun(const EMCWallRunEndReason& InEndReason)
 	
 	//if(InEndReason == EMETWallRunEndReason::FellOffWall) SetJumps(JumpsLeftAfterFalling);
 	MovementComponent->SetPlaneConstraintNormal({ 0.f, 0.f, 0.f });
-	MovementComponent->bOrientRotationToMovement = true;
 	MovementComponent->GravityScale = DefaultGravityScale;
 	MovementComponent->AirControl = DefaultAirControl;
+	WallRunCooldownRemaining = WallRunCooldown;
 	SetIsWallRunning(false);
+}
+
+void UMCWallRunComponent::CharacterLeanUpdate(const float InDeltaTime) const
+{
+	if(!OwningCharacter) return;
+
+	const FRotator CurrentRotation = OwningCharacter->GetActorRotation();
+	
+	// If we aren't wall running and the character roll is already zero, we don't need to do anything
+	if (!bIsWallRunning && CurrentRotation.Roll == 0.f) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("CurrentCharacterRoll: %f"), CurrentRotation.Roll)
+
+	// Get target character roll, based on whether we are wall running and which side of the wall we are on
+	FRotator TargetRotation = { CurrentRotation.Pitch, CurrentRotation.Yaw, GetTargetCharacterRoll() };
+
+	if (bIsWallRunning)
+	{
+		// If we are wall running, we want to be rotated parallel to the wall
+		TargetRotation.Pitch = WallRunDirection.Rotation().Pitch;
+		TargetRotation.Yaw = WallRunDirection.Rotation().Yaw;
+	}
+
+	// Smoothly interpolate towards target character roll
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, InDeltaTime, WallRunLeanSpeed);
+
+	if (!bIsWallRunning && FMath::IsNearlyZero(NewRotation.Roll, 0.01f))
+	{
+		MovementComponent->bOrientRotationToMovement = true;
+		NewRotation.Roll = 0.0f;
+	}
+	
+	OwningCharacter->SetActorRotation(NewRotation);
+}
+
+float UMCWallRunComponent::GetTargetCharacterRoll() const
+{
+	if (bIsWallRunning)
+	{
+		if (WallSide == EMCWallSide::Left) return WallRunLean;
+		if (WallSide == EMCWallSide::Right) return -WallRunLean;
+	}
+	// If we aren't wall running, we want to tilt the character back to normal
+	return 0.f;
 }
 
 void UMCWallRunComponent::SetIsWallRunning(const bool InIsWallRunning)

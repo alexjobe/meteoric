@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WallRunning", meta = (ToolTip = "How fast should the character lean away from the wall while wall running?"))
 	float WallRunLeanSpeed;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WallRunning")
+	float WallRunCooldown;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WallRunning", meta = (ToolTip = "How long should the character keep wall running once wall run keys are no longer held down?"))
 	float TimeToFallOff;
 
@@ -79,6 +82,7 @@ private:
 	float DefaultGravityScale;
 	float DefaultAirControl;
 
+	float WallRunCooldownRemaining;
 	float ElapsedFallOffTime;
 
 	/* Called when we collide with something, so we can check if we hit a wall we can run on */
@@ -102,6 +106,11 @@ private:
 	bool LineTraceToWall(FHitResult& InHitResult) const;
 
 	void EndWallRun(const EMCWallRunEndReason& InEndReason);
+	
+	// Tilt the character away from the wall while wall running
+    void CharacterLeanUpdate(const float InDeltaTime) const;
+
+	float GetTargetCharacterRoll() const;
 	
 	void SetIsWallRunning(const bool InIsWallRunning);
 
