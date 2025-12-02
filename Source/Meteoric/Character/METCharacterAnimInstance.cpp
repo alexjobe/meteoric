@@ -10,6 +10,7 @@
 #include "Meteoric/Weapon/METWeapon.h"
 #include "Meteoric/Weapon/METWeaponManager.h"
 #include "Meteoric/Weapon/Handling/METWeaponSwayComponent.h"
+#include "WallRunning/MCWallRunComponent.h"
 
 UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	: IdleBlendAlpha(1.f)
@@ -26,6 +27,7 @@ UMETCharacterAnimInstance::UMETCharacterAnimInstance()
 	, AimDownSightsSpeed(20.f)
 	, AimAlpha(0.f)
 	, FootstepOffset(0.f)
+	, bIsWallRunning(false)
 	, LeftHandAttachAlpha(0.f)
 	, bIsTurningInPlace(false)
 {
@@ -38,6 +40,7 @@ void UMETCharacterAnimInstance::NativeInitializeAnimation()
 	
 	MovementComponent = Character->GetCharacterMovement();
 	FootstepComponent = Character->FindComponentByClass<UMETFootstepComponent>();
+	WallRunComponent = Character->FindComponentByClass<UMCWallRunComponent>();
 
 	if(UMETWeaponManager* WeaponManager = Character->GetWeaponManager())
 	{
@@ -87,6 +90,12 @@ void UMETCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (FootstepComponent)
 	{
 		FootstepOffset = FootstepComponent->GetFootstepOffset();
+	}
+	
+	if (WallRunComponent)
+	{
+		bIsWallRunning = WallRunComponent->IsWallRunning();
+		WallRunLeanRotation = WallRunComponent->GetWallRunLeanRotation();
 	}
 
 	UpdateWeaponSway();

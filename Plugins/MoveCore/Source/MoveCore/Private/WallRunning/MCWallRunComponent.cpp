@@ -227,40 +227,38 @@ void UMCWallRunComponent::EndWallRun(const EMCWallRunEndReason& InEndReason)
 	SetIsWallRunning(false);
 }
 
-void UMCWallRunComponent::CharacterLeanUpdate(const float InDeltaTime) const
+void UMCWallRunComponent::CharacterLeanUpdate(const float InDeltaTime)
 {
 	if(!OwningCharacter) return;
-
-	const FRotator CurrentRotation = OwningCharacter->GetActorRotation();
 	
-	// If we aren't wall running and the character roll is already zero, we don't need to do anything
-	if (!bIsWallRunning && CurrentRotation.Roll == 0.f) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("CurrentCharacterRoll: %f"), CurrentRotation.Roll)
+	// If we aren't wall running and the lean roll is already zero, we don't need to do anything
+	if (!bIsWallRunning && CurrentLeanRotation.IsZero()) return;
 
-	// Get target character roll, based on whether we are wall running and which side of the wall we are on
-	FRotator TargetRotation = { CurrentRotation.Pitch, CurrentRotation.Yaw, GetTargetCharacterRoll() };
+	// Get target lean roll, based on whether we are wall running and which side of the wall we are on
+	FRotator TargetRotation = { 0.f, 0.f, GetTargetLeanRoll() };
 
 	if (bIsWallRunning)
 	{
 		// If we are wall running, we want to be rotated parallel to the wall
-		TargetRotation.Pitch = WallRunDirection.Rotation().Pitch;
-		TargetRotation.Yaw = WallRunDirection.Rotation().Yaw;
+		const FVector WallRunDirectionLocal = OwningCharacter->GetTransform().InverseTransformVector(WallRunDirection);
+		
+		TargetRotation.Pitch = WallRunDirectionLocal.Rotation().Pitch;
+		TargetRotation.Yaw = WallRunDirectionLocal.Rotation().Yaw;
 	}
 
 	// Smoothly interpolate towards target character roll
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, InDeltaTime, WallRunLeanSpeed);
+	CurrentLeanRotation = FMath::RInterpTo(CurrentLeanRotation, TargetRotation, InDeltaTime, WallRunLeanSpeed);
 
-	if (!bIsWallRunning && FMath::IsNearlyZero(NewRotation.Roll, 0.01f))
+	if (!bIsWallRunning && CurrentLeanRotation.IsNearlyZero(0.01f))
 	{
 		MovementComponent->bOrientRotationToMovement = true;
-		NewRotation.Roll = 0.0f;
+		CurrentLeanRotation = FRotator::ZeroRotator;
 	}
 	
-	OwningCharacter->SetActorRotation(NewRotation);
+	UE_LOG(LogTemp, Warning, TEXT("CurrentLeanRotation: %s"), *CurrentLeanRotation.ToString())
 }
 
-float UMCWallRunComponent::GetTargetCharacterRoll() const
+float UMCWallRunComponent::GetTargetLeanRoll() const
 {
 	if (bIsWallRunning)
 	{

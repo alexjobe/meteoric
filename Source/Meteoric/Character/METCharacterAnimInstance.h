@@ -40,6 +40,9 @@ protected:
 
 	UPROPERTY(Transient)
 	TObjectPtr<class UMETFootstepComponent> FootstepComponent;
+	
+	UPROPERTY(Transient)
+	TObjectPtr<class UMCWallRunComponent> WallRunComponent;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	TObjectPtr<UAnimSequence> CurrentIdleAnim;
@@ -91,6 +94,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Footstep")
 	FVector FootstepOffset;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "WallRunning")
+	bool bIsWallRunning;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "WallRunning")
+	FRotator WallRunLeanRotation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ADS")
 	FName CameraRootBone;

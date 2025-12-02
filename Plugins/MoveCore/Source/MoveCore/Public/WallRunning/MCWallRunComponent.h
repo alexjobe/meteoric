@@ -63,6 +63,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	//~ End UActorComponent interface
+	
+	bool IsWallRunning() const { return bIsWallRunning; }
+	FRotator GetWallRunLeanRotation() const { return CurrentLeanRotation; }
 
 private:
 	UPROPERTY(Transient);
@@ -84,6 +87,8 @@ private:
 
 	float WallRunCooldownRemaining;
 	float ElapsedFallOffTime;
+	
+	FRotator CurrentLeanRotation;
 
 	/* Called when we collide with something, so we can check if we hit a wall we can run on */
 	UFUNCTION()
@@ -108,9 +113,9 @@ private:
 	void EndWallRun(const EMCWallRunEndReason& InEndReason);
 	
 	// Tilt the character away from the wall while wall running
-    void CharacterLeanUpdate(const float InDeltaTime) const;
+    void CharacterLeanUpdate(const float InDeltaTime);
 
-	float GetTargetCharacterRoll() const;
+	float GetTargetLeanRoll() const;
 	
 	void SetIsWallRunning(const bool InIsWallRunning);
 
