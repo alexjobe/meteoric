@@ -255,7 +255,7 @@ void UMCWallRunComponent::CharacterLeanUpdate(const float InDeltaTime)
 		CurrentLeanRotation = FRotator::ZeroRotator;
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("CurrentLeanRotation: %s"), *CurrentLeanRotation.ToString())
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentLeanRotation: %s"), *CurrentLeanRotation.ToString())
 }
 
 float UMCWallRunComponent::GetTargetLeanRoll() const

@@ -20,6 +20,14 @@ class METEORIC_API AMETPlayerCharacter : public AMETCharacter, public ICrowdAgen
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraBoom;
+	
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCameraComponent> DebugCamera;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USpringArmComponent> DebugCameraBoom;
+#endif
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UMETInteractionComponent> InteractionComponent;
@@ -87,6 +95,12 @@ protected:
 	//~ End AMETCharacter interface
 	
 	void ResetControlRotation() const;
+	
+#if WITH_EDITORONLY_DATA
+	UFUNCTION(Exec)
+	void ToggleDebugCamera();
+	bool bDebugCameraActive;
+#endif
 	
 private:
 	void UnregisterCrowdAgent();

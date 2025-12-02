@@ -40,6 +40,23 @@ AMETPlayerCharacter::AMETPlayerCharacter()
 	check(MainCamera);
 	MainCamera->SetupAttachment(CameraBoom);
 	MainCamera->bUsePawnControlRotation = false;
+	
+	MainCamera->SetActive(true);
+	
+#if WITH_EDITORONLY_DATA
+	DebugCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("DebugCameraBoom"));
+	check(DebugCameraBoom);
+	DebugCameraBoom->SetupAttachment(RootComponent);
+	DebugCameraBoom->TargetArmLength = 350.f;
+	DebugCameraBoom->bUsePawnControlRotation = false;
+	DebugCameraBoom->bDoCollisionTest = false;
+	
+	DebugCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("DebugCamera"));
+	check(DebugCamera);
+	DebugCamera->SetupAttachment(DebugCameraBoom, USpringArmComponent::SocketName);
+	
+	bDebugCameraActive = false;
+#endif
 
 	InteractionComponent = CreateDefaultSubobject<UMETInteractionComponent>(TEXT("InteractionComponent"));
 	FootstepComponent = CreateDefaultSubobject<UMETFootstepComponent>(TEXT("FootstepComponent"));
@@ -214,6 +231,29 @@ void AMETPlayerCharacter::ResetControlRotation() const
 		PlayerController->SetControlRotation(GetActorRotation());
 	}
 }
+
+#if WITH_EDITORONLY_DATA
+void AMETPlayerCharacter::ToggleDebugCamera()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
+
+	bDebugCameraActive = !bDebugCameraActive;
+
+	if (bDebugCameraActive)
+	{
+		DebugCamera->SetActive(true);
+		MainCamera->SetActive(false);
+		PlayerController->SetViewTargetWithBlend(this, 0.1f);
+	}
+	else
+	{
+		MainCamera->SetActive(true);
+		DebugCamera->SetActive(false);
+		PlayerController->SetViewTargetWithBlend(this, 0.2f); // back to normal FP camera
+	}
+}
+#endif
 
 void AMETPlayerCharacter::UnregisterCrowdAgent()
 {
