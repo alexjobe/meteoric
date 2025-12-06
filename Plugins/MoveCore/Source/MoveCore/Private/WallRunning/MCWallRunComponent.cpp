@@ -18,6 +18,8 @@ UMCWallRunComponent::UMCWallRunComponent()
 	, LineTraceDistance(200.f)
 	, LineTraceChannel(ECC_Visibility)
 	, InputDeadZone(0.1f)
+	, MaxJumps(2)
+	, JumpsAfterFalling(1)
 	, bIsWallRunning(false)
 	, WallSide(EMCWallSide::Right)
 	, WallRunDirection(FVector::ZeroVector)
@@ -27,6 +29,7 @@ UMCWallRunComponent::UMCWallRunComponent()
 	, DefaultAirControl(0)
 	, WallRunCooldownRemaining(0)
 	, ElapsedFallOffTime(0)
+	, bIsJumping(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
@@ -49,6 +52,9 @@ void UMCWallRunComponent::BeginPlay()
 	DefaultAirControl = MovementComponent->AirControl;
 
 	OwningCharacter->OnActorHit.AddUniqueDynamic(this, &UMCWallRunComponent::OwningCharacter_OnActorHit);
+	OwningCharacter->LandedDelegate.AddDynamic(this, &UMCWallRunComponent::OwningCharacter_OnLanded);
+	
+	JumpsRemaining = MaxJumps;
 }
 
 void UMCWallRunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -63,6 +69,20 @@ void UMCWallRunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		WallRunUpdate(DeltaTime);
 	}
 	CharacterLeanUpdate(DeltaTime);
+}
+
+void UMCWallRunComponent::Jump()
+{
+	if(!OwningCharacter) return;
+	if (JumpsRemaining > 0)
+	{
+		JumpsRemaining--;
+		bIsJumping = true;
+		FVector LaunchVelocity = CalculateLaunchVelocity();
+		// Override Z component of character's velocity
+		OwningCharacter->LaunchCharacter(LaunchVelocity, false, true);
+		if (bIsWallRunning) EndWallRun(EMCWallRunEndReason::JumpedOffWall);
+	}
 }
 
 void UMCWallRunComponent::OwningCharacter_OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
@@ -80,6 +100,12 @@ void UMCWallRunComponent::OwningCharacter_OnActorHit(AActor* SelfActor, AActor* 
 			BeginWallRun();
 		}
 	}
+}
+
+void UMCWallRunComponent::OwningCharacter_OnLanded(const FHitResult& Hit)
+{
+	SetJumps(MaxJumps);
+	bIsJumping = false;
 }
 
 bool UMCWallRunComponent::CanWallRunOnSurface(const FVector& InSurfaceNormal) const
@@ -143,6 +169,8 @@ void UMCWallRunComponent::BeginWallRun()
 	MovementComponent->GravityScale = WallRunGravityScale;
 	MovementComponent->AirControl = WallRunAirControl;
 	ElapsedFallOffTime = 0.f;
+	// Reset jumps
+	SetJumps(MaxJumps);
 	SetIsWallRunning(true);
 }
 
@@ -219,7 +247,7 @@ void UMCWallRunComponent::EndWallRun(const EMCWallRunEndReason& InEndReason)
 {
 	if(!OwningCharacter || !MovementComponent) return;
 	
-	//if(InEndReason == EMETWallRunEndReason::FellOffWall) SetJumps(JumpsLeftAfterFalling);
+	if(InEndReason == EMCWallRunEndReason::FellOffWall) SetJumps(JumpsAfterFalling);
 	MovementComponent->SetPlaneConstraintNormal({ 0.f, 0.f, 0.f });
 	MovementComponent->GravityScale = DefaultGravityScale;
 	MovementComponent->AirControl = DefaultAirControl;
@@ -272,6 +300,43 @@ float UMCWallRunComponent::GetTargetLeanRoll() const
 void UMCWallRunComponent::SetIsWallRunning(const bool InIsWallRunning)
 {
 	bIsWallRunning = InIsWallRunning;
+}
+
+void UMCWallRunComponent::SetJumps(const int InNumJumps)
+{
+	JumpsRemaining = FMath::Clamp(InNumJumps, 0, MaxJumps);
+}
+
+FVector UMCWallRunComponent::CalculateLaunchVelocity() const
+{
+	if(!OwningCharacter || !MovementComponent) return FVector::ZeroVector;
+	
+	FVector LaunchVelocity = FVector::ZeroVector;
+	if (bIsWallRunning)
+	{
+		// If on wall, jump away from wall
+		switch (WallSide)
+		{
+		case EMCWallSide::Left:
+			LaunchVelocity = FVector::CrossProduct(WallRunDirection, FVector(0.f, 0.f, -1.f));
+			break;
+		case EMCWallSide::Right:
+			LaunchVelocity = FVector::CrossProduct(WallRunDirection, FVector(0.f, 0.f, 1.f));
+			break;
+		}
+	}
+	else if (MovementComponent->IsFalling())
+	{
+		// If in the air, launch in direction of player input
+		LaunchVelocity = OwningCharacter->GetActorRightVector() * RightInput
+			+ OwningCharacter->GetActorForwardVector() * ForwardInput;
+	}
+
+	// No matter what, we want to go up
+	LaunchVelocity += FVector(0.f, 0.f, 1.f);
+	LaunchVelocity *= MovementComponent->JumpZVelocity;
+
+	return LaunchVelocity;
 }
 
 void UMCWallRunComponent::MoveInput(const FInputActionValue& Value)

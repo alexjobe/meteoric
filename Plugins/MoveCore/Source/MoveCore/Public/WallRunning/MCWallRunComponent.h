@@ -57,12 +57,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta=(ClampMin="0"))
 	float InputDeadZone;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WallRunning|Jumping")
+	int MaxJumps;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WallRunning|Jumping", meta = (ToolTip = "How many jumps should the character have left after falling off a wall?"))
+	int32 JumpsAfterFalling;
+	
 	UMCWallRunComponent();
 
 	//~ Begin UActorComponent interface
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	//~ End UActorComponent interface
+	
+	UFUNCTION(BlueprintCallable, Category = "WallRunning|Jumping")
+	void Jump();
 	
 	bool IsWallRunning() const { return bIsWallRunning; }
 	FRotator GetWallRunLeanRotation() const { return CurrentLeanRotation; }
@@ -89,10 +98,16 @@ private:
 	float ElapsedFallOffTime;
 	
 	FRotator CurrentLeanRotation;
+	
+	int JumpsRemaining;
+	bool bIsJumping;
 
 	/* Called when we collide with something, so we can check if we hit a wall we can run on */
 	UFUNCTION()
 	void OwningCharacter_OnActorHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	
+	UFUNCTION()
+	void OwningCharacter_OnLanded(const FHitResult& Hit);
 
 	/* Returns true if we can wall run on a given surface, provided the surface normal */
 	bool CanWallRunOnSurface(const FVector& InSurfaceNormal) const;
@@ -118,6 +133,10 @@ private:
 	float GetTargetLeanRoll() const;
 	
 	void SetIsWallRunning(const bool InIsWallRunning);
+	
+	void SetJumps(const int InNumJumps);
+	
+	FVector CalculateLaunchVelocity() const;
 
 	void MoveInput(const struct FInputActionValue& Value);
 
